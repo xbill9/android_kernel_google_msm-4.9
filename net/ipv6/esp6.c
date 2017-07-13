@@ -327,7 +327,7 @@ static int esp6_output(struct xfrm_state *x, struct sk_buff *skb)
 		           (unsigned char *)esph - skb->data,
 		           assoclen + ivlen + clen + alen);
 	if (unlikely(err < 0))
-		goto error;
+		goto error_free;
 
 	aead_request_set_crypt(req, sg, sg, ivlen + clen, iv);
 	aead_request_set_ad(req, assoclen);
@@ -356,8 +356,8 @@ static int esp6_output(struct xfrm_state *x, struct sk_buff *skb)
 		esp_output_encap_csum(skb);
 	}
 
+error_free:
 	kfree(tmp);
-
 error:
 	return err;
 }
