@@ -2079,7 +2079,7 @@ static int parse_audio_input_terminal(struct mixer_build *state, int unitid,
 
 	if (state->mixer->protocol == UAC_VERSION_2) {
 		/* Check for jack detection. */
-		if (uac2_control_is_readable(d->bmControls,
+		if (uac2_control_is_readable(le16_to_cpu(d->bmControls),
 					     UAC2_TE_CONNECTOR)) {
 			build_connector_control(state, &iterm, true);
 		}
@@ -2867,7 +2867,7 @@ static int snd_usb_mixer_controls(struct usb_mixer_interface *mixer)
 				if (err < 0 && err != -EINVAL)
 					return err;
 
-				if (uac2_control_is_readable(desc->bmControls,
+				if (uac2_control_is_readable(le16_to_cpu(desc->bmControls),
 							     UAC2_TE_CONNECTOR)) {
 					build_connector_control(&state,
 								&state.oterm,
