@@ -798,6 +798,7 @@ static bool unmap_kernel_at_el0(const struct arm64_cpu_capabilities *entry,
 		MIDR_ALL_VERSIONS(MIDR_CORTEX_A57),
 		MIDR_ALL_VERSIONS(MIDR_CORTEX_A72),
 		MIDR_ALL_VERSIONS(MIDR_CORTEX_A73),
+		{ /* sentinel */ }
 	};
 	char const *str = "command line option";
 	u64 pfr0 = read_system_reg(SYS_ID_AA64PFR0_EL1);
