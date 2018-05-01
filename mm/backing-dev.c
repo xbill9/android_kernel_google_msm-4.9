@@ -381,7 +381,10 @@ static void wb_shutdown(struct bdi_writeback *wb)
 	 * the barrier provided by test_and_clear_bit() above.
 	 */
 	smp_wmb();
-	clear_bit(WB_shutting_down, &wb->state);
+	clear_bit_unlock(WB_shutting_down, &wb->state);
+	/* See wake_up_bit() for which memory barrier you need to use. */
+	smp_mb__after_atomic();
+	wake_up_bit(&wb->state, WB_shutting_down);
 }
 
 static void wb_exit(struct bdi_writeback *wb)
