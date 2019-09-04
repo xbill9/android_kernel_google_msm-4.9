@@ -484,11 +484,13 @@ static inline unsigned int __bpf_call_func(const struct bpf_prog *prog,
 	return prog->bpf_func(ctx, prog->insnsi);
 }
 
+static inline struct bpf_binary_header *
+bpf_jit_binary_hdr(const struct bpf_prog *fp);
+
 static inline unsigned int __nocfi bpf_call_func(const struct bpf_prog *prog,
 						 const void *ctx)
 {
-	unsigned long addr = (unsigned long)prog->bpf_func & PAGE_MASK;
-	const struct bpf_binary_header *hdr = (void *)addr;
+	const struct bpf_binary_header *hdr = bpf_jit_binary_hdr(prog);
 
 	if (!IS_ENABLED(CONFIG_BPF_JIT_ALWAYS_ON) && !prog->jited)
 		return __bpf_call_func(prog, ctx);
