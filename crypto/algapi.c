@@ -662,14 +662,22 @@ EXPORT_SYMBOL_GPL(crypto_drop_spawn);
 static struct crypto_alg *crypto_spawn_alg(struct crypto_spawn *spawn)
 {
 	struct crypto_alg *alg;
+	struct crypto_alg *target;
+	bool shoot = false;
 
 	down_read(&crypto_alg_sem);
 	alg = spawn->alg;
 	if (alg && !crypto_mod_get(alg)) {
-		alg->cra_flags |= CRYPTO_ALG_DYING;
+		target = crypto_alg_get(alg);
+		shoot = true;
 		alg = NULL;
 	}
 	up_read(&crypto_alg_sem);
+
+	if (shoot) {
+		crypto_shoot_alg(target);
+		crypto_alg_put(target);
+	}
 
 	return alg ?: ERR_PTR(-EAGAIN);
 }
