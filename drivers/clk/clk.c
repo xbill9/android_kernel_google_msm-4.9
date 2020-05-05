@@ -3352,6 +3352,9 @@ static int __clk_core_init(struct clk_core *core)
 
 	kref_init(&core->ref);
 out:
+	if (ret)
+		hlist_del_init(&core->child_node);
+
 	clk_prepare_unlock();
 
 	if (!ret)
