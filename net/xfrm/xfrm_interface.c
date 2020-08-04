@@ -287,7 +287,7 @@ xfrmi_xmit2(struct sk_buff *skb, struct net_device *dev, struct flowi *fl)
 	}
 
 	mtu = dst_mtu(dst);
-	if (!skb->ignore_df && skb->len > mtu) {
+	if (skb->len > mtu) {
 		if (dst && dst->ops->update_pmtu)
 			dst->ops->update_pmtu(dst, NULL, skb, mtu);
 
