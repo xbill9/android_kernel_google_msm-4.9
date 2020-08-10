@@ -1094,8 +1094,10 @@ static int loop_configure(struct loop_device *lo, fmode_t mode,
 	lo->lo_state = Lo_bound;
 	if (part_shift)
 		lo->lo_flags |= LO_FLAGS_PARTSCAN;
-	if (lo->lo_flags & LO_FLAGS_PARTSCAN)
+	if (lo->lo_flags & LO_FLAGS_PARTSCAN) {
+		lo->lo_disk->flags &= ~GENHD_FL_NO_PART_SCAN;
 		loop_reread_partitions(lo, bdev);
+	}
 
 	/* Grab the block_device to prevent its destruction after we
 	 * put /dev/loopXX inode. Later in loop_clr_fd() we bdput(bdev).
