@@ -2278,8 +2278,9 @@ struct dst_entry *xfrm_lookup(struct net *net, struct dst_entry *dst_orig,
 		xflo.flags = flags;
 
 		/* To accelerate a bit...  */
-		if ((dst_orig->flags & DST_NOXFRM) ||
-		    !net->xfrm.policy_count[XFRM_POLICY_OUT])
+		if (!fl->flowi_xfrm.if_id &&
+		    ((dst_orig->flags & DST_NOXFRM) ||
+		     !net->xfrm.policy_count[XFRM_POLICY_OUT]))
 			goto nopol;
 
 		flo = flow_cache_lookup(net, fl, family, dir,
