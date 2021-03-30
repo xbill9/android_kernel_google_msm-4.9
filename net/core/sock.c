@@ -1765,16 +1765,10 @@ void skb_orphan_partial(struct sk_buff *skb)
 #ifdef CONFIG_INET
 	    || skb->destructor == tcp_wfree
 #endif
-		) {
-		struct sock *sk = skb->sk;
-
-		if (atomic_inc_not_zero(&sk->sk_refcnt)) {
-			atomic_sub(skb->truesize, &sk->sk_wmem_alloc);
-			skb->destructor = sock_efree;
-		}
-	} else {
+		)
+		skb_set_owner_sk_safe(skb, skb->sk);
+	else
 		skb_orphan(skb);
-	}
 }
 EXPORT_SYMBOL(skb_orphan_partial);
 
