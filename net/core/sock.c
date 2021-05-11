@@ -1761,14 +1761,14 @@ void skb_orphan_partial(struct sk_buff *skb)
 	if (skb_is_tcp_pure_ack(skb))
 		return;
 
-	if (skb->destructor == sock_wfree
+	if ((skb->destructor == sock_wfree
 #ifdef CONFIG_INET
-	    || skb->destructor == tcp_wfree
+	     || skb->destructor == tcp_wfree
 #endif
-		)
-		skb_set_owner_sk_safe(skb, skb->sk);
-	else
-		skb_orphan(skb);
+		) && skb_set_owner_sk_safe(skb, skb->sk))
+		return;
+
+	skb_orphan(skb);
 }
 EXPORT_SYMBOL(skb_orphan_partial);
 
