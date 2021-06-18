@@ -1071,6 +1071,7 @@ static int loop_configure(struct loop_device *lo, fmode_t mode,
 		blk_queue_logical_block_size(lo->lo_queue, bsize);
 	}
 
+	loop_config_discard(lo);
 	loop_update_dio(lo);
 	loop_sysfs_init(lo);
 
