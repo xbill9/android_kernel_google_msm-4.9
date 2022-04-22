@@ -467,6 +467,7 @@ static int fuse_create_open(struct inode *dir, struct dentry *entry,
 	struct fuse_open_out outopen;
 	struct fuse_entry_out outentry;
 	struct fuse_file *ff;
+	bool trunc = flags & O_TRUNC;
 
 	/* Userspace expects S_IFREG in create mode */
 	BUG_ON((mode & S_IFMT) != S_IFREG);
@@ -536,6 +537,10 @@ static int fuse_create_open(struct inode *dir, struct dentry *entry,
 	} else {
 		file->private_data = fuse_file_get(ff);
 		fuse_finish_open(inode, file);
+		if (fc->atomic_o_trunc && trunc)
+			truncate_pagecache(inode, 0);
+		else if (!(ff->open_flags & FOPEN_KEEP_CACHE))
+			invalidate_inode_pages2(inode->i_mapping);
 	}
 	return err;
 
