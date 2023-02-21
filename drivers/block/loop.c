@@ -952,6 +952,10 @@ loop_set_status_from_info(struct loop_device *lo,
 	if ((unsigned int) info->lo_encrypt_key_size > LO_KEY_SIZE)
 		return -EINVAL;
 
+	/* Avoid assigning overflow values */
+	if (info->lo_offset > LLONG_MAX || info->lo_sizelimit > LLONG_MAX)
+		return -EOVERFLOW;
+
 	err = loop_release_xfer(lo);
 	if (err)
 		return err;
