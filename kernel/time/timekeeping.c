@@ -1082,7 +1082,7 @@ static bool cycle_between(cycle_t before, cycle_t test, cycle_t after)
 {
 	if (test > before && test < after)
 		return true;
-	if (test < before && before > after)
+	if (before > after && (test > before || test < after))
 		return true;
 	return false;
 }
