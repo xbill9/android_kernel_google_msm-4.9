@@ -550,6 +550,9 @@ int __ethtool_get_link_ksettings(struct net_device *dev,
 
 	ASSERT_RTNL();
 
+	if (!netif_device_present(dev))
+		return -ENODEV;
+
 	if (dev->ethtool_ops->get_link_ksettings) {
 		memset(link_ksettings, 0, sizeof(*link_ksettings));
 		return dev->ethtool_ops->get_link_ksettings(dev,
