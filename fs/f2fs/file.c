@@ -3005,7 +3005,8 @@ static ssize_t f2fs_file_read_iter(struct kiocb *iocb, struct iov_iter *iter)
 	int ret;
 
 	/* In LFS mode, if there is inflight dio, wait for its completion */
-	if (test_opt(F2FS_I_SB(inode), LFS))
+	if (test_opt(F2FS_I_SB(inode), LFS) &&
+	    get_pages(F2FS_I_SB(inode), F2FS_DIO_WRITE))
 		inode_dio_wait(inode);
 
 	ret = generic_file_read_iter(iocb, iter);
