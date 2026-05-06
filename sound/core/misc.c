@@ -231,9 +231,13 @@ void snd_kill_fasync(struct snd_fasync *fasync, int signal, int poll)
 {
 	unsigned long flags;
 
-	if (!fasync || !fasync->on)
+	if (!fasync)
 		return;
 	spin_lock_irqsave(&snd_fasync_lock, flags);
+	if (!fasync->on) {
+		spin_unlock_irqrestore(&snd_fasync_lock, flags);
+		return;
+	}
 	fasync->signal = signal;
 	fasync->poll = poll;
 	list_move(&fasync->list, &snd_fasync_list);
@@ -248,6 +252,7 @@ void snd_fasync_free(struct snd_fasync *fasync)
 		return;
 
 	spin_lock_irq(&snd_fasync_lock);
+	fasync->on = 0;
 	list_del_init(&fasync->list);
 	spin_unlock_irq(&snd_fasync_lock);
 
