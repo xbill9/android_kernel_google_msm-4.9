@@ -1399,7 +1399,7 @@ page_hit:
 			  next_blkaddr_of_node(page));
 		err = -EINVAL;
 out_err:
-		ClearPageUptodate(page);
+		clear_node_page_dirty(page);
 		f2fs_put_page(page, 1);
 		return ERR_PTR(err);
 	}
