@@ -1193,9 +1193,15 @@ int bpf_get_uprobe_info(const struct perf_event *event, u32 *fd_type,
 	const char *group = event->tp_event->class->system;
 	struct trace_uprobe *tu;
 
-	if (perf_type_tracepoint)
+	/*
+	 * Other probes can be freed while the list is walked. This one can
+	 * not be deleted while perf uses its event.
+	 */
+	if (perf_type_tracepoint) {
+		mutex_lock(&uprobe_lock);
 		tu = find_probe_event(pevent, group);
-	else
+		mutex_unlock(&uprobe_lock);
+	} else
 		tu = event->tp_event->data;
 	if (!tu)
 		return -EINVAL;

@@ -1229,9 +1229,15 @@ int bpf_get_kprobe_info(const struct perf_event *event, u32 *fd_type,
 	const char *group = event->tp_event->class->system;
 	struct trace_kprobe *tk;
 
-	if (perf_type_tracepoint)
+	/*
+	 * Other probes can be freed while the list is walked. This one can
+	 * not be deleted while perf uses its event.
+	 */
+	if (perf_type_tracepoint) {
+		mutex_lock(&probe_lock);
 		tk = find_trace_kprobe(pevent, group);
-	else
+		mutex_unlock(&probe_lock);
+	} else
 		tk = event->tp_event->data;
 	if (!tk)
 		return -EINVAL;
