@@ -22,8 +22,26 @@ kernel runs daily on a Pixel 3a.
 
 `build.sh` builds `Image.lz4` the way LineageOS does: clang r416183b with
 GNU binutils from the Android 4.9 prebuilts, full LTO, CFI. Expects
-`~/sargo-bpf-test/{ksargo,kout,tc}`. `build-base.sh` builds the unmodified
-base tree for comparison.
+`$SARGO_ROOT/{ksargo,kout,tc}` (default `~/sargo-bpf-test`) and runs
+`nproc` jobs unless `JOBS` is set; the full-LTO link alone needs about
+5 GB of RAM. `build-base.sh` builds the unmodified base tree for
+comparison.
+
+To set up a new machine:
+
+    curl -sO https://raw.githubusercontent.com/xbill9/android_kernel_google_msm-4.9/main/backport-tools/setup.sh
+    bash setup.sh                      # or SARGO_ROOT=/path bash setup.sh
+    ~/sargo-bpf-test/ksargo/backport-tools/build.sh Image.lz4 modules
+
+`setup.sh` clones this repo as `ksargo` and fetches the toolchains at the
+exact commits used for every build here (clang
+`54220fd60105`, aarch64 GCC `5e030eafe024`, arm GCC `111258a10e01`, lz4
+`5ff839680134`), builds `lz4`, and fetches AOSP `mkbootimg` into `tools/`.
+
+On a build server without the phone attached, copy back
+`kout/arch/arm64/boot/Image.lz4` and
+`kout/drivers/staging/qcacld-3.0/wlan.ko`, then repack, boot-test and
+flash on the machine with the phone (see below).
 
 ## Status
 
