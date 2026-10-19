@@ -86,6 +86,36 @@ To check that a BPF program is actually running, not just loaded:
     adb shell 'ls -l /proc/<pid>/fd | grep bpf-prog'   # find the holder's fds
     adb shell 'grep run_ /proc/<pid>/fdinfo/<fd>'      # run_cnt, run_time_ns
 
+## Installing for daily use
+
+Back up the active slot's boot partition first, and build the image from it
+rather than from an older backup, since OTAs change the ramdisk:
+
+    S=$(adb shell getprop ro.boot.slot_suffix | tr -d '\r')
+    adb root
+    adb shell "dd if=/dev/block/by-name/boot$S of=/data/local/tmp/boot.img"
+    adb pull /data/local/tmp/boot.img img/boot-current.img
+    python3 tools/unpack_bootimg.py --boot_img img/boot-current.img \
+        --out img/cur --format=mkbootimg > img/cur.args
+    # replace img/cur/kernel in cur.args with kout's Image.lz4, then mkbootimg
+    adb reboot bootloader && fastboot flash boot$S boot-new.img
+
+Wi-Fi needs a `wlan.ko` built from the same tree (`build.sh modules`,
+then `strip --strip-debug`) in `/vendor/lib/modules/`. On LineageOS AVB is
+already disabled, so as root `mount -o remount,rw /vendor` works. The
+vendor filesystem is packed full, and ext4's reserved clusters make writes
+fail with `ENOSPC` even with free blocks. Lower the reserve just for the
+write, overwrite in place, and restore it:
+
+    R=/sys/fs/ext4/dm-1/reserved_clusters; old=$(cat $R)
+    mount -o remount,rw /vendor && echo 0 > $R
+    dd if=/data/local/tmp/wlan.ko of=/vendor/lib/modules/wlan.ko bs=1M conv=notrunc,fsync
+    echo $old > $R; mount -o remount,ro /vendor
+
+Don't use `cat >`: it truncates first, and a failed write leaves a partial
+module. Keep the stock `wlan.ko` and boot image to roll back. An OTA
+installs a stock kernel and vendor to the other slot.
+
 ## Selftests
 
 `build-selftests.sh [DIR]` sparse-clones linux-5.4.y, builds
