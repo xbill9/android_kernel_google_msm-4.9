@@ -102,14 +102,23 @@ behaviour that has since changed upstream.
 needs no target binary. For text trace events, note that Android boots with
 `tracing_on` set to 0.
 
+`probe_pmu_bpf.c` does the same through the perf `kprobe` and `uprobe`
+PMUs (no tracefs) and prints what `BPF_TASK_FD_QUERY` reports for each.
+These need `CONFIG_KPROBE_EVENTS`/`CONFIG_UPROBE_EVENTS`, which
+`bpf-uprobes` provides as aliases of the 4.9 option names.
+
 ## Known limitations
 
-- Vendor modules, including `/vendor/lib/modules/wlan.ko`, refuse to load
-  into any custom build (`disagrees about version of symbol
-  module_layout`), so Wi-Fi is absent unless the qcacld driver is built
-  from source. The Wi-Fi testing above used a local build with
-  `CONFIG_QCA_CLD_WLAN=y`.
-- 4.9 names the probe options `CONFIG_KPROBE_EVENT`/`CONFIG_UPROBE_EVENT`.
-  Backported code guarded by the 4.11+ names (`CONFIG_KPROBE_EVENTS`,
-  `CONFIG_UPROBE_EVENTS`), such as the perf kprobe PMU and probe details
-  in `bpf_task_fd_query`, is compiled out.
+- The stock vendor `wlan.ko` refuses to load into any custom build
+  (`disagrees about version of symbol module_layout`).
+- On `bpf-backport-s2`, code guarded by the 4.11+ option names
+  (`CONFIG_KPROBE_EVENTS`, `CONFIG_UPROBE_EVENTS`), such as the perf kprobe
+  PMU and probe details in `bpf_task_fd_query`, is compiled out.
+  `bpf-uprobes` adds the aliases that enable it.
+- No BPF ring buffer (5.8). It would not help bpfloader anyway: bpfloader
+  gates maps on kernel version, so uprobestats' 5.8 maps are skipped on any
+  4.9 kernel.
+- Vendor `wlan.ko` must match the kernel. `CONFIG_QCA_CLD_WLAN=m` is in
+  `bonito_defconfig`, so `build.sh modules` produces a matching
+  `drivers/staging/qcacld-3.0/wlan.ko`; strip it with `--strip-debug` and
+  replace `/vendor/lib/modules/wlan.ko`.
