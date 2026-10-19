@@ -2,20 +2,21 @@
 
 Scripts and bookkeeping used to backport newer eBPF support onto the
 LineageOS 4.9 kernel for the Pixel 3a (`sargo`, `bonito_defconfig`).
-`main` holds everything: the kernel tree from `bpf-backport-s2` with this
-directory merged in as `backport-tools/`. The other branches are kept for
-history:
+Everything is on `main`: the kernel tree, based on LineageOS
+`lineage-22.2`, with this directory as `backport-tools/`. On top of the
+base it has, in order:
 
-- `bpf-backport-s2` — current work and the default branch: the 1642-commit
-  stage-2 series replayed onto `lineage-22.2`, plus build fixes, a CFI fix,
-  `CONFIG_BPF_EVENTS`, two verifier/ABI fixes from 4.15, arm64 uprobes (the
-  4.10 upstream series and later fixes from 4.14, `CONFIG_UPROBE_EVENT=y`),
-  the 4.11 `KPROBE_EVENTS`/`UPROBE_EVENTS` option names, and a fix for
-  kprobing CFI function bodies. Commits that needed a hand merge say how in
-  a `[ 4.9: ... ]` note. Runs daily on a Pixel 3a.
-- `bpf-uprobes` — where the uprobe work was developed; now the same commit
-  as `bpf-backport-s2`.
-- `bpf-backport` — stage 1 (441-commit series in `series.txt`).
+- stage 1: a 441-commit series (`series.txt`);
+- stage 2: a 1642-commit series (`series2.txt`), plus build fixes and a CFI
+  fix;
+- `CONFIG_BPF_EVENTS` and two verifier/ABI fixes from 4.15;
+- arm64 uprobes: the 4.10 upstream series and later fixes from 4.14, with
+  `CONFIG_UPROBE_EVENT=y`;
+- the 4.11 `KPROBE_EVENTS`/`UPROBE_EVENTS` option names, and a fix for
+  kprobing CFI function bodies.
+
+Commits that needed a hand merge say how in a `[ 4.9: ... ]` note. The
+kernel runs daily on a Pixel 3a.
 
 ## Build
 

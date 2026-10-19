@@ -7,8 +7,11 @@ set -u
 REPO=$1 BASE=$2 TIP=$3 OUT=$4
 cd "$REPO"
 git cherry-pick --abort 2>/dev/null
-git checkout -q -f -B bpf-conflict-test "${START:-lineage-22.2}"
-git config user.email t@t; git config user.name t; git config rerere.enabled false
+# Detached HEAD: the dry run leaves no branch behind. Run it in a scratch clone.
+git checkout -q -f --detach "${START:-origin/lineage-22.2}"
+# Throwaway identity for the dry-run commits, without touching the repo config.
+export GIT_AUTHOR_NAME=t GIT_AUTHOR_EMAIL=t@t GIT_COMMITTER_NAME=t GIT_COMMITTER_EMAIL=t@t
+git config rerere.enabled false
 : > "$OUT/results.tsv"; : > "$OUT/conflict_files.txt"
 # Subjects already in sargo history (catches equivalent backports with different SHAs)
 git log --format=%s HEAD | sed -E 's/^(BACKPORT|UPSTREAM|FROMGIT|FROMLIST): //' | sort -u > "$OUT/sargo_subjects.txt"
