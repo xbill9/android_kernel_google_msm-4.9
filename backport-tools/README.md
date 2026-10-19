@@ -2,7 +2,9 @@
 
 Scripts and bookkeeping used to backport newer eBPF support onto the
 LineageOS 4.9 kernel for the Pixel 3a (`sargo`, `bonito_defconfig`).
-The kernel itself lives on the other branches of this repo:
+`main` holds everything: the kernel tree from `bpf-backport-s2` with this
+directory merged in as `backport-tools/`. The other branches are kept for
+history:
 
 - `bpf-backport-s2` — current work and the default branch: the 1642-commit
   stage-2 series replayed onto `lineage-22.2`, plus build fixes, a CFI fix,
