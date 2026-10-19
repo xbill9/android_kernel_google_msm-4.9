@@ -1,6 +1,7 @@
 # UAPI Header export list
 header-y += auxvec.h
 header-y += bitsperlong.h
+header-y += bpf_perf_event.h
 header-y += errno-base.h
 header-y += errno.h
 header-y += fcntl.h

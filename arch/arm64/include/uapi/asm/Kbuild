@@ -5,6 +5,7 @@ generic-y += kvm_para.h
 
 header-y += auxvec.h
 header-y += bitsperlong.h
+header-y += bpf_perf_event.h
 header-y += byteorder.h
 header-y += fcntl.h
 header-y += hwcap.h
