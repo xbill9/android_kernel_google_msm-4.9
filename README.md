@@ -115,6 +115,12 @@ These need `CONFIG_KPROBE_EVENTS`/`CONFIG_UPROBE_EVENTS`, which
   (`CONFIG_KPROBE_EVENTS`, `CONFIG_UPROBE_EVENTS`), such as the perf kprobe
   PMU and probe details in `bpf_task_fd_query`, is compiled out.
   `bpf-uprobes` adds the aliases that enable it.
+- Kprobes and CFI: with `CONFIG_CFI_CLANG`, a function body is named
+  `<name>.cfi` and the plain name is its jump-table entry, which only
+  indirect calls reach. A kprobe on `do_sys_open` therefore attaches but
+  never fires; probe `do_sys_open.cfi` (check `/proc/kallsyms`). This is
+  how the stock 4.9 CFI kernel behaves too. `bpf-uprobes` makes the perf
+  kprobe PMU accept `.cfi` names, which used to fail with `EINVAL`.
 - No BPF ring buffer (5.8). It would not help bpfloader anyway: bpfloader
   gates maps on kernel version, so uprobestats' 5.8 maps are skipped on any
   4.9 kernel.

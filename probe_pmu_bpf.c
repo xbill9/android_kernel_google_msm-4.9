@@ -143,9 +143,21 @@ int main(void)
 	int fails = 0, map, pfd, efd, s = 0;
 	unsigned long long n;
 
-	/* kprobe PMU on a syscall path we can trigger N times */
+	/* kprobe PMU on a syscall path we can trigger N times. Under Clang CFI
+	 * the plain symbol is the jump-table stub that only indirect calls go
+	 * through; the function body is <name>.cfi. */
+	const char *func = "do_sys_open";
+	char line[512];
+	FILE *f = fopen("/proc/kallsyms", "r");
+	while (f && fgets(line, sizeof(line), f))
+		if (strstr(line, " do_sys_open.cfi\n")) {
+			func = "do_sys_open.cfi";
+			break;
+		}
+	if (f)
+		fclose(f);
 	pfd = load_counter(&map);
-	efd = open_pmu(pmu_type("kprobe"), (unsigned long)"do_sys_open", 0, pfd);
+	efd = open_pmu(pmu_type("kprobe"), (unsigned long)func, 0, pfd);
 	if (pfd < 0 || efd < 0)
 		return 1;
 	for (int i = 0; i < N; i++)
@@ -158,9 +170,9 @@ int main(void)
 	close(efd);
 
 	/* uprobe PMU on our own function */
-	char exe[256], line[512];
+	char exe[256];
 	unsigned long start, end, pgoff, off = 0, addr = (unsigned long)target;
-	FILE *f = fopen("/proc/self/maps", "r");
+	f = fopen("/proc/self/maps", "r");
 	while (fgets(line, sizeof(line), f))
 		if (sscanf(line, "%lx-%lx %*s %lx", &start, &end, &pgoff) == 3 &&
 		    addr >= start && addr < end) {
