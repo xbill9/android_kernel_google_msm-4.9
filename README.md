@@ -4,13 +4,15 @@ Scripts and bookkeeping used to backport newer eBPF support onto the
 LineageOS 4.9 kernel for the Pixel 3a (`sargo`, `bonito_defconfig`).
 The kernel itself lives on the other branches of this repo:
 
-- `bpf-backport-s2` — current work: 1642-commit stage-2 series replayed onto
-  `lineage-22.2`, plus build fixes, a CFI fix, `CONFIG_BPF_EVENTS` and two
-  verifier/ABI fixes from 4.15. Boots on a Pixel 3a.
-- `bpf-uprobes` — `bpf-backport-s2` plus arm64 uprobe support: the 4.10
-  upstream series and later fixes from 4.14, with
-  `CONFIG_UPROBE_EVENT=y`. Commits that needed a hand merge say how in a
-  `[ 4.9: ... ]` note.
+- `bpf-backport-s2` — current work and the default branch: the 1642-commit
+  stage-2 series replayed onto `lineage-22.2`, plus build fixes, a CFI fix,
+  `CONFIG_BPF_EVENTS`, two verifier/ABI fixes from 4.15, arm64 uprobes (the
+  4.10 upstream series and later fixes from 4.14, `CONFIG_UPROBE_EVENT=y`),
+  the 4.11 `KPROBE_EVENTS`/`UPROBE_EVENTS` option names, and a fix for
+  kprobing CFI function bodies. Commits that needed a hand merge say how in
+  a `[ 4.9: ... ]` note. Runs daily on a Pixel 3a.
+- `bpf-uprobes` — where the uprobe work was developed; now the same commit
+  as `bpf-backport-s2`.
 - `bpf-backport` — stage 1 (441-commit series in `series.txt`).
 
 ## Build
@@ -22,25 +24,27 @@ base tree for comparison.
 
 ## Status
 
-Tested on a Pixel 3a running LineageOS, kernel RAM-booted (see below):
+Tested on a Pixel 3a running LineageOS 22.2, first RAM-booted and then
+flashed for daily use (see below):
 
 - Boots cleanly; no oops, BUG or CFI reports. The only kernel warning is an
   ION warning from a vendor HAL that the stock kernel logs too.
 - Android's bpfloader loads every platform program except the three
   optional uprobestats objects, whose maps need a BPF ring buffer
-  (`BPF_MAP_TYPE_RINGBUF`, kernel 5.8); bpfloader skips the maps and the
-  programs then fail to load. This is harmless. netd's cgroup/socket
+  (`BPF_MAP_TYPE_RINGBUF`, kernel 5.8). bpfloader skips maps by kernel
+  version, so the programs then fail to load. This is harmless. netd's cgroup/socket
   programs, timeInState (`sched_switch`, `cpu_frequency`,
   `sched_process_free`), gpuMem and gpuWork load, attach and run.
-- Networking with per-UID traffic accounting works (tested over Wi-Fi with a
-  built-in driver; see Known limitations).
+- Wi-Fi works with a `wlan.ko` built from this tree, and networking with
+  per-UID traffic accounting works.
 - The linux-5.4.y BPF verifier selftests pass: `test_verifier` from 5.4.302
   gives 1610 passed, 0 failed, 3 skipped (the skips are sockmap, sockhash
   and xskmap, which sargo does not configure).
-- On `bpf-uprobes`: uprobe and uretprobe trace events work, and a BPF
+- Uprobe and uretprobe trace events work, and a BPF
   program attached to a uprobe via `PERF_EVENT_IOC_SET_BPF` counts every
-  hit (`uprobe_bpf.c`: 1000 calls, 1000 hits). The test kernel ran
-  `bpf-uprobes` built with no local changes.
+  hit (`uprobe_bpf.c`: 1000 calls, 1000 hits). BPF programs on the perf
+  kprobe and uprobe PMUs count every hit too (`probe_pmu_bpf.c`). Each
+  test kernel was built with no local changes.
 
 ## Replaying a series
 
@@ -134,22 +138,18 @@ needs no target binary. For text trace events, note that Android boots with
 
 `probe_pmu_bpf.c` does the same through the perf `kprobe` and `uprobe`
 PMUs (no tracefs) and prints what `BPF_TASK_FD_QUERY` reports for each.
-These need `CONFIG_KPROBE_EVENTS`/`CONFIG_UPROBE_EVENTS`, which
-`bpf-uprobes` provides as aliases of the 4.9 option names.
+These need `CONFIG_KPROBE_EVENTS`/`CONFIG_UPROBE_EVENTS`, which the kernel
+provides as aliases of the 4.9 option names.
 
 ## Known limitations
 
 - The stock vendor `wlan.ko` refuses to load into any custom build
   (`disagrees about version of symbol module_layout`).
-- On `bpf-backport-s2`, code guarded by the 4.11+ option names
-  (`CONFIG_KPROBE_EVENTS`, `CONFIG_UPROBE_EVENTS`), such as the perf kprobe
-  PMU and probe details in `bpf_task_fd_query`, is compiled out.
-  `bpf-uprobes` adds the aliases that enable it.
 - Kprobes and CFI: with `CONFIG_CFI_CLANG`, a function body is named
   `<name>.cfi` and the plain name is its jump-table entry, which only
   indirect calls reach. A kprobe on `do_sys_open` therefore attaches but
   never fires; probe `do_sys_open.cfi` (check `/proc/kallsyms`). This is
-  how the stock 4.9 CFI kernel behaves too. `bpf-uprobes` makes the perf
+  how the stock 4.9 CFI kernel behaves too. This tree makes the perf
   kprobe PMU accept `.cfi` names, which used to fail with `EINVAL`.
 - No BPF ring buffer (5.8). It would not help bpfloader anyway: bpfloader
   gates maps on kernel version, so uprobestats' 5.8 maps are skipped on any
