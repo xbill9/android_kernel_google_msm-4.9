@@ -1,0 +1,269 @@
+17	858c05c36766	net/tls/tls_sw.c
+18	cdcb2ffd202f	net/tls/tls_sw.c
+27	5672a71aea62	tools/testing/selftests/bpf/test_verifier.c
+40	8e82f81104a6	UU	tools/include/uapi/linux/bpf.h
+58	c5d512942c3a	UU	drivers/net/ethernet/broadcom/bnxt/bnxt.c
+58	c5d512942c3a	DU	drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+58	c5d512942c3a	DU	drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.h
+58	c5d512942c3a	UU	drivers/net/ethernet/cavium/thunder/nicvf_main.c
+58	c5d512942c3a	UU	drivers/net/ethernet/intel/i40e/i40e_main.c
+58	c5d512942c3a	UU	drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+58	c5d512942c3a	UU	drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+58	c5d512942c3a	UU	drivers/net/ethernet/qlogic/qede/qede.h
+58	c5d512942c3a	DU	drivers/net/ethernet/qlogic/qede/qede_filter.c
+58	c5d512942c3a	UU	drivers/net/ethernet/qlogic/qede/qede_main.c
+58	c5d512942c3a	UU	drivers/net/ethernet/broadcom/bnxt/bnxt.c
+58	c5d512942c3a	DU	drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+58	c5d512942c3a	DU	drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.h
+58	c5d512942c3a	UU	drivers/net/ethernet/cavium/thunder/nicvf_main.c
+58	c5d512942c3a	UU	drivers/net/ethernet/intel/i40e/i40e_main.c
+58	c5d512942c3a	UU	drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+58	c5d512942c3a	UU	drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+58	c5d512942c3a	UU	drivers/net/ethernet/qlogic/qede/qede.h
+58	c5d512942c3a	DU	drivers/net/ethernet/qlogic/qede/qede_filter.c
+58	c5d512942c3a	UU	drivers/net/ethernet/qlogic/qede/qede_main.c
+58	c5d512942c3a	UU	drivers/net/virtio_net.c
+65	c5e657d8137b	UU	kernel/trace/trace_kprobe.c (unbuilt: KPROBE_EVENT off)
+102	3e156f611b25	UU	arch/arm/net/bpf_jit_32.c
+102	3e156f611b25	DU	arch/mips/net/ebpf_jit.c
+102	3e156f611b25	DU	arch/sparc/net/bpf_jit_comp_64.c
+129	49e57b79e7a9	UU	kernel/trace/trace_kprobe.c (unbuilt)
+140	7a2a482641da	DU	tools/testing/selftests/bpf/test_verifier.c
+184	6bc096cbacac	UU	net/ipv6/ip6_gre.c
+185	3deaa382009a	UU	net/ipv6/ip6_gre.c
+188	26b040e06704	UU	net/ipv6/ip6_gre.c
+189	b287860d13a7	UU	net/ipv4/ip_gre.c
+189	b287860d13a7	UU	net/ipv6/ip6_gre.c
+216	5982012c2b0e	UU	drivers/net/ethernet/qlogic/qede/qede.h
+216	5982012c2b0e	DU	drivers/net/ethernet/qlogic/qede/qede_fp.c
+216	5982012c2b0e	UU	drivers/net/ethernet/qlogic/qede/qede_main.c
+450	f536388bb4b1	DU	seg6_local.{c,h} + Kconfig ours (no SRv6 in 4.9)
+452	1628aaa69a18	DU	seg6_local files (no SRv6)
+476	4f3087cdaf8d	DU	drivers/media/rc/gpio-ir-tx.c
+476	4f3087cdaf8d	UU	drivers/media/rc/imon.c
+476	4f3087cdaf8d	UU	drivers/media/rc/ir-nec-decoder.c
+476	4f3087cdaf8d	UU	drivers/media/rc/ir-rc6-decoder.c
+476	4f3087cdaf8d	UU	drivers/media/rc/ir-sharp-decoder.c
+476	4f3087cdaf8d	DU	drivers/media/rc/ir-spi.c
+476	4f3087cdaf8d	UU	drivers/media/rc/mceusb.c
+476	4f3087cdaf8d	DU	drivers/media/rc/mtk-cir.c
+476	4f3087cdaf8d	UU	drivers/media/rc/rc-main.c
+476	4f3087cdaf8d	DU	drivers/media/rc/serial_ir.c
+476	4f3087cdaf8d	DU	drivers/media/rc/sir_ir.c
+477	def5c1d34573	UU	drivers/media/rc/lirc_dev.c
+478	056b57767057	UU	drivers/media/rc/ir-lirc-codec.c
+478	056b57767057	UU	drivers/media/rc/lirc_dev.c
+478	056b57767057	UU	drivers/staging/media/lirc/lirc_zilog.c
+479	0fc148759dd2	UU	drivers/media/rc/lirc_dev.c
+480	8f9dd04f9235	UU	drivers/media/rc/lirc_dev.c
+480	8f9dd04f9235	UU	drivers/staging/media/lirc/lirc_zilog.c
+590	51d14e5db2e2	UU	drivers/media/rc/lirc_dev.c
+627	34558c647c95	UU	MAINTAINERS
+643	986d311d7f5d	UU	drivers/media/rc/Kconfig (rc-core unbuilt)
+643	986d311d7f5d	UU	drivers/media/rc/Makefile (rc-core unbuilt)
+643	986d311d7f5d	UU	drivers/media/rc/lirc_dev.c (rc-core unbuilt)
+643	986d311d7f5d	UU	drivers/media/rc/rc-core-priv.h (rc-core unbuilt)
+643	986d311d7f5d	UU	drivers/media/rc/rc-ir-raw.c (rc-core unbuilt)
+646	57370f0030b6	UU	drivers/media/rc/rc-main.c
+705	ae4829832f40	DU	arch/openrisc/include/asm/atomic.h (non-arm64/unbuilt)
+705	ae4829832f40	UU	arch/x86/include/asm/atomic.h (non-arm64/unbuilt)
+705	ae4829832f40	DU	drivers/infiniband/core/rdma_core.c (non-arm64/unbuilt)
+705	ae4829832f40	UU	fs/afs/rxrpc.c (non-arm64/unbuilt)
+705	ae4829832f40	DU	include/asm-generic/atomic-instrumented.h (non-arm64/unbuilt)
+705	ae4829832f40	UU	include/asm-generic/atomic.h (non-arm64/unbuilt)
+705	ae4829832f40	UU	kernel/trace/tracing_map.c (non-arm64/unbuilt)
+710	c7aece9c8634	UU	drivers/net/geneve.c
+710	c7aece9c8634	UU	drivers/net/vxlan.c
+710	c7aece9c8634	UU	net/ipv4/ip_gre.c
+710	c7aece9c8634	UU	net/ipv6/ip6_gre.c
+741	008437393bb9	DU	include/net/seg6_local.h
+741	008437393bb9	DU	net/ipv6/seg6_local.c
+779	15fa1c4ab934	UU	drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+809	04cd57d88184	DU	tools/testing/selftests/bpf/test_verifier.c
+862	65bb7b876504	UU	security/smack/smack.h
+862	65bb7b876504	UU	security/smack/smack_access.c
+863	c446d53b0e81	UU	security/apparmor/resource.c
+892	21722bdb48ba	UU	arch/arm/net/bpf_jit_32.c
+892	21722bdb48ba	DU	arch/mips/net/ebpf_jit.c
+892	21722bdb48ba	DU	arch/sparc/net/bpf_jit_comp_64.c
+927	b8f0d0e6ebcf	DU	tools/testing/selftests/bpf/test_verifier.c
+979	689546273384	UU	arch/powerpc/net/bpf_jit_comp64.c
+980	426c47d0e938	UU	arch/powerpc/net/bpf_jit_comp64.c
+981	285e44e69bb9	UU	arch/powerpc/net/bpf_jit_comp64.c
+1116	3f564855bb61	DU	include/trace/bpf_probe.h (no raw-tp infra in 4.9; BPF_EVENTS off)
+1118	5fdead07c852	UU	arch/x86/Kconfig
+1119	65db69505874	UU	Documentation/filesystems/porting
+1147	543ff330a58f	DU	arch/x86/mm/pti.c (SPDX comment only)
+1147	543ff330a58f	DU	drivers/dax/dax-private.h (SPDX comment only)
+1147	543ff330a58f	DU	drivers/dax/super.c (SPDX comment only)
+1147	543ff330a58f	DU	samples/bpf/xdp_redirect_map_user.c (SPDX comment only)
+1147	543ff330a58f	DU	samples/bpf/xdp_redirect_user.c (SPDX comment only)
+1147	543ff330a58f	DU	security/selinux/ibpkey.c (SPDX comment only)
+1147	543ff330a58f	DU	security/selinux/include/ibpkey.h (SPDX comment only)
+1147	543ff330a58f	DU	tools/testing/selftests/timers/freq-step.c (SPDX comment only)
+1149	d10ee6a07dc3	partial	AF_XDP: family numbers + lock names only; SELinux xdp_socket class NOT added
+1167	eaa94bcf5d13	DU	Documentation/networking/index.rst
+1167	eaa94bcf5d13	UU	samples/bpf/Makefile
+1191	68e252942c9c	UU	drivers/net/ethernet/broadcom/bnxt/bnxt.c
+1191	68e252942c9c	UU	drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+1191	68e252942c9c	UU	drivers/net/ethernet/qlogic/qede/qede_main.c
+1192	54b7782e5ff7	DU	drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+1192	54b7782e5ff7	UU	drivers/net/ethernet/cavium/thunder/nicvf_main.c
+1192	54b7782e5ff7	UU	drivers/net/ethernet/intel/i40e/i40e_main.c
+1192	54b7782e5ff7	UU	drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+1192	54b7782e5ff7	UU	drivers/net/ethernet/mellanox/mlx4/en_netdev.c
+1192	54b7782e5ff7	UU	drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+1192	54b7782e5ff7	UU	drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+1192	54b7782e5ff7	DU	drivers/net/ethernet/qlogic/qede/qede_filter.c
+1192	54b7782e5ff7	UU	drivers/net/tun.c
+1192	54b7782e5ff7	UU	drivers/net/virtio_net.c
+1217	d61555eab37e	DU	include/linux/cgroup_rdma.h (SPDX)
+1217	d61555eab37e	DU	kernel/cgroup/rdma.c (SPDX)
+1245	fad90bf3a24a	partial	page_pool_get_dma_addr omitted (no page->dma_addr; struct page rework skipped)
+1349	d95b984a0c7a	DU	kernel/rcu/Kconfig.debug (PROVE_RCU_LIST debug option not added)
+1366	579cfbe4bae3	UA	samples/bpf/prog_tests/map_init.c
+1366	579cfbe4bae3	UA	samples/bpf/test_map_init.c
+1416	947b473a7071	UU	drivers/infiniband/hw/hns/hns_roce_user.h
+1416	947b473a7071	UU	include/net/tcp.h
+1416	947b473a7071	DU	include/net/tls.h
+1416	947b473a7071	DU	net/tls/tls_main.c
+1416	947b473a7071	DU	net/tls/tls_sw.c
+1417	25a91fa83f2a	DU	net/tls/tls_sw.c
+1418	1edda402efa5	DU	include/net/tls.h
+1418	1edda402efa5	DU	net/tls/tls_main.c
+1419	03ab4799a56e	DU	include/net/tls.h
+1419	03ab4799a56e	DU	net/tls/tls_main.c
+1419	03ab4799a56e	DU	net/tls/tls_sw.c
+1420	9c4200eed807	DU	include/net/tls.h
+1420	9c4200eed807	DU	net/tls/tls_sw.c
+1421	4172c6436619	DU	net/tls/tls_main.c
+1422	01fefdee4359	DU	net/tls/tls_main.c
+1423	f784584bb341	DU	include/net/tls.h
+1423	f784584bb341	DU	include/uapi/linux/tls.h
+1424	3cbcbc7ce431	DU	include/net/tls.h
+1424	3cbcbc7ce431	DU	net/tls/tls_sw.c
+1425	40e4fa3d6a98	DU	net/tls/tls_main.c
+1426	b86d69929c33	DU	net/tls/tls_sw.c
+1427	fcefae1b14dd	DU	net/tls/tls_main.c
+1428	52a98ca5606b	DU	net/tls/tls_main.c
+1429	487c26632174	DU	net/tls/tls_sw.c
+1430	117911411fe6	DU	include/net/tls.h
+1430	117911411fe6	DU	net/tls/tls_sw.c
+1431	a35cfe8aacc4	DU	net/tls/tls_main.c
+1432	3a91dbe6907f	DU	net/tls/tls_main.c
+1433	51d7017beaf1	DU	net/tls/tls_main.c
+1434	7682e826155b	DU	net/tls/tls_main.c
+1435	8b1e35e5011a	DU	net/tls/tls_sw.c
+1436	9143a1f4825f	DU	net/tls/tls_sw.c
+1437	e13a85278d4a	DU	net/tls/tls_sw.c
+1438	1d190227f73d	DU	include/net/tls.h
+1438	1d190227f73d	DU	net/tls/tls_main.c
+1438	1d190227f73d	DU	net/tls/tls_sw.c
+1439	2fe3e4b5d18f	DU	include/net/tls.h
+1439	2fe3e4b5d18f	DU	net/tls/tls_sw.c
+1440	9761f4024640	DU	include/net/tls.h
+1440	9761f4024640	DU	net/tls/tls_main.c
+1441	254d2408e8f7	UU	drivers/infiniband/hw/hns/hns_roce_user.h
+1441	254d2408e8f7	DU	include/net/tls.h
+1441	254d2408e8f7	DU	net/tls/Kconfig
+1441	254d2408e8f7	DU	net/tls/tls_main.c
+1441	254d2408e8f7	DU	net/tls/tls_sw.c
+1442	59cd9b8b93d4	DU	include/net/tls.h
+1442	59cd9b8b93d4	DU	net/tls/tls_main.c
+1443	40f0fd9826b4	DU	net/tls/tls_sw.c
+1444	ce9c1d33cd65	DU	net/tls/tls_sw.c
+1445	011e5bb87974	DU	include/net/tls.h
+1445	011e5bb87974	DU	net/tls/tls_main.c
+1445	011e5bb87974	DU	net/tls/tls_sw.c
+1446	4e0c39a058df	DU	include/net/tls.h
+1446	4e0c39a058df	DU	net/tls/Kconfig
+1446	4e0c39a058df	DU	net/tls/Makefile
+1446	4e0c39a058df	DU	net/tls/tls_main.c
+1447	0fa2b9b66c27	DU	include/net/tls.h
+1447	0fa2b9b66c27	DU	net/tls/tls_main.c
+1448	2734eee73508	DU	net/tls/tls_main.c
+1449	d925951d34c9	DU	net/tls/tls_main.c
+1451	700f3db61520	DU	include/net/tls.h
+1451	700f3db61520	DU	net/tls/tls_sw.c
+1452	a09a3420397d	DU	net/tls/tls_sw.c
+1453	24c7bd668c51	DU	include/net/tls.h
+1453	24c7bd668c51	DU	net/tls/tls_main.c
+1453	24c7bd668c51	DU	net/tls/tls_sw.c
+1454	de9691db123f	DU	net/tls/tls_sw.c
+1455	86453698dac3	DU	net/tls/tls_sw.c
+1456	fa4b3c9b4ddc	DU	net/tls/tls_sw.c
+1457	535821513503	DU	net/tls/tls_sw.c
+1458	fd60ae43185e	DU	include/net/tls.h
+1458	fd60ae43185e	DU	net/tls/tls_main.c
+1458	fd60ae43185e	DU	net/tls/tls_sw.c
+1459	1058cf719a53	DU	net/tls/tls_sw.c
+1460	d7084ba9ac8f	DU	net/tls/tls_sw.c
+1461	8dbe2af63c25	DU	include/net/tls.h
+1462	e6e132f6968f	DU	include/net/tls.h
+1462	e6e132f6968f	DU	net/tls/tls_sw.c
+1463	51a42669e5fe	DU	include/net/tls.h
+1463	51a42669e5fe	DU	net/tls/tls_sw.c
+1464	f01dc0e2e662	DU	net/tls/tls_sw.c
+1465	0289c0ee33ae	DU	include/net/tls.h
+1465	0289c0ee33ae	DU	net/tls/tls_main.c
+1465	0289c0ee33ae	DU	net/tls/tls_sw.c
+1466	3d4cc7161972	DU	net/tls/tls_sw.c
+1467	6bd0d19e2250	DU	net/tls/tls_sw.c
+1469	695e4470a91e	DU	net/tls/tls_sw.c
+1470	32c667528c72	DU	net/tls/tls_sw.c
+1471	0f6ac31a071c	DU	net/tls/tls_sw.c
+1472	4830bd433cac	DU	net/tls/tls_sw.c
+1473	03398b355002	DU	net/tls/tls_sw.c
+1474	e90a195e2a1e	DU	net/tls/tls_sw.c
+1475	55e9a7a183aa	DU	net/tls/tls_sw.c
+1477	f75a514e01a5	DU	net/tls/tls_sw.c
+1478	edfade4bdc00	DU	include/net/tls.h
+1478	edfade4bdc00	DU	net/tls/tls_sw.c
+1480	047d929cf638	DU	net/tls/tls_main.c
+1481	2ba8eac2bd95	DU	net/tls/tls_sw.c
+1482	946b4b625e11	DU	net/tls/tls_sw.c
+1483	cf7e314d7d9d	DU	include/net/tls.h
+1483	cf7e314d7d9d	DU	net/tls/tls_main.c
+1483	cf7e314d7d9d	DU	net/tls/tls_sw.c
+1484	89e5b2dc1d9f	DU	net/tls/tls_main.c
+1485	590b72ea9352	DU	net/tls/tls_sw.c
+1486	7a3e04870f75	DU	net/tls/tls_main.c
+1487	dc5ac52183f4	DU	net/tls/tls_main.c
+1488	2052eb1cb9ef	DU	include/net/tls.h
+1491	553b7a357cb9	DU	net/tls/tls_main.c
+1491	553b7a357cb9	DU	net/tls/tls_sw.c
+1498	d0a66c7cf8dd	DU	include/net/tls.h
+1499	7cfa19e44287	DU	include/net/tls.h
+1499	7cfa19e44287	DU	net/tls/tls_main.c
+1500	5d3931fc47f7	DU	net/tls/tls_sw.c
+1501	97557b702c7e	DU	net/tls/tls_main.c
+1502	f5aabc5288c9	DU	net/tls/tls_main.c
+1507	6d314f1b211f	DU	net/tls/tls_sw.c
+1508	e471fef2a58e	DU	include/net/tls.h
+1510	e7d5e3190e7f	DU	include/net/tls.h
+1510	e7d5e3190e7f	DU	net/tls/tls_main.c
+1510	e7d5e3190e7f	DU	net/tls/tls_sw.c
+1511	a8c0fb469de4	DU	include/net/tls.h
+1511	a8c0fb469de4	DU	net/tls/tls_main.c
+1511	a8c0fb469de4	DU	net/tls/tls_sw.c
+1512	67c9ddf46f46	DU	net/tls/tls_sw.c
+1513	1d2b0404b063	DU	net/tls/tls_sw.c
+1514	eede3f576a2c	DU	net/tls/tls_sw.c
+1515	07fc76f30360	DU	net/tls/tls_sw.c
+1516	d5086e392d68	DU	include/net/tls.h
+1516	d5086e392d68	DU	net/tls/tls_sw.c
+1517	60bf03c94bb8	DU	include/net/tls.h
+1517	60bf03c94bb8	DU	net/tls/tls_sw.c
+1519	4baf038d3b31	DU	include/net/tls.h
+1519	4baf038d3b31	DU	net/tls/Kconfig
+1519	4baf038d3b31	DU	net/tls/tls_sw.c
+1520	6fd58a8b3f76	DU	include/net/tls.h
+1520	6fd58a8b3f76	DU	net/tls/tls_main.c
+1520	6fd58a8b3f76	DU	net/tls/tls_sw.c
+1521	34303de1a6e4	DU	net/tls/tls_sw.c
+1523	019de45a9942	DU	net/tls/tls_sw.c
+1524	4629898e71a5	DU	net/tls/tls_sw.c
+1563	bc255154fedb	partial	SNMP+accounting kept; tcp_info/opt_stats fields not added (4.9 tcp_info layout differs)
+1565	445a26693246	partial	bytes_sent accounting only
+1566	8ad45ff368e2	partial	bytes_retrans accounting only (in 4.9 success path)
+1567	e6236553cbf0	partial	dsack_dups accounting only
