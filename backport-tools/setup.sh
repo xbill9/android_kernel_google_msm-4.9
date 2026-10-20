@@ -36,7 +36,7 @@ pin tc/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9 \
 	$L/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9 \
 	111258a10e017f067b27e6cfcea7619d753f3309
 pin tc/lz4 https://github.com/lz4/lz4 5ff839680134437dbf4678f3d0c7b371d84f4964
-make -s -C tc/lz4/programs lz4
+make -s -C tc/lz4/programs lz4 lz4c	# the 4.9 Image.lz4 rule calls lz4c
 
 if [ ! -f tools/mkbootimg.py ]; then
 	git clone -q --depth 1 https://android.googlesource.com/platform/system/tools/mkbootimg tools
