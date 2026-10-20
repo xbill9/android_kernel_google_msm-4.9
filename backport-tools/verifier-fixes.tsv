@@ -1,0 +1,32 @@
+#	upstream	subject	result	commit	note
+1	8c11ea5ce13d	bpf, arm64: fix getting subprog addr from aux for calls	ported	08d7b22d73d9	
+2	e47304232b37	bpf: Fix cgroup local storage prog tracking	ported	78d81c97c470	
+3	100605035e15	bpf: Verifier, do_refine_retval_range may clamp umin to 0 incorrectly	covered	-	tree has 89c90c7225c0 (5.4-stable replacement: explicit error/success branches)
+4	fa123ac022e4	bpf: Verifier, refine 32bit bound in do_refine_retval_range	covered	-	same replacement; this verifier has no 32-bit bounds (s32_max_value)
+5	ee114dd64c00	bpf: Fix verifier jsgt branch analysis on max bound	ported	3e81e872da94	
+6	353050be4c19	bpf: Fix toctou on read-only map's constant scalar tracking	ported	9662d5dce943	writecnt on update/delete/lookup_and_delete; no mmap/batch here
+7	e60b0d12a95d	bpf: Don't promote bogus looking registers after null check.	ported	085a6515b587	
+8	10f3b29c65bb	bpf, arm64: Clear prog->jited_len along prog->jited	ported	d5361c9329a8	clean (5.4 backport e412b3d178ea)
+9	3844d153a41a	bpf: Fix insufficient bounds propagation from adjust_scalar_min_max_vals	ported	242aacda4f1a	via 5.10 e917be1f83ea
+10	9c7c48d6a1e2	bpf: Fix subprog names in stack traces.	ported	b53cb4b26ce2	
+11	f1db20814af5	bpf: Fix wrong reg type conversion in release_reference()	ported	319c6eef8fe1	
+12	529409ea92d5	bpf: propagate precision across all frames, not just the last one	ported	f61a3e62c30e	via 5.10 e1989d808b86
+13	eb86559a691c	bpf: Fix memory leaks in __check_func_call	ported	fc43906fee39	
+14	71f656a50176	bpf: Fix to preserve reg parent/live fields when copying range info	ported	2403e93dd018	via 5.10 36dbb8daf08a; 5 of 7 sites exist
+15	52c2b005a3c1	bpf: take into account liveness when propagating precision	ported	b3dabf2c7251	via 5.10 6be8ad4cdcac
+16	34f0677e7afd	bpf: fix precision propagation verbose logging	ported	360a6a53f51a	via 5.10 10702be8b373
+17	f655badf2a8f	bpf: fix propagate_precision() logic for inner frames	replaced	ae9363df544f	needs struct backtrack_state (6.4); conservative fallback for outer frames instead
+18	0108a4e9f358	bpf: ensure main program has an extable	n/a	-	arm64 JIT here emits no extables (BPF_PROBE_MEM is 5.8); only a duplicate kallsyms entry remains
+19	4bb7ea946a37	bpf: fix precision backtracking instruction iteration	ported	5d02aa0c4bc0	via 5.10 973c7a0d8a38
+20	10e14e9652bf	bpf: fix control-flow graph checking in privileged mode	skipped	-	permissiveness only (accepts more privileged loops/recursion); changes test_verifier expectations
+21	eabe518de533	bpf: enforce precision of R0 on program/async callback return	ported	b80d6e837f69	
+22	22c7fa171a02	bpf: Reject variable offset alu on PTR_TO_FLOW_KEYS	ported	69ba86546e21	
+23	98e948fb60d4	bpf: Allow delete from sockmap/sockhash only if update is allowed	ported	cf950113ad4b	may_delete_sockmap() in check_map_func_compatibility()
+24	32556ce93bc4	bpf: Fix helper writes to read-only maps	ported	f16ce488631e	int-ptr args set raw_mode (write check); no MEM_* flags here
+24b	4b3786a6c539	bpf: Zero former ARG_PTR_TO_{LONG,INT} args in case of error	ported	7bf9b26be645	companion of 24: zero *res on error in strtol/strtoul
+25	18752d73c189	bpf: Improve check_raw_mode_ok test for MEM_UNINIT-tagged types	ported	7be3a738a230	raw mem = UNINIT_MEM or int ptr
+26	aa30eb3260b2	bpf: Force checkpoint when jmp history is too long	ported	3e488922b8dc	
+27	d1d53aa30ab3	bpf: Fix stack slot index in nospec checks	ported	9fb486d2b2ea	
+28	a4c6f804b44c	bpf: Preserve pointer state for commuted arithmetic	ported	63cef13deea2	copy_register_state() instead of struct copy (keeps parent/live)
+28a	a15970d916b3	bpf: Simplify sanitize_err() signature	ported	92ea65d7279f	prerequisite of 28: sanitize_err() picks the register by type
+29	1a3a10b030c9	bpf: mark a NULL call argument precise	ported	cab0ba252d1d	

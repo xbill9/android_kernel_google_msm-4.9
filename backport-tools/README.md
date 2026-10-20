@@ -15,7 +15,12 @@ base it has, in order:
 - the 4.11 `KPROBE_EVENTS`/`UPROBE_EVENTS` option names, and a fix for
   kprobing CFI function bodies;
 - the arm64 JIT branch-offset fix (upstream `32f6865c7aa3`), which the
-  bounded loops from stage 2 need.
+  bounded loops from stage 2 need;
+- the upstream verifier and arm64 JIT fixes that `missing_fixes.py`
+  found for backported code (29, from 4.20 to 7.3), with two companion commits
+  from the same upstream series. `verifier-fixes.tsv` lists each one and
+  what was done with it: 26 ported, 2 already covered by 5.4-stable fixes
+  in the tree, 1 replaced, 1 not applicable, 1 skipped.
 
 Commits that needed a hand merge say how in a `[ 4.9: ... ]` note. The
 kernel runs daily on a Pixel 3a.
@@ -50,7 +55,7 @@ flash on the machine with the phone (see below).
 
 Tested on a Pixel 3a running LineageOS 22.2, first RAM-booted and then
 flashed for daily use (see below). Last tested kernel:
-`4.9.337-g78af978b5948`.
+`4.9.337-g92ea65d7279f`.
 
 - Boots cleanly; no oops, BUG or CFI reports. The only kernel warning on
   every boot is an ION warning from a vendor HAL that the stock kernel
@@ -63,11 +68,24 @@ flashed for daily use (see below). Last tested kernel:
   programs, timeInState (`sched_switch`, `cpu_frequency`,
   `sched_process_free`), gpuMem and gpuWork load, attach and run.
 - Wi-Fi works with a `wlan.ko` built from this tree, and networking with
-  per-UID traffic accounting works.
+  per-UID traffic accounting works. From `9662d5dce943` on, `struct
+  bpf_map` has a `writecnt` field, which changes the symbol CRCs that
+  `wlan.ko` checks: a `wlan.ko` built from an earlier commit fails with
+  `disagrees about version of symbol`, so install the one from the same
+  build.
 - The linux-5.4.y BPF verifier selftests pass: `test_verifier` from 5.4.302
   gives 1610 passed, 0 failed, 3 skipped (the skips are sockmap, sockhash
-  and xskmap, which sargo does not configure). It gave that result in 250
-  runs in a row: 200 on the RAM-booted kernel and 50 after flashing.
+  and xskmap, which sargo does not configure), with the two
+  "ARG_PTR_TO_LONG {half-,}uninitialized" tests changed to expect success,
+  as upstream `b8e188f023e0` did when the helper-writes fix landed. It gave
+  that result in 150 runs in a row: 100 on the RAM-booted kernel and 50
+  after flashing. The unchanged suite gives 1608 passed, 2 failed: those
+  two tests, which expect the old rejection.
+- The linux-5.10.y `test_verifier` (5.10.272), with `is_admin()` changed
+  to test `CAP_SYS_ADMIN` because 4.9 has no `CAP_BPF` or `CAP_PERFMON`,
+  gives 917 passed, 815 failed, 19 skipped, test for test the same as on
+  `78af978b5948`, before the verifier fixes. Its failures are 5.10
+  features this verifier lacks, such as 32-bit bounds tracking and BTF.
 - Kernels before `1c311a4e1e8c` ("arm64: bpf: Fix branch offset in JIT")
   panic intermittently in the `test_verifier` case "taken loop with back
   jump to 1st insn": the arm64 JIT computed a jump to a program's first
@@ -100,6 +118,7 @@ absent from the 4.9 tree or not built for sargo.
 | `groundwork2.txt` | prerequisite commits pulled in ahead of the series |
 | `mapper.txt` | BPF helper ID → name table, for checking helper ABI order |
 | `missing-fixes.tsv` | upstream fixes this tree lacks, from `missing_fixes.py` |
+| `verifier-fixes.tsv` | the verifier and arm64 JIT fixes from it: port commit or reason |
 
 `conflict_test.sh REPO BASE TIP OUT` dry-runs a range and classifies each
 commit as clean, already present, or conflicting. `resolve.py FILE
