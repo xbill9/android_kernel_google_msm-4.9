@@ -13,7 +13,9 @@ base it has, in order:
 - arm64 uprobes: the 4.10 upstream series and later fixes from 4.14, with
   `CONFIG_UPROBE_EVENT=y`;
 - the 4.11 `KPROBE_EVENTS`/`UPROBE_EVENTS` option names, and a fix for
-  kprobing CFI function bodies.
+  kprobing CFI function bodies;
+- the arm64 JIT branch-offset fix (upstream `32f6865c7aa3`), which the
+  bounded loops from stage 2 need.
 
 Commits that needed a hand merge say how in a `[ 4.9: ... ]` note. The
 kernel runs daily on a Pixel 3a.
@@ -36,7 +38,8 @@ To set up a new machine:
 `setup.sh` clones this repo as `ksargo` and fetches the toolchains at the
 exact commits used for every build here (clang
 `54220fd60105`, aarch64 GCC `5e030eafe024`, arm GCC `111258a10e01`, lz4
-`5ff839680134`), builds `lz4`, and fetches AOSP `mkbootimg` into `tools/`.
+`5ff839680134`), builds `lz4` and `lz4c` (the `Image.lz4` rule calls
+`lz4c`), and fetches AOSP `mkbootimg` into `tools/`.
 
 On a build server without the phone attached, copy back
 `kout/arch/arm64/boot/Image.lz4` and
@@ -46,10 +49,13 @@ flash on the machine with the phone (see below).
 ## Status
 
 Tested on a Pixel 3a running LineageOS 22.2, first RAM-booted and then
-flashed for daily use (see below):
+flashed for daily use (see below). Last tested kernel:
+`4.9.337-g78af978b5948`.
 
-- Boots cleanly; no oops, BUG or CFI reports. The only kernel warning is an
-  ION warning from a vendor HAL that the stock kernel logs too.
+- Boots cleanly; no oops, BUG or CFI reports. The only kernel warning on
+  every boot is an ION warning from a vendor HAL that the stock kernel
+  logs too. One RAM boot also logged a `NETDEV WATCHDOG` transmit timeout
+  on `rmnet_ipa0` (mobile data, no SIM fitted); it has not recurred.
 - Android's bpfloader loads every platform program except the three
   optional uprobestats objects, whose maps need a BPF ring buffer
   (`BPF_MAP_TYPE_RINGBUF`, kernel 5.8). bpfloader skips maps by kernel
@@ -60,7 +66,15 @@ flashed for daily use (see below):
   per-UID traffic accounting works.
 - The linux-5.4.y BPF verifier selftests pass: `test_verifier` from 5.4.302
   gives 1610 passed, 0 failed, 3 skipped (the skips are sockmap, sockhash
-  and xskmap, which sargo does not configure).
+  and xskmap, which sargo does not configure). It gave that result in 250
+  runs in a row: 200 on the RAM-booted kernel and 50 after flashing.
+- Kernels before `1c311a4e1e8c` ("arm64: bpf: Fix branch offset in JIT")
+  panic intermittently in the `test_verifier` case "taken loop with back
+  jump to 1st insn": the arm64 JIT computed a jump to a program's first
+  instruction from `ctx->offset[-1]`, one element before its offset table,
+  so the branch went wherever that stray value pointed. On
+  `36cde1167d6a` it panicked on the 1st and on the 15th run after a
+  reboot.
 - Uprobe and uretprobe trace events work, and a BPF
   program attached to a uprobe via `PERF_EVENT_IOC_SET_BPF` counts every
   hit (`uprobe_bpf.c`: 1000 calls, 1000 hits). BPF programs on the perf
@@ -161,6 +175,15 @@ needs no target binary. For text trace events, note that Android boots with
 PMUs (no tracefs) and prints what `BPF_TASK_FD_QUERY` reports for each.
 These need `CONFIG_KPROBE_EVENTS`/`CONFIG_UPROBE_EVENTS`, which the kernel
 provides as aliases of the 4.9 option names.
+
+A JIT bug can depend on leftover memory, so one clean `test_verifier` run
+proves little; run it in a loop:
+
+    for i in $(seq 100); do adb shell /data/local/tmp/test_verifier54y | tail -1; done | sort | uniq -c
+
+After a panic, push the test binaries again and compare `md5sum` on both
+ends: files pushed just before a panic can come back zero-filled, and a
+zero-filled binary runs as an empty script, prints nothing and exits 0.
 
 ## Known limitations
 
