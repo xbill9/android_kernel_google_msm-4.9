@@ -5,6 +5,19 @@ Kernel for the Pixel 3a (`sargo`, `bonito_defconfig`) running LineageOS
 5.4 level, arm64 uprobes, and BPF tracing. Details, test results and the
 backport scripts are in [`backport-tools/`](backport-tools/README.md).
 
+## Quick start
+
+On a new Debian/Ubuntu machine, three commands:
+
+    sudo apt-get install -y git make gcc bc bison flex libssl-dev libelf-dev python3 cpio curl
+    curl -s https://raw.githubusercontent.com/xbill9/android_kernel_google_msm-4.9/main/backport-tools/setup.sh | bash
+    ~/sargo-bpf-test/ksargo/backport-tools/build.sh Image.lz4 modules
+
+The kernel (version 4.9.337) is the repo itself: `setup.sh` clones it to
+`~/sargo-bpf-test/ksargo` and fetches the toolchains. The result is
+`~/sargo-bpf-test/kout/arch/arm64/boot/Image.lz4`. To update later:
+`git -C ~/sargo-bpf-test/ksargo pull`, then run `build.sh` again.
+
 ## 1. Set up the build machine
 
 Host packages (Debian/Ubuntu):
