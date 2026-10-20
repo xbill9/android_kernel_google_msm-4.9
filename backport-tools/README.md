@@ -99,10 +99,39 @@ absent from the 4.9 tree or not built for sargo.
 | `unbuilt2.tsv` | conflicting files in drivers not built for sargo |
 | `groundwork2.txt` | prerequisite commits pulled in ahead of the series |
 | `mapper.txt` | BPF helper ID → name table, for checking helper ABI order |
+| `missing-fixes.tsv` | upstream fixes this tree lacks, from `missing_fixes.py` |
 
 `conflict_test.sh REPO BASE TIP OUT` dry-runs a range and classifies each
 commit as clean, already present, or conflicting. `resolve.py FILE
 ours|theirs|union` resolves every conflict hunk in a file one way.
+
+## Missing upstream fixes
+
+`missing_fixes.py UPSTREAM_GIT [TREE] [KOUT]` lists upstream commits whose
+`Fixes:` tag names a commit this tree has, when the fix itself is absent.
+It repeats for fixes of those fixes. The backported commits carry no
+upstream hash, so a commit counts as present when its subject matches,
+ignoring `UPSTREAM:`/`BACKPORT:` prefixes, or when its message cites the
+hash. A mainline clone without file contents is enough:
+
+    git clone --bare --filter=blob:none https://github.com/torvalds/linux.git ~/sargo-bpf-test/linux-upstream.git
+    APPLY=backport backport-tools/missing_fixes.py ~/sargo-bpf-test/linux-upstream.git > backport-tools/missing-fixes.tsv
+
+Columns of `missing-fixes.tsv`:
+
+- `class`: the most relevant kind of file the fix touches. `built` means a
+  `.c` file with an object in `kout`; then `header`, `unbuilt`, `absent`,
+  `tools` and `other-arch`.
+- `target_origin`: `backport` if the fixed commit came in with this
+  backport, `base` if it was already in LineageOS. A `-via-missing` suffix
+  means the row fixes another missing fix.
+- `apply`: whether `git apply --check` takes the patch as is (`clean`), only
+  in reverse (`already`), or neither (`conflict`). It is checked only for
+  backport targets in built code and headers.
+- `reverted_by`: set when upstream later reverted the fix.
+
+On the tree before `1c311a4e1e8c` it reports that commit's upstream fix,
+`32f6865c7aa3`, as `built`, `backport`.
 
 ## Boot testing
 
