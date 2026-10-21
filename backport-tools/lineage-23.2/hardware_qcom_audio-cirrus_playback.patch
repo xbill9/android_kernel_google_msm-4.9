@@ -1,0 +1,41 @@
+From e2cae171b39b5f642b5192076a7cddcaa80f063a Mon Sep 17 00:00:00 2001
+From: xbill9 <xbill9@gmail.com>
+Date: Wed, 21 Oct 2026 11:17:04 -0400
+Subject: [PATCH] hal: cirrus_playback: Give the config thread the pthread
+ start routine signature
+
+pthread_create() passes a void * argument; clang 21 rejects the
+'void *(void)' prototype with -Wincompatible-function-pointer-types once
+AUDIO_FEATURE_ENABLED_CIRRUS_SPKR_PROTECTION compiles this file.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Change-Id: Id09f4d58724eefaa1ed03c284633f1f16724a419
+---
+ hal/audio_extn/cirrus_playback.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/hal/audio_extn/cirrus_playback.c b/hal/audio_extn/cirrus_playback.c
+index 25fe258..50e58ae 100644
+--- a/hal/audio_extn/cirrus_playback.c
++++ b/hal/audio_extn/cirrus_playback.c
+@@ -158,7 +158,7 @@ static struct cirrus_playback_session handle;
+ #ifdef CIRRUS_FACTORY_CALIBRATION
+ static void *audio_extn_cirrus_calibration_thread();
+ #else
+-static void *audio_extn_cirrus_config_thread();
++static void *audio_extn_cirrus_config_thread(void *context);
+ #endif
+ 
+ #ifdef ENABLE_CIRRUS_DETECTION
+@@ -553,7 +553,7 @@ exit:
+ }
+ 
+ #else
+-static void *audio_extn_cirrus_config_thread(void) {
++static void *audio_extn_cirrus_config_thread(void *context __unused) {
+     struct audio_device *adev = handle.adev_handle;
+     struct crus_sp_ioctl_header header;
+     struct cirrus_cal_result_t result;
+-- 
+2.55.0
+
