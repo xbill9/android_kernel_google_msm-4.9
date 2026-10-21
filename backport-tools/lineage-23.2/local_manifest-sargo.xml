@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Unofficial LineageOS 23.2 for the Pixel 3a (sargo).
+     Device trees: newest LineageOS branch is lineage-23.0 (stalled 2025-08).
+     Vendor blobs: TheMuppets has no 23.x branch; 22.2 carries the same final firmware.
+     Kernel: the BPF backport tree, which reports 5.4.302 to bpfloader/netbpfload/netd. -->
+<manifest>
+  <project name="LineageOS/android_device_google_sargo" path="device/google/sargo" remote="github" revision="lineage-23.0" />
+  <project name="xbill9/android_device_google_bonito" path="device/google/bonito" remote="github" revision="lineage-23.0" />
+  <project name="LineageOS/android_device_google_gs-common" path="device/google/gs-common" remote="github" revision="lineage-23.0" />
+  <project name="LineageOS/android_packages_apps_ElmyraService" path="packages/apps/ElmyraService" remote="github" revision="lineage-23.2" />
+  <project name="xbill9/android_kernel_google_msm-4.9" path="kernel/google/msm-4.9" remote="github" revision="main" />
+  <project name="TheMuppets/proprietary_vendor_google_sargo" path="vendor/google/sargo" remote="github" revision="lineage-22.2" />
+  <project name="TheMuppets/proprietary_vendor_google_bonito" path="vendor/google/bonito" remote="github" revision="lineage-22.2" />
+  <!-- Fetched by hand as partial clones with a sparse checkout of the versions the build uses
+       (clang-r563880c, -r563880, -3289846, llvm-binutils-stable, clang-stable; rust linux-x86):
+       a full shallow fetch of these two is over 110 GB. -->
+  <remove-project name="platform/prebuilts/clang/host/linux-x86" />
+  <remove-project name="platform/prebuilts/rust" />
+</manifest>
