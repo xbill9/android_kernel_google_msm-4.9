@@ -20,7 +20,8 @@ Paths below assume the tree at `~/android/lineage-23.2` and work files in
 | `device/google/gs-common` | `LineageOS/android_device_google_gs-common` | `lineage-23.0`; 23.2 removed thermal from it |
 | `packages/apps/ElmyraService` | LineageOS | `lineage-23.2` |
 | `kernel/google/msm-4.9` | this repository | `main`; the release used `50d897667cc3` |
-| `vendor/google/{sargo,bonito}` | `TheMuppets/proprietary_vendor_google_*` | `lineage-22.2`, plus the camera fixup below |
+| `vendor/google/{sargo,bonito}` | `xbill9/proprietary_vendor_google_*`, forks of TheMuppets | `lineage-22.2` plus the camera fixup: sargo `e599461`, bonito `0934eea` |
+| `hardware/qcom/audio` | `xbill9/android_hardware_qcom_audio` | `lineage-23.2` plus `e2cae17`, the patch below |
 
 The newest device trees are `lineage-23.0`; TheMuppets has no 23.x branch for
 sargo, and the 22.2 blobs are the final Google firmware.
@@ -82,7 +83,8 @@ Android started. See `../README.md`, section "LineageOS 23.2 (Android 16)".
 `libtinyxml2` the camera provider crashes in
 `CamX::TuningDataManager::GetChromatix()` on every start. The older
 `libtinyxml2_1.so` blob lacks `XMLDocument::ErrorIDToName`. The fixup is in
-`extract-files.py`; on blobs already extracted:
+`extract-files.py`, and the vendor forks carry the patched blobs. By hand, on
+blobs already extracted:
 
     patchelf --replace-needed libtinyxml2.so libtinyxml2-v34.so <blob>
 
@@ -91,8 +93,10 @@ and `libtinyxml2` → `libtinyxml2-v34` in the three modules' `shared_libs` in
 
 ### hardware/qcom/audio
 
-`hardware_qcom_audio-cirrus_playback.patch`: the Cirrus config thread gets the
-pthread start-routine signature that clang requires.
+`hardware_qcom_audio-cirrus_playback.patch` (`e2cae17` in the fork): the Cirrus
+config thread gets the pthread start-routine signature that clang requires. The
+manifest swaps the project by path, because the same repository name also backs
+`hardware/qcom-caf/msm8953/audio` and `msm8996/audio`.
 
 ## Build
 
