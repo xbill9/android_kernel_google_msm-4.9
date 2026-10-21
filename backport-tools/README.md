@@ -99,6 +99,36 @@ flashed for daily use (see below). Last tested kernel:
   kprobe and uprobe PMUs count every hit too (`probe_pmu_bpf.c`). Each
   test kernel was built with no local changes.
 
+## LineageOS 23.2 (Android 16)
+
+An unofficial LineageOS 23.2 build boots to the home screen on
+`4.9.337-g416f6a9fd740` with SELinux enforcing, and Wi-Fi connects and
+validates. LineageOS lists 4.14 as the minimum kernel for 23.x; Android 16
+needs three things from the kernel that 4.9 lacked, each of which stops
+init before `on boot`:
+
+- `MADV_WIPEONFORK` (upstream 4.14, `d2cd9ede6e19`). Bionic's arc4random
+  calls it and aborts the process on `EINVAL`, so every program died at
+  startup, e2fsck first. Ported with its prerequisite `df3735c5b40f` and
+  the fix `93949bb21b52`.
+- Netlink extended permissions in the policy. Android 16's policy has
+  `allowxperm ... nlmsg` rules, written as xperm type `0x03`; this tree's
+  Android M compatibility code read them in the M encoding and the load
+  failed with `avtab: invalid type or class`. `bf173c3ec796` reads them
+  and drops them: they only apply under the `netlink_xperm` policy
+  capability (upstream 6.13), and 4.9 keeps checking the `nlmsg_*`
+  permissions, which the same policy still grants.
+- The `cpuset_v2_mode` cgroup mount option (upstream 4.17,
+  `e1cba4b85daa`, `b8d1b8ee93df`, plus the fixes `e06b678e3b4e` and
+  `b8eb5fd5bdb4`). libprocessgroup mounts cpuset with it, and
+  `SetupCgroups` failed with `ENOENT` without it, so no service could
+  start.
+
+Still open on 23.2: the camera provider crashes in
+`CamX::TuningDataManager::GetChromatix()` and restarts every 5 seconds,
+and netd aborts once in `libnetd_updatable_init` at boot and then runs
+normally after init restarts it.
+
 ## Replaying a series
 
 `next.sh` (stage 1) and `next2.sh` (stage 2) cherry-pick `series*.txt` one
