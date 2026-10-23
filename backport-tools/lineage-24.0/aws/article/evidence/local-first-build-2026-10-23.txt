@@ -1,0 +1,27 @@
+# Copy home and first local m bacon on 'build' (192.168.50.45), 2026-10-23 (local time, EDT). Output verbatim.
+
+## ~/pull-tree.log (summary lines)
+start 13:43:57
+ 278G
+done: 266G
+real	96m45.082s
+user	22m25.692s
+sys	14m9.914s
+end 15:20:42
+
+## Soong rerun cause: only input newer than out/soong/build.lineage_sargo.ninja (13:11:49)
+deps 16869 newer 1 missing 0
+15:22:36 out/soong/soong.lineage_sargo.variables
+124 values in soong.environment.used.lineage_sargo.build matched the local environment.
+
+## memory during analysis (15:35)
+full avg10=41.27 avg60=33.76 avg300=27.31 (/proc/pressure/memory); vmstat wa=82; swap 18G used, peak seen 45G
+
+## ~/local-bacon.log (summary)
+start 15:22:33
+ninja: 1h44m06.32s Build Succeeded: 1 steps - 0.00/s
+Package Complete: out/target/product/sargo/lineage-24.0-20261023-UNOFFICIAL-sargo.zip
+ninja: 42m33.96s Build Succeeded: 246 steps - 0.10/s
+real	149m46.233s
+exit=0 end 17:52:19
+-rw-rw-r-- 3 xbill xbill 1208902188 17:51:57 /home/xbill/android/lineage-24.0/out/target/product/sargo/lineage-24.0-20261023-UNOFFICIAL-sargo.zip
