@@ -1,0 +1,10 @@
+# Local build machine "build" (192.168.50.45, Debian sid, i7-3770), captured 2026-10-23 over SSH.
+# Output copied verbatim.
+
+before:
+/dev/sda1       435G  360G   53G  88% /
+lineage-23.2 48G out=
+lineage-24.0 225G out=77G
+
+after `rm -rf ~/android/lineage-24.0`:
+/dev/sda1       435G  135G  278G  33% /

@@ -1,0 +1,393 @@
+# Key lines of ~/build.log on i-0ade22eb7456ffa7a, extracted 2026-10-23T16:29:53Z. Full log kept off-repo.
+14:38:15 packages
+14:39:24 repo init lineage-24.0
+14:39:26 repo sync
+stdout: error: RPC failed; HTTP 429 curl 22 The requested URL returned error: 429
+14:53:00 sync attempt 1 exit=1 free= 828G
+14:54:09 sync attempt 2 exit=0 free= 828G
+14:54:23 build
+14:54:35 Build sandboxing disabled due to nsjail error.
+14:54:37 Build sandboxing disabled due to nsjail error.
+14:54:40 Build sandboxing disabled due to nsjail error.
+system/core/libprocessgroup/processgroup.cpp:664:42: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libprocessgroup/processgroup.cpp:747:24: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libprocessgroup/processgroup.cpp:753:38: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libprocessgroup/processgroup.cpp:664:42: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libprocessgroup/processgroup.cpp:747:24: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libprocessgroup/processgroup.cpp:753:38: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/tools/sysprop/Common.cpp:259:41: warning: 'System' is deprecated [-Wdeprecated-declarations]
+system/tools/sysprop/Common.cpp:259:41: warning: 'System' is deprecated [-Wdeprecated-declarations]
+system/security/keystore/keystore_attestation_id.cpp:229:14: warning: 'sk_push' is deprecated [-Wdeprecated-declarations]
+system/security/keystore/keystore_attestation_id.cpp:258:14: warning: 'sk_push' is deprecated [-Wdeprecated-declarations]
+system/core/libprocessgroup/processgroup.cpp:664:42: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libprocessgroup/processgroup.cpp:747:24: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libprocessgroup/processgroup.cpp:753:38: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libprocessgroup/processgroup.cpp:664:42: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libprocessgroup/processgroup.cpp:747:24: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libprocessgroup/processgroup.cpp:753:38: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libprocessgroup/processgroup.cpp:664:42: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libprocessgroup/processgroup.cpp:747:24: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libprocessgroup/processgroup.cpp:753:38: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libutils/include/utils/StrongPointer.h:211:24: warning: 'CpuConsumer' is deprecated: Prefer ctors that create their own surface and consumer. [-Wdeprecated-declarations]
+system/core/libutils/include/utils/StrongPointer.h:211:12: note: while substituting into a lambda expression here
+system/core/libutils/include/utils/AllocatorTracker.h:205:17: note: expanded from macro 'ANDROID_NEW'
+system/core/libutils/include/utils/StrongPointer.h:211:24: warning: 'BufferItemConsumer' is deprecated: Prefer ctors that create their own surface and consumer. [-Wdeprecated-declarations]
+system/core/libutils/include/utils/StrongPointer.h:211:12: note: while substituting into a lambda expression here
+system/core/libutils/include/utils/AllocatorTracker.h:205:17: note: expanded from macro 'ANDROID_NEW'
+system/core/libutils/include/utils/StrongPointer.h:211:24: warning: 'BufferItemConsumer' is deprecated: Prefer ctors that create their own surface and consumer. [-Wdeprecated-declarations]
+system/core/libutils/include/utils/StrongPointer.h:211:12: note: while substituting into a lambda expression here
+system/core/libutils/include/utils/AllocatorTracker.h:205:17: note: expanded from macro 'ANDROID_NEW'
+system/core/libutils/include/utils/StrongPointer.h:211:24: warning: 'GLConsumer' is deprecated: Prefer ctors that create their own surface and consumer. [-Wdeprecated-declarations]
+system/core/libutils/include/utils/StrongPointer.h:211:12: note: while substituting into a lambda expression here
+system/core/libutils/include/utils/AllocatorTracker.h:205:17: note: expanded from macro 'ANDROID_NEW'
+system/core/libutils/include/utils/StrongPointer.h:211:24: warning: 'GLConsumer' is deprecated: Prefer ctors that create their own surface and consumer. [-Wdeprecated-declarations]
+system/core/libutils/include/utils/StrongPointer.h:211:12: note: while substituting into a lambda expression here
+system/core/libutils/include/utils/AllocatorTracker.h:205:17: note: expanded from macro 'ANDROID_NEW'
+system/core/libutils/include/utils/StrongPointer.h:211:24: warning: 'CpuConsumer' is deprecated: Prefer ctors that create their own surface and consumer. [-Wdeprecated-declarations]
+system/core/libutils/include/utils/StrongPointer.h:211:12: note: while substituting into a lambda expression here
+system/core/libutils/include/utils/AllocatorTracker.h:205:17: note: expanded from macro 'ANDROID_NEW'
+system/core/libutils/include/utils/StrongPointer.h:211:24: warning: 'GLConsumer' is deprecated: Prefer ctors that create their own surface and consumer. [-Wdeprecated-declarations]
+system/core/libutils/include/utils/StrongPointer.h:211:12: note: while substituting into a lambda expression here
+system/core/libutils/include/utils/AllocatorTracker.h:205:17: note: expanded from macro 'ANDROID_NEW'
+system/core/libutils/include/utils/StrongPointer.h:211:24: warning: 'GLConsumer' is deprecated: Prefer ctors that create their own surface and consumer. [-Wdeprecated-declarations]
+system/core/libutils/include/utils/StrongPointer.h:211:12: note: while substituting into a lambda expression here
+system/core/libutils/include/utils/AllocatorTracker.h:205:17: note: expanded from macro 'ANDROID_NEW'
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libutils/include/utils/StrongPointer.h:211:24: warning: 'BufferItemConsumer' is deprecated: Prefer ctors that create their own surface and consumer. [-Wdeprecated-declarations]
+system/core/libutils/include/utils/StrongPointer.h:211:12: note: while substituting into a lambda expression here
+system/core/libutils/include/utils/AllocatorTracker.h:205:17: note: expanded from macro 'ANDROID_NEW'
+system/core/libutils/include/utils/StrongPointer.h:211:24: warning: 'CpuConsumer' is deprecated: Prefer ctors that create their own surface and consumer. [-Wdeprecated-declarations]
+system/core/libutils/include/utils/StrongPointer.h:211:12: note: while substituting into a lambda expression here
+system/core/libutils/include/utils/AllocatorTracker.h:205:17: note: expanded from macro 'ANDROID_NEW'
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libutils/include/utils/StrongPointer.h:211:24: warning: 'GLConsumer' is deprecated: Prefer ctors that create their own surface and consumer. [-Wdeprecated-declarations]
+system/core/libutils/include/utils/StrongPointer.h:211:12: note: while substituting into a lambda expression here
+system/core/libutils/include/utils/AllocatorTracker.h:205:17: note: expanded from macro 'ANDROID_NEW'
+system/core/libutils/include/utils/StrongPointer.h:211:24: warning: 'GLConsumer' is deprecated: Prefer ctors that create their own surface and consumer. [-Wdeprecated-declarations]
+system/core/libutils/include/utils/StrongPointer.h:211:12: note: while substituting into a lambda expression here
+system/core/libutils/include/utils/AllocatorTracker.h:205:17: note: expanded from macro 'ANDROID_NEW'
+system/tools/sysprop/Common.cpp:259:41: warning: 'System' is deprecated [-Wdeprecated-declarations]
+system/core/libutils/include/utils/StrongPointer.h:211:24: warning: 'BufferItemConsumer' is deprecated: Prefer ctors that create their own surface and consumer. [-Wdeprecated-declarations]
+system/core/libutils/include/utils/StrongPointer.h:211:12: note: while substituting into a lambda expression here
+system/core/libutils/include/utils/AllocatorTracker.h:205:17: note: expanded from macro 'ANDROID_NEW'
+system/core/libstats/expresslog/include/Counter.h:26:7: note: 'logIncrement' has been explicitly marked deprecated here
+system/core/libstats/expresslog/include/Counter.h:26:7: note: 'logIncrement' has been explicitly marked deprecated here
+system/core/libstats/expresslog/include/Counter.h:26:7: note: 'logIncrement' has been explicitly marked deprecated here
+system/core/libstats/expresslog/include/Counter.h:26:7: note: 'logIncrement' has been explicitly marked deprecated here
+system/core/libstats/expresslog/include/Counter.h:26:7: note: 'logIncrement' has been explicitly marked deprecated here
+system/core/libstats/expresslog/include/Counter.h:26:7: note: 'logIncrement' has been explicitly marked deprecated here
+system/core/libprocessgroup/processgroup.cpp:664:42: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libprocessgroup/processgroup.cpp:747:24: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libprocessgroup/processgroup.cpp:753:38: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/linkerconfig/modules/apex.cc:160:36: warning: 'requiresharedapexlibs' is deprecated [-Wdeprecated-declarations]
+FAILED: out/soong/.intermediates/system/sepolicy/vendor_sepolicy.unversioned.cil/android_common/sargo/vendor_sepolicy.unversioned.cil
+system/sepolicy/vendor/hal_vm_capabilities_default.te:10:WARNING 'omitting avrule with no permission set' at token ';' on line 18770:
+device/google/bonito/sepolicy/vendor/qcom/common/logger_app.te:1:ERROR 'unknown type logger_app' at token ';' on line 25869:
+FAILED: ninja: 
+14m50.05s Build Failure: 156615 done, 1 failed, 75511 remaining - 175.96/s
+15:13:55 ninja failed with: exit status 1
+[0;31m#### failed to build some targets (19:17 (mm:ss)) ####
+real	19m16.886s
+user	2259m47.302s
+sys	333m31.393s
+15:13:56 build exit=1
+15:15:49 build
+15:15:50 Build sandboxing disabled due to nsjail error.
+15:15:52 Build sandboxing disabled due to nsjail error.
+15:15:54 Build sandboxing disabled due to nsjail error.
+system/core/libstats/expresslog/include/Counter.h:26:7: note: 'logIncrement' has been explicitly marked deprecated here
+system/core/init/service.cpp:512:14: warning: 'setProcessGroupSwappiness' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:85:3: note: 'setProcessGroupSwappiness' has been explicitly marked deprecated here
+FAILED: out/soong/.intermediates/system/sepolicy/vendor_sepolicy.unversioned.cil/android_common/sargo/vendor_sepolicy.unversioned.cil
+system/sepolicy/vendor/hal_vm_capabilities_default.te:10:WARNING 'omitting avrule with no permission set' at token ';' on line 18770:
+hardware/google/pixel-sepolicy/wifi_perf_diag/wifi_perf_diag.te:5:ERROR 'unknown type wifi_logging_data_file' at token ';' on line 33497:
+FAILED: ninja: 
+1m35.88s Build Failure: 3494 done, 1 failed, 71986 remaining - 36.44/s
+15:21:42 ninja failed with: exit status 1
+[0;31m#### failed to build some targets (05:48 (mm:ss)) ####
+real	5m48.550s
+user	117m44.497s
+sys	16m24.764s
+15:21:42 build exit=1
+15:22:47 build
+15:22:48 Build sandboxing disabled due to nsjail error.
+15:22:50 Build sandboxing disabled due to nsjail error.
+15:22:52 Build sandboxing disabled due to nsjail error.
+system/sepolicy/vendor/hal_vm_capabilities_default.te:10:WARNING 'omitting avrule with no permission set' at token ';' on line 18770:
+system/core/libstats/expresslog/include/Counter.h:26:7: note: 'logIncrement' has been explicitly marked deprecated here
+system/core/libstats/expresslog/include/Counter.h:26:7: note: 'logIncrement' has been explicitly marked deprecated here
+system/core/libstats/expresslog/include/Counter.h:26:7: note: 'logIncrement' has been explicitly marked deprecated here
+system/core/libstats/expresslog/include/Counter.h:26:7: note: 'logIncrement' has been explicitly marked deprecated here
+system/core/libstats/expresslog/include/Counter.h:26:7: note: 'logIncrement' has been explicitly marked deprecated here
+system/core/libstats/expresslog/include/Counter.h:26:7: note: 'logIncrement' has been explicitly marked deprecated here
+system/core/libstats/expresslog/include/Counter.h:26:7: note: 'logIncrement' has been explicitly marked deprecated here
+system/sepolicy/vendor/hal_vm_capabilities_default.te:10:WARNING 'omitting avrule with no permission set' at token ';' on line 18770:
+system/update_engine/payload_consumer/install_operation_executor.cc:288:28: warning: 'BSDIFF' is deprecated [-Wdeprecated-declarations-switch-case]
+system/update_engine/payload_consumer/install_operation_executor.cc:321:28: warning: 'BSDIFF' is deprecated [-Wdeprecated-declarations-switch-case]
+system/update_engine/payload_consumer/payload_constants.cc:77:28: warning: 'BSDIFF' is deprecated [-Wdeprecated-declarations-switch-case]
+system/update_engine/payload_consumer/payload_constants.cc:78:28: warning: 'MOVE' is deprecated [-Wdeprecated-declarations-switch-case]
+system/linkerconfig/modules/apex.cc:160:36: warning: 'requiresharedapexlibs' is deprecated [-Wdeprecated-declarations]
+system/core/init/service.cpp:512:14: warning: 'setProcessGroupSwappiness' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:85:3: note: 'setProcessGroupSwappiness' has been explicitly marked deprecated here
+system/core/storaged/storaged_service.cpp:217:30: warning: 'getService' is deprecated: this polls for 5s, prefer waitForService or checkService [-Wdeprecated-declarations]
+system/core/init/host_init_verifier.cpp:108:19: warning: ISO C++ requires field designators to be specified in declaration order; field 'pw_dir' will be initialized after field 'pw_uid' [-Wreorder-init-list]
+system/core/init/host_init_verifier.cpp:107:19: note: previous initialization for field 'pw_dir' is here
+system/core/init/service.cpp:512:14: warning: 'setProcessGroupSwappiness' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:85:3: note: 'setProcessGroupSwappiness' has been explicitly marked deprecated here
+system/core/storaged/storaged_uid_monitor.cpp:128:30: warning: 'getService' is deprecated: this polls for 5s, prefer waitForService or checkService [-Wdeprecated-declarations]
+system/sepolicy/vendor/hal_vm_capabilities_default.te:10:WARNING 'omitting avrule with no permission set' at token ';' on line 107212:
+system/apex/apexd/apexd_checkpoint_vold.cpp:33:32: warning: 'getService' is deprecated: this polls for 5s, prefer waitForService or checkService [-Wdeprecated-declarations]
+system/apex/apexd/apex_shim.cpp:117:17: warning: 'postinstallhook' is deprecated [-Wdeprecated-declarations]
+system/apex/apexd/apexd_metrics.cpp:99:43: warning: 'providesharedapexlibs' is deprecated [-Wdeprecated-declarations]
+system/update_engine/payload_consumer/payload_constants.cc:77:28: warning: 'BSDIFF' is deprecated [-Wdeprecated-declarations-switch-case]
+system/update_engine/payload_consumer/payload_constants.cc:78:28: warning: 'MOVE' is deprecated [-Wdeprecated-declarations-switch-case]
+system/update_engine/payload_consumer/install_operation_executor.cc:288:28: warning: 'BSDIFF' is deprecated [-Wdeprecated-declarations-switch-case]
+system/update_engine/payload_consumer/install_operation_executor.cc:321:28: warning: 'BSDIFF' is deprecated [-Wdeprecated-declarations-switch-case]
+system/apex/apexd/apexd.cpp:3260:28: warning: 'providesharedapexlibs' is deprecated [-Wdeprecated-declarations]
+system/vold/model/Disk.cpp:499:27: warning: 'strtok' is deprecated: strtok() is not thread-safe; use strtok_r() instead [-Wdeprecated-declarations]
+system/vold/model/Disk.cpp:503:36: warning: 'strtok' is deprecated: strtok() is not thread-safe; use strtok_r() instead [-Wdeprecated-declarations]
+FAILED: out/soong/.intermediates/system/sepolicy/precompiled_sepolicy/android_common/sargo/precompiled_sepolicy
+Found conflicting genfscon rules
+FAILED: ninja: 
+5m29.10s Build Failure: 29046 done, 1 failed, 42686 remaining - 88.26/s
+15:32:42 ninja failed with: exit status 1
+[0;31m#### failed to build some targets (09:51 (mm:ss)) ####
+real	9m50.668s
+user	845m32.586s
+sys	94m0.078s
+15:32:42 build exit=1
+15:34:06 build
+15:34:07 Build sandboxing disabled due to nsjail error.
+15:34:10 Build sandboxing disabled due to nsjail error.
+15:34:12 Build sandboxing disabled due to nsjail error.
+system/sepolicy/vendor/hal_vm_capabilities_default.te:10:WARNING 'omitting avrule with no permission set' at token ';' on line 18770:
+system/sepolicy/vendor/hal_vm_capabilities_default.te:10:WARNING 'omitting avrule with no permission set' at token ';' on line 107212:
+system/security/keystore/keystore_cli_v2.cpp:862:25: warning: 'listEntries' is deprecated: use listEntriesBatched instead. [-Wdeprecated-declarations]
+system/security/keystore/keystore_cli_v2.cpp:1000:33: warning: 'AServiceManager_getService' is deprecated: this polls 5s, use AServiceManager_waitForService or AServiceManager_checkService [-Wdeprecated-declarations]
+system/sepolicy/vendor/hal_vm_capabilities_default.te:10:WARNING 'omitting avrule with no permission set' at token ';' on line 18770:
+system/netd/server/NdcDispatcher.cpp:123:34: warning: 'getService' is deprecated: this polls for 5s, prefer waitForService or checkService [-Wdeprecated-declarations]
+system/netd/server/NdcDispatcher.cpp:124:41: warning: 'getService' is deprecated: this polls for 5s, prefer waitForService or checkService [-Wdeprecated-declarations]
+system/netd/server/NdcDispatcher.cpp:591:26: warning: 'bandwidthAddNaughtyApp' is deprecated: unimplemented on T+. [-Wdeprecated-declarations]
+system/netd/server/NdcDispatcher.cpp:606:26: warning: 'bandwidthRemoveNaughtyApp' is deprecated: unimplemented on T+. [-Wdeprecated-declarations]
+system/netd/server/NdcDispatcher.cpp:621:26: warning: 'bandwidthAddNiceApp' is deprecated: unimplemented on T+. [-Wdeprecated-declarations]
+system/netd/server/NdcDispatcher.cpp:636:26: warning: 'bandwidthRemoveNiceApp' is deprecated: unimplemented on T+. [-Wdeprecated-declarations]
+system/netd/server/NdcDispatcher.cpp:818:27: warning: 'firewallSetUidRule' is deprecated: unimplemented on T+. [-Wdeprecated-declarations]
+system/netd/server/NdcDispatcher.cpp:828:27: warning: 'firewallEnableChildChain' is deprecated: unimplemented on T+. [-Wdeprecated-declarations]
+system/netd/server/NdcDispatcher.cpp:838:27: warning: 'firewallEnableChildChain' is deprecated: unimplemented on T+. [-Wdeprecated-declarations]
+system/logging/liblog/include_vndk/log/log_main.h:227:52: note: expanded from macro 'ALOGD'
+system/logging/liblog/include_vndk/log/log_main.h:336:67: note: expanded from macro 'ALOG'
+system/logging/liblog/include_vndk/log/log_main.h:94:69: note: expanded from macro 'LOG_PRI'
+system/logging/liblog/include_vndk/log/log_main.h:85:34: note: expanded from macro 'android_printLog'
+system/logging/liblog/include_vndk/log/log_main.h:227:52: note: expanded from macro 'ALOGD'
+system/logging/liblog/include_vndk/log/log_main.h:336:67: note: expanded from macro 'ALOG'
+system/logging/liblog/include_vndk/log/log_main.h:94:69: note: expanded from macro 'LOG_PRI'
+system/logging/liblog/include_vndk/log/log_main.h:85:34: note: expanded from macro 'android_printLog'
+system/memory/lmkd/lmkd.cpp:3451:73: warning: 'mp_event_common' is deprecated: memcg v1 is not supported after Dec. 2026 [-Wdeprecated-declarations]
+system/memory/lmkd/lmkd.cpp:3206:3: note: 'mp_event_common' has been explicitly marked deprecated here
+system/sepolicy/vendor/hal_vm_capabilities_default.te:10:WARNING 'omitting avrule with no permission set' at token ';' on line 104123:
+system/chre/host/common/socket_client.cc:38:8: warning: 'atomic_init<int>' is deprecated [-Wdeprecated-declarations]
+system/core/gatekeeperd/gatekeeperd.cpp:432:39: warning: 'AServiceManager_getService' is deprecated: this polls 5s, use AServiceManager_waitForService or AServiceManager_checkService [-Wdeprecated-declarations]
+system/security/ondevice-signing/KeystoreKey.cpp:149:24: warning: 'getService' is deprecated: this polls for 5s, prefer waitForService or checkService [-Wdeprecated-declarations]
+system/update_engine/payload_consumer/payload_constants.cc:77:28: warning: 'BSDIFF' is deprecated [-Wdeprecated-declarations-switch-case]
+system/update_engine/payload_consumer/payload_constants.cc:78:28: warning: 'MOVE' is deprecated [-Wdeprecated-declarations-switch-case]
+system/update_engine/payload_generator/payload_generation_config.cc:337:28: warning: 'MOVE' is deprecated [-Wdeprecated-declarations-switch-case]
+system/update_engine/payload_generator/payload_generation_config.cc:338:28: warning: 'BSDIFF' is deprecated [-Wdeprecated-declarations-switch-case]
+system/update_engine/payload_consumer/install_operation_executor.cc:288:28: warning: 'BSDIFF' is deprecated [-Wdeprecated-declarations-switch-case]
+system/update_engine/payload_consumer/install_operation_executor.cc:321:28: warning: 'BSDIFF' is deprecated [-Wdeprecated-declarations-switch-case]
+system/apex/apexd/apex_shim.cpp:117:17: warning: 'postinstallhook' is deprecated [-Wdeprecated-declarations]
+system/core/init/service.cpp:512:14: warning: 'setProcessGroupSwappiness' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:85:3: note: 'setProcessGroupSwappiness' has been explicitly marked deprecated here
+15:38:18 mkuserimg_mke2fs.py INFO: Env: {'MKE2FS_CONFIG': '/home/ubuntu/android/lineage-24.0/out/soong/.temp/tmp38w2ncpg'}
+15:38:18 mkuserimg_mke2fs.py INFO: Running: /home/ubuntu/android/lineage-24.0/out/host/linux-x86/bin/mke2fs -M /persist -E android_sparse -t ext4 -b 4096 out/target/product/sargo/persist.img 10240
+15:38:18 mkuserimg_mke2fs.py INFO: Env: {}
+15:38:18 mkuserimg_mke2fs.py INFO: Running: /home/ubuntu/android/lineage-24.0/out/host/linux-x86/bin/e2fsdroid -f out/target/product/sargo/persist -a /persist out/target/product/sargo/persist.img
+FAILED: out/soong/.intermediates/vendor/google/sargo/libsecureuisvc_jni/android_arm64_armv8-a_shared/libsecureuisvc_jni.so.check_elf_file
+vendor/google/sargo/proprietary/system_ext/lib64/libsecureuisvc_jni.so: error: Unresolved symbol: _ZN7android21SurfaceComposerClient13createSurfaceERKNS_7String8EjjiiRKNS_2spINS_7IBinderEEENS_3gui13LayerMetadataEPj
+15:46:39 ninja may be stuck, check /home/ubuntu/android/lineage-24.0/out/soong.log for list of running processes.
+FAILED: ninja: 
+14m05.15s Build Failure: 39976 done, 1 failed, 2626 remaining - 47.30/s
+15:50:47 ninja failed with: exit status 1
+[0;31m#### failed to build some targets (16:36 (mm:ss)) ####
+real	16m36.100s
+user	325m30.281s
+sys	162m54.360s
+15:50:47 build exit=1
+15:53:02 build
+15:53:10 Build sandboxing disabled due to nsjail error.
+15:53:13 Build sandboxing disabled due to nsjail error.
+15:53:15 Build sandboxing disabled due to nsjail error.
+15:53:17 CWD directory changed from /home/ubuntu/android/lineage-24.0 to /home/xbill/android/lineage-24.0, updating output symlinks
+15:53:19 Updated 9/3492 symlinks in dir out
+15:55:29 build
+15:55:30 Build sandboxing disabled due to nsjail error.
+15:55:32 Build sandboxing disabled due to nsjail error.
+15:55:34 Build sandboxing disabled due to nsjail error.
+system/core/libprocessgroup/processgroup.cpp:664:42: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libprocessgroup/processgroup.cpp:747:24: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libprocessgroup/processgroup.cpp:753:38: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libprocessgroup/processgroup.cpp:664:42: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libprocessgroup/processgroup.cpp:747:24: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libprocessgroup/processgroup.cpp:753:38: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/tools/sysprop/Common.cpp:259:41: warning: 'System' is deprecated [-Wdeprecated-declarations]
+system/tools/sysprop/Common.cpp:259:41: warning: 'System' is deprecated [-Wdeprecated-declarations]
+system/core/libprocessgroup/processgroup.cpp:664:42: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libprocessgroup/processgroup.cpp:747:24: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libprocessgroup/processgroup.cpp:753:38: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/security/keystore/keystore_attestation_id.cpp:229:14: warning: 'sk_push' is deprecated [-Wdeprecated-declarations]
+system/security/keystore/keystore_attestation_id.cpp:258:14: warning: 'sk_push' is deprecated [-Wdeprecated-declarations]
+system/core/libprocessgroup/processgroup.cpp:664:42: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libprocessgroup/processgroup.cpp:747:24: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libprocessgroup/processgroup.cpp:753:38: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libprocessgroup/processgroup.cpp:664:42: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libprocessgroup/processgroup.cpp:747:24: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libprocessgroup/processgroup.cpp:753:38: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libutils/include/utils/StrongPointer.h:211:24: warning: 'CpuConsumer' is deprecated: Prefer ctors that create their own surface and consumer. [-Wdeprecated-declarations]
+system/core/libutils/include/utils/StrongPointer.h:211:12: note: while substituting into a lambda expression here
+system/core/libutils/include/utils/AllocatorTracker.h:205:17: note: expanded from macro 'ANDROID_NEW'
+system/core/libutils/include/utils/StrongPointer.h:211:24: warning: 'BufferItemConsumer' is deprecated: Prefer ctors that create their own surface and consumer. [-Wdeprecated-declarations]
+system/core/libutils/include/utils/StrongPointer.h:211:12: note: while substituting into a lambda expression here
+system/core/libutils/include/utils/AllocatorTracker.h:205:17: note: expanded from macro 'ANDROID_NEW'
+system/core/libutils/include/utils/StrongPointer.h:211:24: warning: 'CpuConsumer' is deprecated: Prefer ctors that create their own surface and consumer. [-Wdeprecated-declarations]
+system/core/libutils/include/utils/StrongPointer.h:211:12: note: while substituting into a lambda expression here
+system/core/libutils/include/utils/AllocatorTracker.h:205:17: note: expanded from macro 'ANDROID_NEW'
+system/core/libutils/include/utils/StrongPointer.h:211:24: warning: 'BufferItemConsumer' is deprecated: Prefer ctors that create their own surface and consumer. [-Wdeprecated-declarations]
+system/core/libutils/include/utils/StrongPointer.h:211:12: note: while substituting into a lambda expression here
+system/core/libutils/include/utils/AllocatorTracker.h:205:17: note: expanded from macro 'ANDROID_NEW'
+system/core/libutils/include/utils/StrongPointer.h:211:24: warning: 'GLConsumer' is deprecated: Prefer ctors that create their own surface and consumer. [-Wdeprecated-declarations]
+system/core/libutils/include/utils/StrongPointer.h:211:12: note: while substituting into a lambda expression here
+system/core/libutils/include/utils/AllocatorTracker.h:205:17: note: expanded from macro 'ANDROID_NEW'
+system/core/libutils/include/utils/StrongPointer.h:211:24: warning: 'GLConsumer' is deprecated: Prefer ctors that create their own surface and consumer. [-Wdeprecated-declarations]
+system/core/libutils/include/utils/StrongPointer.h:211:12: note: while substituting into a lambda expression here
+system/core/libutils/include/utils/AllocatorTracker.h:205:17: note: expanded from macro 'ANDROID_NEW'
+system/core/libutils/include/utils/StrongPointer.h:211:24: warning: 'GLConsumer' is deprecated: Prefer ctors that create their own surface and consumer. [-Wdeprecated-declarations]
+system/core/libutils/include/utils/StrongPointer.h:211:12: note: while substituting into a lambda expression here
+system/core/libutils/include/utils/AllocatorTracker.h:205:17: note: expanded from macro 'ANDROID_NEW'
+system/core/libutils/include/utils/StrongPointer.h:211:24: warning: 'GLConsumer' is deprecated: Prefer ctors that create their own surface and consumer. [-Wdeprecated-declarations]
+system/core/libutils/include/utils/StrongPointer.h:211:12: note: while substituting into a lambda expression here
+system/core/libutils/include/utils/AllocatorTracker.h:205:17: note: expanded from macro 'ANDROID_NEW'
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libutils/include/utils/StrongPointer.h:211:24: warning: 'CpuConsumer' is deprecated: Prefer ctors that create their own surface and consumer. [-Wdeprecated-declarations]
+system/core/libutils/include/utils/StrongPointer.h:211:12: note: while substituting into a lambda expression here
+system/core/libutils/include/utils/AllocatorTracker.h:205:17: note: expanded from macro 'ANDROID_NEW'
+system/core/libutils/include/utils/StrongPointer.h:211:24: warning: 'BufferItemConsumer' is deprecated: Prefer ctors that create their own surface and consumer. [-Wdeprecated-declarations]
+system/core/libutils/include/utils/StrongPointer.h:211:12: note: while substituting into a lambda expression here
+system/core/libutils/include/utils/AllocatorTracker.h:205:17: note: expanded from macro 'ANDROID_NEW'
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libutils/include/utils/StrongPointer.h:211:24: warning: 'GLConsumer' is deprecated: Prefer ctors that create their own surface and consumer. [-Wdeprecated-declarations]
+system/core/libutils/include/utils/StrongPointer.h:211:12: note: while substituting into a lambda expression here
+system/core/libutils/include/utils/AllocatorTracker.h:205:17: note: expanded from macro 'ANDROID_NEW'
+system/core/libutils/include/utils/StrongPointer.h:211:24: warning: 'GLConsumer' is deprecated: Prefer ctors that create their own surface and consumer. [-Wdeprecated-declarations]
+system/core/libutils/include/utils/StrongPointer.h:211:12: note: while substituting into a lambda expression here
+system/core/libutils/include/utils/AllocatorTracker.h:205:17: note: expanded from macro 'ANDROID_NEW'
+system/core/libutils/include/utils/StrongPointer.h:211:24: warning: 'BufferItemConsumer' is deprecated: Prefer ctors that create their own surface and consumer. [-Wdeprecated-declarations]
+system/core/libutils/include/utils/StrongPointer.h:211:12: note: while substituting into a lambda expression here
+system/core/libutils/include/utils/AllocatorTracker.h:205:17: note: expanded from macro 'ANDROID_NEW'
+system/tools/sysprop/Common.cpp:259:41: warning: 'System' is deprecated [-Wdeprecated-declarations]
+system/core/libprocessgroup/processgroup.cpp:664:42: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libprocessgroup/processgroup.cpp:747:24: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/core/libprocessgroup/processgroup.cpp:753:38: warning: 'UsePerAppMemcg' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:58:3: note: 'UsePerAppMemcg' has been explicitly marked deprecated here
+system/sepolicy/vendor/hal_vm_capabilities_default.te:10:WARNING 'omitting avrule with no permission set' at token ';' on line 18770:
+system/core/libstats/expresslog/include/Counter.h:26:7: note: 'logIncrement' has been explicitly marked deprecated here
+system/core/libstats/expresslog/include/Counter.h:26:7: note: 'logIncrement' has been explicitly marked deprecated here
+system/linkerconfig/modules/apex.cc:160:36: warning: 'requiresharedapexlibs' is deprecated [-Wdeprecated-declarations]
+system/core/init/service.cpp:512:14: warning: 'setProcessGroupSwappiness' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:85:3: note: 'setProcessGroupSwappiness' has been explicitly marked deprecated here
+system/core/libstats/expresslog/include/Counter.h:26:7: note: 'logIncrement' has been explicitly marked deprecated here
+system/core/libstats/expresslog/include/Counter.h:26:7: note: 'logIncrement' has been explicitly marked deprecated here
+system/core/libstats/expresslog/include/Counter.h:26:7: note: 'logIncrement' has been explicitly marked deprecated here
+system/core/libstats/expresslog/include/Counter.h:26:7: note: 'logIncrement' has been explicitly marked deprecated here
+system/core/libstats/expresslog/include/Counter.h:26:7: note: 'logIncrement' has been explicitly marked deprecated here
+system/core/libstats/expresslog/include/Counter.h:26:7: note: 'logIncrement' has been explicitly marked deprecated here
+system/core/libstats/expresslog/include/Counter.h:26:7: note: 'logIncrement' has been explicitly marked deprecated here
+system/core/libstats/expresslog/include/Counter.h:26:7: note: 'logIncrement' has been explicitly marked deprecated here
+system/core/libstats/expresslog/include/Counter.h:26:7: note: 'logIncrement' has been explicitly marked deprecated here
+system/core/libstats/expresslog/include/Counter.h:26:7: note: 'logIncrement' has been explicitly marked deprecated here
+system/core/libstats/expresslog/include/Counter.h:26:7: note: 'logIncrement' has been explicitly marked deprecated here
+system/core/libstats/expresslog/include/Counter.h:26:7: note: 'logIncrement' has been explicitly marked deprecated here
+system/sepolicy/vendor/hal_vm_capabilities_default.te:10:WARNING 'omitting avrule with no permission set' at token ';' on line 18770:
+system/update_engine/payload_consumer/payload_constants.cc:77:28: warning: 'BSDIFF' is deprecated [-Wdeprecated-declarations-switch-case]
+system/update_engine/payload_consumer/payload_constants.cc:78:28: warning: 'MOVE' is deprecated [-Wdeprecated-declarations-switch-case]
+system/update_engine/payload_consumer/install_operation_executor.cc:288:28: warning: 'BSDIFF' is deprecated [-Wdeprecated-declarations-switch-case]
+system/update_engine/payload_consumer/install_operation_executor.cc:321:28: warning: 'BSDIFF' is deprecated [-Wdeprecated-declarations-switch-case]
+system/linkerconfig/modules/apex.cc:160:36: warning: 'requiresharedapexlibs' is deprecated [-Wdeprecated-declarations]
+system/core/init/service.cpp:512:14: warning: 'setProcessGroupSwappiness' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:85:3: note: 'setProcessGroupSwappiness' has been explicitly marked deprecated here
+system/core/storaged/storaged_service.cpp:217:30: warning: 'getService' is deprecated: this polls for 5s, prefer waitForService or checkService [-Wdeprecated-declarations]
+system/core/storaged/storaged_uid_monitor.cpp:128:30: warning: 'getService' is deprecated: this polls for 5s, prefer waitForService or checkService [-Wdeprecated-declarations]
+system/core/init/host_init_verifier.cpp:108:19: warning: ISO C++ requires field designators to be specified in declaration order; field 'pw_dir' will be initialized after field 'pw_uid' [-Wreorder-init-list]
+system/core/init/host_init_verifier.cpp:107:19: note: previous initialization for field 'pw_dir' is here
+system/core/init/service.cpp:512:14: warning: 'setProcessGroupSwappiness' is deprecated: Unsupported in memcg v2 [-Wdeprecated-declarations]
+system/core/libprocessgroup/include/processgroup/processgroup.h:85:3: note: 'setProcessGroupSwappiness' has been explicitly marked deprecated here
+system/apex/apexd/apexd_metrics.cpp:99:43: warning: 'providesharedapexlibs' is deprecated [-Wdeprecated-declarations]
+system/sepolicy/vendor/hal_vm_capabilities_default.te:10:WARNING 'omitting avrule with no permission set' at token ';' on line 107212:
+system/apex/apexd/apexd_checkpoint_vold.cpp:33:32: warning: 'getService' is deprecated: this polls for 5s, prefer waitForService or checkService [-Wdeprecated-declarations]
+system/vold/model/Disk.cpp:499:27: warning: 'strtok' is deprecated: strtok() is not thread-safe; use strtok_r() instead [-Wdeprecated-declarations]
+system/vold/model/Disk.cpp:503:36: warning: 'strtok' is deprecated: strtok() is not thread-safe; use strtok_r() instead [-Wdeprecated-declarations]
+system/update_engine/payload_consumer/payload_constants.cc:77:28: warning: 'BSDIFF' is deprecated [-Wdeprecated-declarations-switch-case]
+system/update_engine/payload_consumer/payload_constants.cc:78:28: warning: 'MOVE' is deprecated [-Wdeprecated-declarations-switch-case]
+system/update_engine/payload_consumer/install_operation_executor.cc:288:28: warning: 'BSDIFF' is deprecated [-Wdeprecated-declarations-switch-case]
+system/update_engine/payload_consumer/install_operation_executor.cc:321:28: warning: 'BSDIFF' is deprecated [-Wdeprecated-declarations-switch-case]
+system/apex/apexd/apex_shim.cpp:117:17: warning: 'postinstallhook' is deprecated [-Wdeprecated-declarations]
+system/apex/apexd/apexd.cpp:3260:28: warning: 'providesharedapexlibs' is deprecated [-Wdeprecated-declarations]
+system/security/keystore/keystore_cli_v2.cpp:862:25: warning: 'listEntries' is deprecated: use listEntriesBatched instead. [-Wdeprecated-declarations]
+system/security/keystore/keystore_cli_v2.cpp:1000:33: warning: 'AServiceManager_getService' is deprecated: this polls 5s, use AServiceManager_waitForService or AServiceManager_checkService [-Wdeprecated-declarations]
+system/sepolicy/vendor/hal_vm_capabilities_default.te:10:WARNING 'omitting avrule with no permission set' at token ';' on line 104123:
+system/core/gatekeeperd/gatekeeperd.cpp:432:39: warning: 'AServiceManager_getService' is deprecated: this polls 5s, use AServiceManager_waitForService or AServiceManager_checkService [-Wdeprecated-declarations]
+system/logging/liblog/include_vndk/log/log_main.h:227:52: note: expanded from macro 'ALOGD'
+system/logging/liblog/include_vndk/log/log_main.h:336:67: note: expanded from macro 'ALOG'
+system/logging/liblog/include_vndk/log/log_main.h:94:69: note: expanded from macro 'LOG_PRI'
+system/logging/liblog/include_vndk/log/log_main.h:85:34: note: expanded from macro 'android_printLog'
+system/logging/liblog/include_vndk/log/log_main.h:227:52: note: expanded from macro 'ALOGD'
+system/logging/liblog/include_vndk/log/log_main.h:336:67: note: expanded from macro 'ALOG'
+system/logging/liblog/include_vndk/log/log_main.h:94:69: note: expanded from macro 'LOG_PRI'
+system/logging/liblog/include_vndk/log/log_main.h:85:34: note: expanded from macro 'android_printLog'
+system/chre/host/common/socket_client.cc:38:8: warning: 'atomic_init<int>' is deprecated [-Wdeprecated-declarations]
+system/netd/server/NdcDispatcher.cpp:123:34: warning: 'getService' is deprecated: this polls for 5s, prefer waitForService or checkService [-Wdeprecated-declarations]
+system/netd/server/NdcDispatcher.cpp:124:41: warning: 'getService' is deprecated: this polls for 5s, prefer waitForService or checkService [-Wdeprecated-declarations]
+system/netd/server/NdcDispatcher.cpp:591:26: warning: 'bandwidthAddNaughtyApp' is deprecated: unimplemented on T+. [-Wdeprecated-declarations]
+system/netd/server/NdcDispatcher.cpp:606:26: warning: 'bandwidthRemoveNaughtyApp' is deprecated: unimplemented on T+. [-Wdeprecated-declarations]
+system/netd/server/NdcDispatcher.cpp:621:26: warning: 'bandwidthAddNiceApp' is deprecated: unimplemented on T+. [-Wdeprecated-declarations]
+system/netd/server/NdcDispatcher.cpp:636:26: warning: 'bandwidthRemoveNiceApp' is deprecated: unimplemented on T+. [-Wdeprecated-declarations]
+system/netd/server/NdcDispatcher.cpp:818:27: warning: 'firewallSetUidRule' is deprecated: unimplemented on T+. [-Wdeprecated-declarations]
+system/netd/server/NdcDispatcher.cpp:828:27: warning: 'firewallEnableChildChain' is deprecated: unimplemented on T+. [-Wdeprecated-declarations]
+system/netd/server/NdcDispatcher.cpp:838:27: warning: 'firewallEnableChildChain' is deprecated: unimplemented on T+. [-Wdeprecated-declarations]
+system/memory/lmkd/lmkd.cpp:3451:73: warning: 'mp_event_common' is deprecated: memcg v1 is not supported after Dec. 2026 [-Wdeprecated-declarations]
+system/memory/lmkd/lmkd.cpp:3206:3: note: 'mp_event_common' has been explicitly marked deprecated here
+system/security/ondevice-signing/KeystoreKey.cpp:149:24: warning: 'getService' is deprecated: this polls for 5s, prefer waitForService or checkService [-Wdeprecated-declarations]
+FAILED: out/soong/.intermediates/device/google/bonito/libshims/libgui_shim_secureui/android_arm64_armv8-a_shared/obj/device/google/bonito/libshims/gui_shim_secureui.o

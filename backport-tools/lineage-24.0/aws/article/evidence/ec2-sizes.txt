@@ -1,0 +1,29 @@
+# captured 2026-10-23T16:29:21Z on i-0ade22eb7456ffa7a (c7a.48xlarge, us-east-1a)
+192
+               total        used        free      shared  buff/cache   available
+Mem:             369          50         105           0         216         319
+/dev/root       968G  270G  699G  28% /
+33G .repo
+32G .repo/project-objects
+130G out
+103G out/soong
+90G out/soong/.intermediates
+14G out/target/product/sargo
+61G prebuilts
+19G prebuilts/clang/host/linux-x86
+13G prebuilts/rust-toolchain
+out/soong/build.lineage_sargo.ninja: 0 lines naming /home/ubuntu, 0 naming /home/xbill
+out/build-lineage_sargo.ninja: 0 lines naming /home/ubuntu, 124 naming /home/xbill
+
+# ps on the instance during the build (16:26), copied verbatim, truncated by cut -c1-220:
+2471556       26:58  220 33487984 prebuilts/siso/linux-x86/siso --log_dir /home/xbill/android/lineage-24.0/out ninja -d keepdepfile -d keeprsp --frontend_file out/.ninja_fifo --local_jobs 194 --log_dir /home/xbill/androi
+
+# RunInstances parameters (AWS MCP run_script, 2026-10-23):
+"InstanceType":"c7a.48xlarge", ImageId ami-0d6dd9e8265d48906 (Ubuntu 24.04, SSM /aws/service/canonical/ubuntu/server/24.04/stable/current/amd64/hvm/ebs-gp3/ami-id)
+"Ebs":{"VolumeSize":1000,"VolumeType":"gp3","Iops":16000,"Throughput":1000,"DeleteOnTermination":True}
+instance i-0ade22eb7456ffa7a, us-east-1a
+
+# soong environment value (out/soong/soong.environment.used.lineage_sargo.build) before BUILD_USERNAME was set:
+soong.environment.used.lineage_sargo.build BUILD_USERNAME ubuntu
+out/soong/build.lineage_sargo.ninja: 0 lines with /home/ubuntu of 3712391
+out/build-lineage_sargo.ninja: 124 lines with /home/ubuntu of 5697004

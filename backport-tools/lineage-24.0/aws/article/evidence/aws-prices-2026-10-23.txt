@@ -1,0 +1,19 @@
+# AWS Pricing API (GetProducts, US East N. Virginia, Linux, shared tenancy, on-demand) and
+# EC2 DescribeSpotPriceHistory (last hour) and GetSpotPlacementScores, run 2026-10-23 ~14:30 UTC-4
+# through the AWS MCP run_script tool, account 106059658660. Output copied verbatim.
+
+quotas: Running On-Demand Standard (A, C, D, H, I, M, R, T, Z) instances = 264 vCPU
+        All Standard (A, C, D, H, I, M, R, T, Z) Spot Instance Requests = 256 vCPU
+
+"c7a.16xlarge":{"vcpu":64,"gib":128,"ondemand":3.28448,"spot_min":0.9331}
+"c7a.24xlarge":{"vcpu":96,"gib":192,"ondemand":4.92672,"spot_min":1.3629}
+"m7a.16xlarge":{"vcpu":64,"gib":256,"ondemand":3.70944,"spot_min":0.8568}
+"m7a.24xlarge":{"vcpu":96,"gib":384,"ondemand":5.56416,"spot_min":1.2787}
+"m7a.32xlarge":{"vcpu":128,"gib":512,"ondemand":7.41888,"spot":{"us-east-1f":1.5892,...}}
+"m7a.48xlarge":{"vcpu":192,"gib":768,"ondemand":11.12832,"spot":{"us-east-1a":3.191,...}}
+"c7a.32xlarge":{"vcpu":128,"gib":256,"ondemand":6.56896,"spot":{"us-east-1a":2.0357,...}}
+"c7a.48xlarge":{"vcpu":192,"gib":384,"ebs_MBps":5000,"ondemand":9.85344,"spot":{"us-east-1a":2.9348,"us-east-1b":3.0107,"us-east-1c":2.9622,"us-east-1d":3.2111,"us-east-1f":3.6285}}
+"m7a48_spot_scores":[{"AvailabilityZoneId":"use1-az6","Score":1},{"AvailabilityZoneId":"use1-az5","Score":1},{"AvailabilityZoneId":"use1-az4","Score":1},{"AvailabilityZoneId":"use1-az2","Score":1},{"AvailabilityZoneId":"use1-az1","Score":1}]
+
+# AWSDataTransfer, US East (N. Virginia) -> External, AWS Outbound
+["0","10240","0.0900000000","$0.090 per GB - first 10 TB / month data transfer out beyond the global free tie"]
