@@ -1,0 +1,14 @@
+Android 16 on a 4.9 Kernel: LineageOS 23.2 on the Pixel 3a
+
+LineageOS ships 4.9-kernel phones only up to 22.2. The Pixel 3a runs 23.2 on its 4.9 kernel with three backported kernel features and two device fixes, each found from one line of a boot log.
+
+What is in it:
+
+- 🟢 LineageOS 23.2 boots on kernel 4.9.337 with SELinux enforcing, and the slot is marked successful.
+- 🟢 Three kernel features made the difference: MADV_WIPEONFORK from 4.14, cpuset_v2_mode from 4.17, and reading Android 16's netlink policy rules.
+- 🟢 Wi-Fi connects and validates; both cameras work after the blobs move to libtinyxml2-v34.
+- 🟢 netd starts once, after the BPF loader, with no crash.
+
+dev.to: https://dev.to/xbill/android-16-on-a-49-kernel-lineageos-232-on-the-pixel-3a-5e79
+Medium: https://medium.com/@xbill999/android-16-on-a-4-9-kernel-lineageos-23-2-on-the-pixel-3a-c532f8cc2c3d
+Substack: https://xbill9.substack.com/p/android-16-on-a-49-kernel-lineageos
