@@ -116,14 +116,15 @@ Each fix goes to the fork on GitHub, the instance syncs that one project, and th
 The fourth is a vendor blob compiled when `SurfaceComposerClient::createSurface` took `LayerMetadata` by value. Android 17 takes it by const reference, so the mangled name changed. A shim exports the old name and forwards:
 
 ```cpp
-extern "C" sp<SurfaceControl>
-_ZN7android21SurfaceComposerClient13createSurfaceERKNS_7String8EjjiiRKNS_2spINS_7IBinderEEENS_3gui13LayerMetadataEPj(
+sp<SurfaceControl> SurfaceComposerClient_createSurface_metadataByValue(
         SurfaceComposerClient* thiz, const String8& name, uint32_t w, uint32_t h, PixelFormat format,
         int32_t flags, const sp<IBinder>& parentHandle, gui::LayerMetadata metadata,
-        uint32_t* outTransformHint) {
-    return thiz->createSurface(name, w, h, format, flags, parentHandle, metadata, outTransformHint);
-}
+        uint32_t* outTransformHint)
+        __asm__("_ZN7android21SurfaceComposerClient13createSurfaceERKNS_7String8EjjiiRKNS_2spINS_7IBinderEEENS_3gui13LayerMetadataEPj");
 ```
+
+The `__asm__` label gives an ordinary C++ function the blob's symbol name, and a free function with the object as its first argument has the member function's calling convention. The body calls `thiz->createSurface(...)` with the same arguments.
+
 
 `extract-files.py` gets a `blob_fixup().add_needed('libgui_shim_secureui.so')` for the blob, so a fresh extraction reproduces the patch, and `proprietary-files.txt` pins both the original and the patched SHA-1.
 

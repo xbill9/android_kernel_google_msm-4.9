@@ -1,9 +1,9 @@
 # LineageOS 24.0 on the Pixel 3a (sargo): work in progress
 
 Unofficial LineageOS 24.0 (Android 17) for sargo on this 4.9 kernel, started
-2026-10-21 from the 23.2 port in `../lineage-23.2`. The platform build has
-passed product configuration and Soong analysis and is compiling; it has not
-yet produced an image, and nothing here has booted.
+2026-10-21 from the 23.2 port in `../lineage-23.2`. The first full build
+completed on 2026-10-23 on EC2 (`lineage-24.0-20261023-UNOFFICIAL-sargo.zip`,
+1,208,903,032 bytes; see `aws/`). Nothing here has booted yet.
 
 ## Sources
 
@@ -50,6 +50,32 @@ directories, 9.1 GB), as 23.2 did. The trusty module group names
 - `KERNEL_CROSS_COMPILE` gives the kernel the GCC 4.9 binutils and clang
   r416183b as host compiler. LineageOS 24 builds kernels with LLVM only and
   no longer sets either; 4.9 predates `LLVM=1` and links LTO with GNU gold.
+
+### Device tree fixes found by the first full build (2026-10-23, on EC2)
+
+Each one stopped `m bacon`; all are on bonito `lineage-24.0` up to `873fbf6`.
+
+- `sepolicy/vendor/qcom/common/logger_app.te` removed: `unknown type logger_app`; 17 no longer
+  defines it and PixelLogger is gone.
+- `hardware/google/pixel-sepolicy/wifi_perf_diag` no longer added by `bonito-sepolicy.mk`:
+  `unknown type wifi_logging_data_file`. Pixel adds that policy itself for eng builds only.
+- `/sys/class/typec` takes the platform's `sysfs_typec` label: secilc rejects two `genfscon`
+  rules for one path. `usbc0` keeps `sysfs_usb_c`; health gets `r_dir_file` on `sysfs_typec`.
+- `libgui_shim_secureui` (`libshims/`): `libsecureuisvc_jni.so` needs
+  `SurfaceComposerClient::createSurface` with `LayerMetadata` by value; 17 takes a const
+  reference. The shim names an ordinary C++ function with the old symbol through `__asm__`
+  (an `extern "C"` function returning `sp<>` is a clang error). `extract-files.py` adds it with
+  `add_needed`; the vendor forks carry the patched blob (`4a9f4f1`, `8fa4a48`) and
+  `proprietary-files.txt` pins both hashes.
+- `manifest.xml` `target-level` 5 to 7: 17 ships framework matrices from level 7 only. The
+  HIDL `bluetooth.audio@2.0`, `contexthub@1.2` and `health@2.1` are declared optional in
+  `device_framework_matrix.xml`; 17's matrices list only the AIDL versions, and the framework
+  still has HIDL clients for all three.
+- `PRODUCT_ENFORCE_SELINUX_TREBLE_LABELING := false`: 17 enforces Treble app labeling for board
+  API 202604 and later, and the vendor partition labels ims, QtiTelephonyService, HardwareInfo
+  and GoogleCamera in vendor policy. The check now lists them as warnings.
+
+Untested on the phone: the SecureUI shim, the three HIDL HALs, and the typec labels.
 
 ### sdm845 display (`lineage-24.0` branch)
 
