@@ -22,6 +22,32 @@ c7a.48xlarge (192 vCPU, 384 GiB, us-east-1, on-demand $9.85/h) and the home mach
 5. `pull-tree.sh` on the home machine. Free the space first.
 6. First local `m bacon`: should do little or nothing.
 
+## Cost: this approach is not cheap
+
+One round trip is about **$60**. Prices from the AWS Pricing API, us-east-1, 2026-10-23:
+
+| Item | Rate | This run |
+|---|---|---|
+| c7a.48xlarge on-demand | $9.85/h | about $31 for 3.2 h (sync, eight builds, one rebuild after the clang trim) |
+| Data transfer out to home | $0.09/GB | about $23.50 for 261 GB |
+| gp3 1000 GB at 16000 IOPS, 1000 MB/s | $180/month ($6/day), running or stopped | storage $80 + IOPS $65 + throughput $35 |
+| m7a.xlarge for the copy home | $0.23/h | $0.46 for 2 h |
+
+Ways to keep it down, in order of size:
+
+- **Do not copy with the big instance running.** Stop it, change the type to m7a.xlarge (4 vCPU,
+  16 GiB, up to 12.5 Gigabit), start it, then run `pull-tree.sh`. The volume and tree are kept.
+- **Trim clang right after the sync.** Trimming after a build cost a near-full rebuild.
+- **Fix port errors in one pass where possible.** Each failed `m bacon` is 6-17 minutes of the
+  $9.85/h instance.
+- **Drop the volume to baseline performance while stopped** (`ModifyVolume` to 3000 IOPS and
+  125 MB/s; the baseline figures are AWS's published gp3 defaults, not checked here). That leaves
+  $80/month for the storage. Terminate when the tree is no longer needed.
+- Spot would cut compute by about 70 %, but 192-core spot capacity was not available (score 1/10).
+
+Against that: the home machine needs about 1 h 45 min for analysis alone and a full build there
+had not finished in one sitting.
+
 ## Quirks
 
 ### The tree must live at the home machine's absolute path

@@ -184,6 +184,21 @@ The home machine is reached on the local network with its own credentials, used 
 
 ---
 
+#### And What Does It Cost?
+
+More than a home build. Prices from the AWS Pricing API, us-east-1:
+
+| Item | Rate | One round trip |
+|---|---|---|
+| c7a.48xlarge on-demand | $9.85/h | PENDING |
+| Data transfer out to home | $0.09/GB | PENDING |
+| gp3 1000 GB at 16,000 IOPS and 1000 MB/s | $180/month, running or stopped | PENDING |
+| m7a.xlarge for the copy home | $0.23/h | PENDING |
+
+The copy home runs on an m7a.xlarge: stop the instance, change its type, start it. The volume and the tree stay, and two hours of copying cost $0.46 against $19.71 on the build instance. While the instance is stopped, the volume drops back to its baseline performance, which leaves $80 a month for the storage.
+
+---
+
 #### Compare and Contrast
 
 | | i7-3770, home | c7a.48xlarge, EC2 |
