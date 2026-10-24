@@ -1,5 +1,5 @@
 builder = https://builder.aws.com/content/3L7kJCHKa9PJ5mSnRlPHhRYJHB0/rent-the-cores-keep-the-phone-building-lineageos-24-on-ec2-and-iterating-at-home
-medium = SKIP
+medium = https://medium.com/@xbill999/rent-the-cores-keep-the-phone-building-lineageos-24-on-ec2-and-iterating-at-home-88e6e6ab7e80
 substack = SKIP
 devto-aws = https://dev.to/aws-builders/rent-the-cores-keep-the-phone-building-lineageos-24-on-ec2-and-iterating-at-home-4pmc
 linkedin = SKIP

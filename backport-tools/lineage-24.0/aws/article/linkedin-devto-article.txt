@@ -1,0 +1,14 @@
+More Claude Code adventures. Can a rented 192-core EC2 box run the heavy part of an Android build and hand it back home?
+
+A full LineageOS 24.0 build outgrows a 32 GB home machine. A 192-core EC2 instance runs the long build, the 266 GB tree comes home at the same path, and the home machine packages the zip next to the phone. Claude Code drives both ends.
+
+What is in it:
+
+- 🟢 Full sync of the LineageOS 24.0 tree in 15 minutes on a c7a.48xlarge.
+- 🟢 Soong analysis plus 156,615 build steps in 19 min 17 s.
+- 🟢 Four Android 17 port errors fixed between builds of 6 to 17 minutes each.
+- 🟢 Fork commits carry the same hash on the instance and on GitHub.
+
+dev.to (AWS Community Builders): https://dev.to/aws-builders/rent-the-cores-keep-the-phone-building-lineageos-24-on-ec2-and-iterating-at-home-4pmc
+AWS Builder Center: https://builder.aws.com/content/3L7kJCHKa9PJ5mSnRlPHhRYJHB0/rent-the-cores-keep-the-phone-building-lineageos-24-on-ec2-and-iterating-at-home
+Medium: https://medium.com/@xbill999/rent-the-cores-keep-the-phone-building-lineageos-24-on-ec2-and-iterating-at-home-88e6e6ab7e80
