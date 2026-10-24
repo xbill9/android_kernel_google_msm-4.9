@@ -18,7 +18,7 @@ ifeq ($(CONFIG_RELOCATABLE), y)
 # Pass --no-apply-dynamic-relocs to restore pre-binutils-2.27 behaviour
 # for relative relocs, since this leads to better Image compression
 # with the relocation offsets always being zero.
-LDFLAGS_vmlinux		+= -pie -shared -Bsymbolic \
+LDFLAGS_vmlinux		+= -shared -Bsymbolic -z notext -z norelro \
 			$(call ld-option, --no-apply-dynamic-relocs)
 endif
 
@@ -103,12 +103,14 @@ endif
 ifeq ($(CONFIG_CPU_BIG_ENDIAN), y)
 KBUILD_CPPFLAGS	+= -mbig-endian
 AS		+= -EB
-LD		+= -EB
+ld-emul		:= $(call ld-option, -maarch64elfb, -maarch64linuxb)
+LDFLAGS		+= -EB $(ld-emul)
 UTS_MACHINE	:= aarch64_be
 else
 KBUILD_CPPFLAGS	+= -mlittle-endian
 AS		+= -EL
-LD		+= -EL
+ld-emul		:= $(call ld-option, -maarch64elf, -maarch64linux)
+LDFLAGS		+= -EL $(ld-emul)
 UTS_MACHINE	:= aarch64
 endif
 
