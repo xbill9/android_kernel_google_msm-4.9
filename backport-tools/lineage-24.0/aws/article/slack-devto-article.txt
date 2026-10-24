@@ -4,6 +4,9 @@ A c7a.48xlarge synced the tree in 15 minutes and ran analysis plus 156,615 build
 Builder Center Article is here:
 https://builder.aws.com/content/3L7kJCHKa9PJ5mSnRlPHhRYJHB0/rent-the-cores-keep-the-phone-building-lineageos-24-on-ec2-and-iterating-at-home
 
+Medium is here:
+https://medium.com/@xbill999/rent-the-cores-keep-the-phone-building-lineageos-24-on-ec2-and-iterating-at-home-88e6e6ab7e80
+
 Dev.to is here:
 https://dev.to/aws-builders/rent-the-cores-keep-the-phone-building-lineageos-24-on-ec2-and-iterating-at-home-4pmc
 
