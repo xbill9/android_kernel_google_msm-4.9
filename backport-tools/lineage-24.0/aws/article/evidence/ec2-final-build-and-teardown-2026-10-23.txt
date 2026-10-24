@@ -1,0 +1,20 @@
+# Last EC2 build, read from the copied tree on 'build' (192.168.50.45): out/verbose.log.3.gz (mtime 2026-10-23 13:40:36 EDT), the post-clang-trim m bacon on i-0ade22eb7456ffa7a. Output verbatim, captured 2026-10-23 23:10 EDT.
+status: ninja: 1m47.54s Build Succeeded: 3 steps - 0.03/s
+[181127/181128] /bin/bash -c "(ln -f out/target/product/sargo/lineage_sargo-ota.zip out/target/product/sargo/lineage-24.0-20261023-UNOFFICIAL-sargo.zip ) && (prebuilts/build-tools/path/linux-x86/sha256sum out/target/product/sargo/lineage-24.0-20261023-UNOFFICIAL-sargo.zip | sed \"s|out/target/product/sargo/||\" > out/target/product/sargo/lineage-24.0-20261023-UNOFFICIAL-sargo.zip.sha256sum ) && (echo \"Package Complete: out/target/product/sargo/lineage-24.0-20261023-UNOFFICIAL-sargo.zip\" >&2 )"
+Package Complete: out/target/product/sargo/lineage-24.0-20261023-UNOFFICIAL-sargo.zip
+status: ninja: 26m11.74s Build Succeeded: 181084 steps - 115.21/s
+
+## prebuilts/clang/host/linux-x86 after the trim (du -sh --apparent-size, on build)
+7.4G	/home/xbill/android/lineage-24.0/prebuilts/clang/host/linux-x86
+
+## clang trim, from the instance (backport-tools/lineage-24.0/aws/README.md, captured on the instance before termination)
+2026-10-23 17:09:39 prebuilts/clang/host/linux-x86/clang-r596125/bin/clang
+2026-10-23 17:08:03 out/target/product/sargo/lineage_sargo-ota.zip
+
+## Teardown (session record in Claude Code project memory lineage-24-aws-build, not re-read from the AWS API: the AWS MCP server was not connected on 2026-10-23 23:10)
+2026-10-23 19:35 UTC: instance i-0ade22eb7456ffa7a terminated (1000 GB gp3 root, DeleteOnTermination True), SG sg-0fb59521ef7f6c996 and key pair lineage-build deleted.
+First repo sync line on the instance: 14:39:26 (UTC, ec2-build-summary.txt).
+
+## Arithmetic (python3, 2026-10-23)
+266 GB x $0.09/GB = $23.94
+9.85344 $/h x (19:35 - 14:39 = 4 h 56 min) = $48.61, a lower bound: the instance was launched before the first sync line

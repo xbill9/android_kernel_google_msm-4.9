@@ -1,7 +1,7 @@
 ---
 title: "Rent the Cores, Keep the Phone: Building LineageOS 24 on EC2 and Iterating at Home"
 published: false
-description: "A full LineageOS 24.0 build outgrows a 32 GB home machine. A 192-core EC2 instance runs the long build, the tree comes home at the same path, and local builds pick up incrementally next to the phone. Claude Code drives both ends."
+description: "A full LineageOS 24.0 build outgrows a 32 GB home machine. A 192-core EC2 instance runs the long build, the 266 GB tree comes home at the same path, and the home machine packages the zip next to the phone. Claude Code drives both ends."
 tags: aws, android, lineageos, ec2
 cover_image: https://raw.githubusercontent.com/xbill9/android_kernel_google_msm-4.9/main/backport-tools/lineage-24.0/aws/article/devto-cover.415eb5a0.jpg
 ---
@@ -10,7 +10,7 @@ This article provides a step by step guide to running the bulk of a LineageOS 24
 
 https://github.com/xbill9/android_kernel_google_msm-4.9/tree/main/backport-tools/lineage-24.0/aws
 
-**A from-scratch LineageOS 24.0 build for the Pixel 3a stalled on a 32 GB home machine during Soong analysis. On a c7a.48xlarge the tree synced in 15 minutes and the first build reached 156,615 of about 232,000 steps in 19 min 17 s. Building on EC2 at the home machine's own path, with the home user name, makes the result portable: the tree is copied home and local builds continue incrementally.**
+**A from-scratch LineageOS 24.0 build for the Pixel 3a stalled on a 32 GB home machine during Soong analysis. On a c7a.48xlarge the tree synced in 15 minutes and the first build reached 156,615 of about 232,000 steps in 19 min 17 s. Building on EC2 at the home machine's own path, with the home user name, makes the result portable: the 266 GB tree came home in 1 h 37 min and the first local `m bacon` produced the zip in 2 h 30 min, with one Soong analysis re-run.**
 
 ---
 
@@ -111,7 +111,7 @@ Each fix goes to the fork on GitHub, the instance syncs that one project, and th
 | `unknown type logger_app` | drop the device tree's `logger_app.te`; Android 17 no longer defines the type | 5 min 49 s |
 | `unknown type wifi_logging_data_file` | stop adding `wifi_perf_diag` policy; Pixel adds it for eng builds only | 9 min 51 s |
 | `Found conflicting genfscon rules` for `/class/typec` | use the platform's `sysfs_typec` label; keep `sysfs_usb_c` on `usbc0` | 16 min 36 s |
-| `Unresolved symbol ... createSurface ... LayerMetadata` in `libsecureuisvc_jni.so` | shim library exporting the Android 12 symbol | PENDING |
+| `Unresolved symbol ... createSurface ... LayerMetadata` in `libsecureuisvc_jni.so` | shim library exporting the Android 12 symbol | the build finished with the zip |
 
 The fourth is a vendor blob compiled when `SurfaceComposerClient::createSurface` took `LayerMetadata` by value. Android 17 takes it by const reference, so the mangled name changed. A shim exports the old name and forwards:
 
@@ -136,9 +136,7 @@ The instance has no GitHub credentials. Commits made there travel as `git format
 
 ---
 
-#### Step 6 — Trim the Tree to Fit at Home
-
-PENDING: final sizes after the clean build.
+#### Step 6 — Trim the Tree Right After the Sync
 
 Sizes on the instance with the build at 85 %:
 
@@ -150,7 +148,21 @@ Sizes on the instance with the build at 85 %:
 | `prebuilts/rust-toolchain` | 13 GB | yes |
 | `out/target/product/sargo` | 14 GB | yes; packaging is rebuilt in minutes |
 
-The home machine has 278 GB free once its old 24.0 tree is gone. Three clang versions (`r547379`, `r563880c`, `r584948b`) are 3.5-3.7 GB each and unused by this device, so the instance trims them with the same sparse checkout the home tree uses, then runs `m bacon` once more so the analysis there sees the trimmed tree.
+The home machine has 278 GB free once its old 24.0 tree is gone. Three clang versions (`r547379`, `r563880c`, `r584948b`) are unused by this device, and the same `git sparse-checkout` the home tree uses takes the clang directory from 19 GB to 7.4 GB.
+
+Do it before the first build. `git sparse-checkout set` rewrites every file it keeps, so the compiler gets a time newer than the finished build:
+
+```
+2026-10-23 17:09:39 prebuilts/clang/host/linux-x86/clang-r596125/bin/clang
+2026-10-23 17:08:03 out/target/product/sargo/lineage_sargo-ota.zip
+```
+
+The next `m bacon` redid almost the whole build:
+
+```
+status: ninja: 26m11.74s Build Succeeded: 181084 steps - 115.21/s
+Package Complete: out/target/product/sargo/lineage-24.0-20261023-UNOFFICIAL-sargo.zip
+```
 
 ---
 
@@ -158,15 +170,36 @@ The home machine has 278 GB free once its old 24.0 tree is gone. Three clang ver
 
 `pull-tree.sh` runs on the home machine and copies the whole tree with `rsync -aHz --partial` and zstd compression, keeping file times and hard links.
 
-PENDING: transfer size, time and AWS data-transfer charge.
+```
+start 13:43:57
+done: 266G
+real	96m45.082s
+end 15:20:42
+```
+
+266 GB in 1 h 37 min. At $0.09/GB out of us-east-1 that is $23.94 of data transfer (arithmetic).
 
 ---
 
-#### Step 8 — Iterate Locally
+#### Step 8 — First Build at Home
 
-PENDING: first local `m bacon` after the copy; expected to do little or no work.
+The first local `m bacon` on the copied tree re-ran Soong analysis, then packaged the zip:
 
-PENDING: one device-tree edit, rebuild time at home.
+```
+ninja: 1h44m06.32s Build Succeeded: 1 steps - 0.00/s
+Package Complete: out/target/product/sargo/lineage-24.0-20261023-UNOFFICIAL-sargo.zip
+ninja: 42m33.96s Build Succeeded: 246 steps - 0.10/s
+real	149m46.233s
+```
+
+Of the 16,869 inputs to the Soong graph, one was newer than the graph:
+
+```
+deps 16869 newer 1 missing 0
+15:22:36 out/soong/soong.lineage_sargo.variables
+```
+
+All 124 recorded environment values matched the home machine, so the path and user-name rules held; what rewrites `soong.lineage_sargo.variables` on the first local run is still open. The analysis took 1 h 44 min with up to 45 GB of swap in use, the same cost as a from-scratch analysis at home. After it, only 246 steps ran.
 
 ---
 
@@ -186,16 +219,15 @@ The home machine is reached on the local network with its own credentials, used 
 
 #### And What Does It Cost?
 
-More than a home build. Prices from the AWS Pricing API, us-east-1:
+More than a home build. Rates from the AWS Pricing API, us-east-1:
 
-| Item | Rate | One round trip |
+| Item | Rate | This run |
 |---|---|---|
-| c7a.48xlarge on-demand | $9.85/h | PENDING |
-| Data transfer out to home | $0.09/GB | PENDING |
-| gp3 1000 GB at 16,000 IOPS and 1000 MB/s | $180/month, running or stopped | PENDING |
-| m7a.xlarge for the copy home | $0.23/h | PENDING |
+| c7a.48xlarge on-demand | $9.85/h | $48.61 for the 4 h 56 min from first sync to termination (arithmetic, a lower bound) |
+| Data transfer out to home | $0.09/GB | $23.94 for 266 GB (arithmetic) |
+| gp3 1000 GB at 16,000 IOPS and 1000 MB/s | billed while the volume exists | deleted with the instance |
 
-The copy home runs on an m7a.xlarge: stop the instance, change its type, start it. The volume and the tree stay, and two hours of copying cost $0.46 against $19.71 on the build instance. While the instance is stopped, the volume drops back to its baseline performance, which leaves $80 a month for the storage.
+The copy home took 1 h 37 min after the last build. A smaller instance type holds the same volume: stop the instance, change its type, start it, and copy from that.
 
 ---
 
@@ -207,6 +239,7 @@ The copy home runs on an m7a.xlarge: stop the instance, change its type, start i
 | RAM | 31 GB + 79 GB swap | 384 GiB |
 | Soong analysis | about 1 h 45 min, swapping | 🥇 included in the 19 min 17 s below |
 | Build steps completed | 130,617 in 7 h 49 min | 🥇 156,615 in 19 min 17 s, analysis included |
+| First build after the copy | 2 h 30 min, analysis re-run | — |
 | Phone on USB | 🥇 yes | no |
 | Cost | electricity | $9.85/h on-demand |
 
@@ -220,7 +253,7 @@ Both, in sequence. EC2 for the from-scratch build and for any change that re-run
 
 #### Teardown
 
-PENDING: stop the instance once the tree is home; a stopped instance keeps the 1000 GB volume for the next full rebuild.
+Once the tree was home the instance was terminated, which deletes its 1000 GB volume, and the security group and key pair were deleted. Stopping instead keeps the volume, and the synced tree, for the next full rebuild, at the price of the volume.
 
 ---
 
@@ -232,11 +265,13 @@ The goal of this project was to move the long part of a LineageOS 24.0 build off
 - 🟢 Soong analysis plus 156,615 build steps in 19 min 17 s.
 - 🟢 Four Android 17 port errors fixed between builds of 6 to 17 minutes each.
 - 🟢 Fork commits carry the same hash on the instance and on GitHub.
-- ⚠️ PENDING: clean build, transfer, first local build.
+- 🟢 The 266 GB tree copied home in 1 h 37 min, and the first local build produced the zip.
+- ⚠️ That first local build re-ran Soong analysis (1 h 44 min); the trigger is one rewritten input file whose cause is still open.
+- ⚠️ Trim prebuilts before the first build; trimming afterwards cost a 181,084-step rebuild.
 - ⚠️ The EC2 build ran without Soong's sandbox; Ubuntu 24.04 restricts the unprivileged user namespaces it needs.
 - ❌ A `.bp` or `.mk` change still re-runs Soong analysis at home.
 
-Scope: one c7a.48xlarge on-demand instance in us-east-1a running Ubuntu 24.04, one home machine (i7-3770, 31 GB, Debian sid), LineageOS 24.0 for sargo built 2026-10-23. Home figures come from the 24.0 port notes in the repository; EC2 figures from the build log on the instance. Parts of the analysis and writing were done with AI assistance (Claude).
+Scope: one c7a.48xlarge on-demand instance in us-east-1a running Ubuntu 24.04, one home machine (i7-3770, 31 GB, Debian sid), LineageOS 24.0 for sargo built 2026-10-23. Home figures come from the 24.0 port notes and the local build log; EC2 figures from the build log on the instance and the build logs copied home with the tree. A device-tree edit rebuilt at home and a boot of this zip on the phone were not run for this article. Parts of the analysis and writing were done with AI assistance (Claude).
 
 The strategy for splitting a LineageOS build between EC2 and a home machine was validated with an incremental step by step approach.
 
