@@ -1,0 +1,2 @@
+A from-scratch LineageOS 24.0 build for the Pixel 3a stalled on my 32 GB home machine during Soong analysis.
+A c7a.48xlarge synced the tree in 15 minutes and ran analysis plus 156,615 build steps in 19 minutes. Building at the home machine's path with the home user name let the 266 GB tree come home and package the zip next to the phone. Claude Code drove both ends.
