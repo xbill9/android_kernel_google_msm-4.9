@@ -20,7 +20,12 @@ base it has, in order:
   found for backported code (29, from 4.20 to 7.3), with two companion commits
   from the same upstream series. `verifier-fixes.tsv` lists each one and
   what was done with it: 26 ported, 2 already covered by 5.4-stable fixes
-  in the tree, 1 replaced, 1 not applicable, 1 skipped.
+  in the tree, 1 replaced, 1 not applicable, 1 skipped;
+- six more from the 2026-10-25 run against mainline `21a7f44fd076`
+  (rows 30 to 35): 3 ported (a `bpf_tcp_sock` access check, the hash map
+  extra element race, and the locking of the kprobe/uprobe lookup for
+  `BPF_TASK_FD_QUERY`), and 3 SRv6 End.BPF fixes not applicable, because
+  `CONFIG_IPV6_SEG6_BPF` cannot be enabled in this tree.
 
 Commits that needed a hand merge say how in a `[ 4.9: ... ]` note. The
 kernel runs daily on a Pixel 3a.
@@ -148,7 +153,7 @@ absent from the 4.9 tree or not built for sargo.
 | `groundwork2.txt` | prerequisite commits pulled in ahead of the series |
 | `mapper.txt` | BPF helper ID → name table, for checking helper ABI order |
 | `missing-fixes.tsv` | upstream fixes this tree lacks, from `missing_fixes.py` |
-| `verifier-fixes.tsv` | the verifier and arm64 JIT fixes from it: port commit or reason |
+| `verifier-fixes.tsv` | the fixes from it that were acted on: port commit or reason |
 
 `conflict_test.sh REPO BASE TIP OUT` dry-runs a range and classifies each
 commit as clean, already present, or conflicting. `resolve.py FILE

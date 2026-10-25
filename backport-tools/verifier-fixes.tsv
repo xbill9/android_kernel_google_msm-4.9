@@ -30,3 +30,9 @@
 28	a4c6f804b44c	bpf: Preserve pointer state for commuted arithmetic	ported	63cef13deea2	copy_register_state() instead of struct copy (keeps parent/live)
 28a	a15970d916b3	bpf: Simplify sanitize_err() signature	ported	92ea65d7279f	prerequisite of 28: sanitize_err() picks the register by type
 29	1a3a10b030c9	bpf: mark a NULL call argument precise	ported	cab0ba252d1d	
+30	af873495cbcb	bpf: Fix verifier WARN on narrow read of bpf_tcp_sock u64 fields	ported	a83f405f8c44	
+31	ccb88db8dac8	bpf: Don't hand out a linked element as extra element	ported	df828f246840	cmpxchg_local() loop; the slot is refilled in htab_map_update_elem() after the unlink
+32	3ccd700543f1	bpf: Read the probe of a perf event under event_mutex	ported	48c3406ffde7	4.9 form: probe_lock/uprobe_lock around the lookup by name; the found probe can not be deleted while perf uses it
+33	e8b084646b94	bpf: Validate the SRH which End.DT6 uncovers in End.BPF	n/a	-	CONFIG_IPV6_SEG6_BPF has no Kconfig entry here (no seg6_local.c, no seg6_get_srh()); the code never builds
+34	434324c611a9	bpf: Pull the inner header for End.DT6 in End.BPF	n/a	-	as 33
+35	427e751a231a	bpf: Update the SRH state if End.B6 fails late	n/a	-	as 33
