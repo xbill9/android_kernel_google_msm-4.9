@@ -100,16 +100,21 @@ ifeq ($(CONFIG_SHADOW_CALL_STACK), y)
 KBUILD_CFLAGS	+= -ffixed-x18
 endif
 
+# Gold rejects -m with LLVMgold bitcode input (the LTO module link).
 ifeq ($(CONFIG_CPU_BIG_ENDIAN), y)
 KBUILD_CPPFLAGS	+= -mbig-endian
 AS		+= -EB
+ifneq ($(ld-name),gold)
 ld-emul		:= $(call ld-option, -maarch64elfb, -maarch64linuxb)
+endif
 LDFLAGS		+= -EB $(ld-emul)
 UTS_MACHINE	:= aarch64_be
 else
 KBUILD_CPPFLAGS	+= -mlittle-endian
 AS		+= -EL
+ifneq ($(ld-name),gold)
 ld-emul		:= $(call ld-option, -maarch64elf, -maarch64linux)
+endif
 LDFLAGS		+= -EL $(ld-emul)
 UTS_MACHINE	:= aarch64
 endif
