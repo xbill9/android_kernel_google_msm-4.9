@@ -15,20 +15,19 @@ built	clean	0fc8c3581dd4	tracing/kprobe: Release kprobe print_fmt properly	e12f0
 built	conflict	100605035e15	bpf: Verifier, do_refine_retval_range may clamp umin to 0 incorrectly	849fa50662fb	bpf/verifier: refine retval R0 state for bpf_get_stack helper	backport		kernel/bpf/verifier.c
 built	conflict	1081de1accb2	bpf: Fix NULL pointer dereference in bpf_skb_fib_lookup()	4f74fede40df	bpf: Add mtu checking to FIB forwarding helper	backport		net/core/filter.c
 built	conflict	10e14e9652bf	bpf: fix control-flow graph checking in privileged mode	2589726d12a1	bpf: introduce bounded loops	backport		kernel/bpf/verifier.c tools/testing/selftests/bpf/progs/verifier_loops1.c tools/testing/selftests/bpf/verifier/calls.c
-built	clean	10f3b29c65bb	bpf, arm64: Clear prog->jited_len along prog->jited	db496944fdaa	bpf: arm64: add JIT support for multi-function programs	backport		arch/arm64/net/bpf_jit_comp.c
 built	conflict	10f86a2a5c91	bpf: Fix same-register dst/src OOB read and pointer leak in sock_ops	84f44df664e9	bpf: sock_ops sk access may stomp registers when dst_reg = src_reg	backport		net/core/filter.c
 built	conflict	117932eea99b	cgroup/bpf: use a dedicated workqueue for cgroup bpf destruction	4bfc0bb2c60e	bpf: decouple the lifetime of cgroup_bpf from cgroup itself	backport		kernel/bpf/cgroup.c
 built	conflict	120f1c857a73	net: flow_dissector: use DEBUG_NET_WARN_ON_ONCE	9b52e3f267a6	flow_dissector: handle no-skb use case	backport		net/core/flow_dissector.c
 built	clean	12cc126df82c	bpf: Fix bpf_put_raw_tracepoint()'s use of __module_address()	a38d1107f937	bpf: support raw tracepoints in modules	backport		kernel/trace/bpf_trace.c
+built	conflict	12d07c38e1b0	bpf: Don't let bpf_skb_adjust_room() use up the MSS	2be7e212d541	bpf: add bpf_skb_adjust_room helper	backport		net/core/filter.c
+built	conflict	13ac7c05bc45	bpf: Bound the nesting that the BTF show code follows	b00b8daec828	bpf: btf: Add pretty print capability for data with BTF type info	backport		kernel/bpf/btf.c
 built	clean	141b52a98ab4	net: use the right variant of kfree	e817f85652c1	xdp: generic XDP handling of xdp_rxq_info	backport		net/core/dev.c
-built	conflict	18752d73c189	bpf: Improve check_raw_mode_ok test for MEM_UNINIT-tagged types	57c3bb725a3d	bpf: Introduce ARG_PTR_TO_{INT,LONG} arg types	backport		kernel/bpf/verifier.c
-built	conflict	1a3a10b030c9	bpf: mark a NULL call argument precise	b5dc0163d8fd	bpf: precise scalar_value tracking	backport		kernel/bpf/verifier.c tools/testing/selftests/bpf/progs/verifier_subprog_precision.c
+built	conflict	14a3d3ef02ba	bpf: Remove MEM_UNINIT from skb/xdp MTU helpers	4b3786a6c539	bpf: Zero former ARG_PTR_TO_{LONG,INT} args in case of error	backport		net/core/filter.c
 built	clean	1ad58225dba3	net-sysfs: take the rtnl lock when storing xps_cpus	184c449f91fe	net: Add support for XPS with QoS via traffic classes	backport		net/core/net-sysfs.c
 built	conflict	1b47026fb4b3	netfilter: xt_connmark: reject invalid shift parameters	472a73e00757	netfilter: xt_conntrack: Support bit-shifting for CONNMARK & MARK targets.	backport		net/netfilter/xt_connmark.c
 built	clean	202aabe84a8f	xdp: fix uninitialized 'err' variable	a25717d2b604	xdp: support simultaneous driver and hw XDP attachment	backport		net/core/rtnetlink.c
 built	clean	21b172ee11b6	net/xdp: Fix suspicious RCU usage warning	8d5d88527587	xdp: rhashtable with allocator ID to pointer mapping	backport		net/core/xdp.c
 built	conflict	21f947753705	net: ipv4: Set skb->dev for output route resolution	d0e13a1488ad	flow_dissector: lookup netns by skb->sk if skb->dev is NULL	backport		net/ipv4/route.c
-built	conflict	22c7fa171a02	bpf: Reject variable offset alu on PTR_TO_FLOW_KEYS	d58e468b1112	flow_dissector: implements flow dissector BPF hook	backport		kernel/bpf/verifier.c
 built	conflict	261b61d3735b	bpf: Make post-verification instruction rewrites killable	52875a04f4b2	bpf: verifier: remove dead code	backport		kernel/bpf/core.c kernel/bpf/fixups.c
 built	conflict	28f6c37a2910	kprobes: Forbid probing on trampoline and BPF code areas	74451e66d516	bpf: make jited programs visible in traces	backport		kernel/kprobes.c
 built	clean	297249569932	net: fix generic XDP to handle if eth header was mangled	d445516966dc	net: xdp: support xdp generic on virtual devices	backport		net/core/dev.c
@@ -41,21 +40,21 @@ built	clean	2d17d8d79e77	xdp: linearize skb in netif_receive_generic_xdp()	de8f3
 built	conflict	2ef2b20cf4e0	net: annotate data-races around sk->sk_{data_ready,write_space}	604326b41a6f	bpf, sockmap: convert to generic sk_msg interface	backport		net/core/skmsg.c net/ipv4/tcp.c net/ipv4/tcp_bpf.c net/ipv4/tcp_input.c net/ipv4/tcp_minisocks.c net/ipv4/udp.c net/ipv4/udp_bpf.c net/unix/af_unix.c
 built	conflict	31a420a822ff	bpf: Check sk_state before sk_protocol in bpf_tcp_*_syncookie	399040847084	bpf: add helper to check for a valid SYN cookie	backport		net/core/filter.c
 built	conflict	31e67340cc65	mm/vmalloc: Avoid rare case of flushing TLB with weird arguments	868b104d7379	mm/vmalloc: Add flag for freeing of special permsissions	backport		mm/vmalloc.c
-built	conflict	32556ce93bc4	bpf: Fix helper writes to read-only maps	57c3bb725a3d	bpf: Introduce ARG_PTR_TO_{INT,LONG} arg types	backport		include/linux/bpf.h kernel/bpf/helpers.c kernel/bpf/syscall.c kernel/bpf/verifier.c kernel/trace/bpf_trace.c net/core/filter.c
 built	clean	32e6e967fb36	perf/core: Need CAP_SYS_ADMIN to create k/uprobe with perf_event_open()	33ea4b24277b	perf/core: Implement the 'perf_uprobe' PMU	backport		kernel/events/core.c
 built	conflict	33f339a1ba54	bpf, net: Fix a potential race in do_sock_getsockopt()	0d01da6afc54	bpf: implement getsockopt and setsockopt hooks	backport		include/linux/bpf-cgroup.h net/socket.c
 built	clean	34ea38ca2799	bpf: guard bpf_get_current_cgroup_id() with CONFIG_CGROUPS	bf6fa2c893c5	bpf: implement bpf_get_current_cgroup_id() helper	backport		kernel/trace/bpf_trace.c
-built	conflict	353050be4c19	bpf: Fix toctou on read-only map's constant scalar tracking	a23740ec43ba	bpf: Track contents of read-only maps as scalars	backport		include/linux/bpf.h kernel/bpf/syscall.c kernel/bpf/verifier.c
 built	clean	35edfdc77f68	net: set default network namespace in init_dummy_netdev()	7db6b048da3b	net: Commonize busy polling code to focus on napi_id instead of socket	backport		net/core/dev.c
 built	clean	36e0f12bbfd3	xdp: add NULL pointer check in __xdp_return()	02b55e5657c3	xdp: add MEM_TYPE_ZERO_COPY	backport	eb91e4d4db06	net/core/xdp.c
 built	clean	37f3c421e8f0	net/core: Document reuseport_add_sock() bind_inany argument	2dbb9b9e6df6	bpf: Introduce BPF_PROG_TYPE_SK_REUSEPORT	backport		net/core/sock_reuseport.c
-built	conflict	3844d153a41a	bpf: Fix insufficient bounds propagation from adjust_scalar_min_max_vals	b03c9f9fdc37	bpf/verifier: track signed and unsigned min/max values	backport		kernel/bpf/verifier.c
 built	clean	390e99cfdda1	bpf: mark bpf_event_notify and bpf_event_init as static	a38d1107f937	bpf: support raw tracepoints in modules	backport		kernel/trace/bpf_trace.c
+built	conflict	3ccd700543f1	bpf: Read the probe of a perf event under event_mutex	41bdc4b40ed6	bpf: introduce bpf subcommand BPF_TASK_FD_QUERY	backport		kernel/bpf/syscall.c kernel/trace/bpf_trace.c
 built	conflict	3f553b308bb0	module: propagate error in modules_open()	516fb7f2e73d	/proc/module: use the same logic as /proc/kallsyms for address exposure	backport		kernel/module.c
 built	conflict	3fcc5530bcb2	bpf: fix build without bpf_syscall	492ecee892c2	bpf: enable program stats	backport		kernel/sysctl.c
 built	conflict	406e8a651a7b	net: skmsg: preserve sg.copy across SG transforms	d3b18ad31f93	tls: add bpf support to sk_msg handling	backport		include/linux/skmsg.h net/core/filter.c net/core/skmsg.c net/tls/tls_sw.c
 built	conflict	407c85c7ddd6	tcp: Set ECT0 bit in tos/tclass for synack when BPF needs ECN	91b5b21c7c16	bpf: Add support for changing congestion control	backport		net/ipv4/tcp_ipv4.c net/ipv6/tcp_ipv6.c
+built	clean	427e751a231a	bpf: Update the SRH state if End.B6 fails late	486cdf21583e	bpf: add End.DT6 action to bpf_lwt_seg6_action helper	backport		net/core/filter.c
 built	conflict	4314a44564eb	bpf: Fix out-of-bounds read in bpf_patch_call_args()	1ea47e01ad6e	bpf: add support for bpf_call to interpreter	backport		include/linux/bpf.h kernel/bpf/core.c kernel/bpf/fixups.c
+built	clean	434324c611a9	bpf: Pull the inner header for End.DT6 in End.BPF	486cdf21583e	bpf: add End.DT6 action to bpf_lwt_seg6_action helper	backport		net/core/filter.c
 built	conflict	435b08ec0094	bpf, test, cgroup: Use sk_{alloc,free} for test cases	2cb494a36c98	bpf: add tests for direct packet access from CGROUP_SKB	backport		net/bpf/test_run.c
 built	conflict	436901649731	bpf: cpumap: Fix memory leak in cpu_map_update_elem	6710e1126934	bpf: introduce new bpf cpu map type BPF_MAP_TYPE_CPUMAP	backport		kernel/bpf/cpumap.c
 built	conflict	4540aed51b12	bpf: Enforce expected_attach_type for tailcall compatibility	5e43f899b03a	bpf: Check attach type at prog load time	backport		include/linux/bpf.h kernel/bpf/core.c
@@ -63,12 +62,8 @@ built	conflict	458bf2f224f0	net: core: support XDP generic on stacked devices.	d
 built	conflict	46df3d209db0	trace: reenable preemption if we modify the ip	9802d86585db	bpf: add a bpf_override_function helper	backport		kernel/trace/trace_kprobe.c
 built	clean	481c2265286e	bpf: tcp: Fix type confusion in bpf_tcp_sock().	655a51e536c0	bpf: Add struct bpf_tcp_sock and BPF_FUNC_tcp_sock	backport		net/core/filter.c
 built	clean	49e9d1a9faf2	workqueue: Add RCU annotation for pwq list walk	28875945ba98	rcu: Add support for consolidated-RCU reader checking	backport		kernel/workqueue.c
-built	conflict	4b3786a6c539	bpf: Zero former ARG_PTR_TO_{LONG,INT} args in case of error	d7a4cb9b6705	bpf: Introduce bpf_strtol and bpf_strtoul helpers	backport		kernel/bpf/helpers.c kernel/bpf/syscall.c net/core/filter.c
-built	conflict	4bb7ea946a37	bpf: fix precision backtracking instruction iteration	b5dc0163d8fd	bpf: precise scalar_value tracking	backport		kernel/bpf/verifier.c
 built	conflict	4da3b7b8b50f	net: xps: reject an out of range traffic class	184c449f91fe	net: Add support for XPS with QoS via traffic classes	backport		net/core/dev.c
 built	clean	5125e757e62f	bpf: Clear the probe_addr for uprobe	41bdc4b40ed6	bpf: introduce bpf subcommand BPF_TASK_FD_QUERY	backport		include/linux/trace_events.h kernel/trace/bpf_trace.c kernel/trace/trace_uprobe.c
-built	conflict	529409ea92d5	bpf: propagate precision across all frames, not just the last one	a3ce685dd01a	bpf: fix precision tracking	backport		kernel/bpf/verifier.c
-built	conflict	52c2b005a3c1	bpf: take into account liveness when propagating precision	a3ce685dd01a	bpf: fix precision tracking	backport		kernel/bpf/verifier.c
 built	conflict	532d6b36b2bf	bpf: Handle in-place update for full LPM trie correctly	b95a5c4db09b	bpf: add a longest prefix match trie map implementation	backport		kernel/bpf/lpm_trie.c
 built	clean	55472017a421	tcp: Set INET_ECN_xmit configuration in tcp_reinit_congestion_control	91b5b21c7c16	bpf: Add support for changing congestion control	backport		net/ipv4/tcp_cong.c
 built	conflict	576afddfee8d	bpf: Fix OOB in pcpu_init_value	d3bec0138bfb	bpf: Zero-fill re-used per-cpu map element	backport		kernel/bpf/hashtab.c
@@ -89,7 +84,6 @@ built	clean	6b1340cc00ed	tracing: Fix race in perf_trace_buf initialization	e12f
 built	conflict	6e8cfd6d9d80	tun: Fix use-after-free on XDP_TX	735fc4054b3a	xdp: change ndo_xdp_xmit API to support bulking	backport		drivers/net/tun.c
 built	clean	6fabca2fc94d	bpf: Explicitly check accesses to bpf_sock_addr	1cedee13d25a	bpf: Hooks for sys_sendmsg	backport		net/core/filter.c
 built	conflict	704b862f9efd	mm/vmalloc.c: don't unconditonally use __GFP_HIGHMEM	19809c2da28a	mm, vmalloc: use __GFP_HIGHMEM implicitly	backport		mm/vmalloc.c
-built	conflict	71f656a50176	bpf: Fix to preserve reg parent/live fields when copying range info	679c782de14b	bpf/verifier: per-register parent pointers	backport		kernel/bpf/verifier.c
 built	conflict	75f8cf22463d	bpf: Fix out-of-bounds read of rtt_min in sock_ops	44f0e43037d3	bpf: Add support for reading sk_state and more	backport		net/core/filter.c
 built	clean	768fb61fcc13	bpf: Fix bpf_event_output re-entry issue	a5a3a828cd00	bpf: add perf event notificaton support for sock_ops	backport		kernel/trace/bpf_trace.c
 built	conflict	78c3aff834f7	bpf: fix sysctl.c warning	492ecee892c2	bpf: enable program stats	backport		kernel/sysctl.c
@@ -106,9 +100,9 @@ built	conflict	871019b22d1b	net: set SOCK_RCU_FREE before inserting socket into 
 built	conflict	87ac0d600943	bpf: fix potential 32-bit overflow when accessing ARRAY map element	c85d69135a91	bpf: move memory size checks to bpf_map_charge_init()	backport		kernel/bpf/arraymap.c
 built	conflict	88d6f130e563	bpf: Improve bucket_log calculation logic	6ac99e8f23d4	bpf: Introduce bpf sk local storage	backport		net/core/bpf_sk_storage.c
 built	conflict	89edbdfc5d03	bpf: Fix NMI/tracepoint re-entry deadlock on lru locks	3a08c2fd7634	bpf: LRU List	backport		kernel/bpf/bpf_lru_list.c kernel/bpf/bpf_lru_list.h
-built	conflict	8c11ea5ce13d	bpf, arm64: fix getting subprog addr from aux for calls	db496944fdaa	bpf: arm64: add JIT support for multi-function programs	backport		arch/arm64/net/bpf_jit_comp.c
 built	conflict	8c7224245557	tracing/uprobes: Check the return value of kstrdup() for tu->filename	33ea4b24277b	perf/core: Implement the 'perf_uprobe' PMU	backport		kernel/trace/trace_uprobe.c
 built	clean	8e41f8726dcf	mm/vmalloc: Fix calculation of direct map addr range	868b104d7379	mm/vmalloc: Add flag for freeing of special permsissions	backport		mm/vmalloc.c
+built	conflict	8e83d5359644	bpf: Fix stale offload->prog pointer after realloc	ab3f0063c48c	bpf: offload: add infrastructure for loading programs for a specific netdev	backport		include/linux/bpf.h kernel/bpf/core.c kernel/bpf/offload.c
 built	conflict	90545cdc3f2b	tcp, ulp: fix leftover icsk_ulp_ops preventing sock from reattach	1aa12bdf1bfb	bpf: sockmap, add sock close() hook to remove socks	backport		net/ipv4/tcp_ulp.c
 built	conflict	9594dc3c7e71	bpf: fix nested bpf tracepoints with per-cpu data	20b9d7ac4852	bpf: avoid excessive stack usage for perf_sample_data	backport		kernel/trace/bpf_trace.c
 built	conflict	95fa145479fb	bpf: sockmap/tls, close can race with map free	02c558b2d5d6	bpf: sockmap, support for msg_peek in sk_msg with redirect ingress	backport		include/linux/skmsg.h include/net/tcp.h net/core/skmsg.c net/ipv4/tcp_ulp.c net/tls/tls_main.c
@@ -116,19 +110,19 @@ built	conflict	9724160b3942	bpf/btf: Accept function names that contain dots	1dc
 built	conflict	972787479ee7	bpf: test_run: Fix the null pointer dereference issue in bpf_lwt_xmit_push_encap	52f278774e79	bpf: implement BPF_LWT_ENCAP_IP mode in bpf_lwt_push_encap	backport		net/bpf/test_run.c
 built	conflict	98da8ce87dd5	soreuseport: Clear sk_reuseport_cb before failure in sk_clone().	5dc4c4b7d4e8	bpf: Introduce BPF_MAP_TYPE_REUSEPORT_SOCKARRAY	backport		net/core/sock.c
 built	conflict	990348e5bb45	tcp: clear sock_ops cb flags before force-closing a child socket	d44874910a26	bpf: Add BPF_SOCK_OPS_STATE_CB	backport		include/net/tcp.h net/ipv4/inet_connection_sock.c
+built	conflict	993d0b287e2e	usercopy: Handle vm_map_ram() areas	0aef499f3172	mm/usercopy: Detect vmalloc overruns	backport		include/linux/vmalloc.h mm/usercopy.c mm/vmalloc.c
 built	conflict	99bda1ecbd56	flow_dissector: avoid u16 truncation of skb->len when computing thoff	d0c081b49137	flow_dissector: properly cap thoff field	backport		net/core/flow_dissector.c
 built	conflict	9a5cb79762e0	bpf: Fix bpf socket lookup from tc/xdp to respect socket VRF bindings	6acc9b432e67	bpf: Add helper to retrieve socket in BPF	backport		include/linux/netdevice.h net/core/filter.c
 built	clean	9b74ebb2b0f2	cpumap: Use non-locked version __ptr_ring_consume_batched	77361825bb01	bpf: cpumap use ptr_ring_consume_batched	backport		kernel/bpf/cpumap.c
 built	conflict	9b75dbeb36fc	bpf, lpm: Fix check prefixlen before walking trie	b95a5c4db09b	bpf: add a longest prefix match trie map implementation	backport		kernel/bpf/lpm_trie.c
-built	conflict	9c7c48d6a1e2	bpf: Fix subprog names in stack traces.	7337224fc150	bpf: Improve the info.func_info and info.func_info_rec_size behavior	backport		kernel/bpf/verifier.c
 built	clean	a0c584fc1805	bpf: Fix use-after-free in offloaded map/prog info fill	52775b33bb50	bpf: offload: report device information about offloaded maps	backport		kernel/bpf/offload.c
 built	clean	a171fbec88a2	lwt: Check LWTUNNEL_XMIT_CONTINUE strictly	3a0af8fd61f9	bpf: BPF for lightweight tunnel infrastructure	backport		include/net/lwtunnel.h net/ipv4/ip_output.c net/ipv6/ip6_output.c
 built	clean	a4837980fd9f	net: revert default NAPI poll timeout to 2 jiffies	7acf8a1e8a28	Replace 2 jiffies with sysctl netdev_budget_usecs to enable softirq tuning	backport		net/core/dev.c
 built	clean	a48802fb2cd2	bpf, sockmap: fix integer overflow in bpf_msg_pop_data() bounds check	7246d8ed4dcc	bpf: helper to pop data from messages	backport		net/core/filter.c
-built	conflict	a4c6f804b44c	bpf: Preserve pointer state for commuted arithmetic	f4d7e40a5b71	bpf: introduce function calls (verification)	backport		kernel/bpf/verifier.c
+built	conflict	a5f4d9df1f7b	mm: usercopy: move the virt_addr_valid() below the is_vmalloc_addr()	0aef499f3172	mm/usercopy: Detect vmalloc overruns	backport		mm/usercopy.c
 built	conflict	a984705ca88b	tcp: annotate data-races around tp->dsack_dups	7e10b6554ff2	tcp: add dsack blocks received stats	backport		net/ipv4/tcp.c net/ipv4/tcp_input.c
-built	conflict	aa30eb3260b2	bpf: Force checkpoint when jmp history is too long	2589726d12a1	bpf: introduce bounded loops	backport		kernel/bpf/verifier.c
 built	conflict	ad1e03b2b3d4	core: Don't skip generic XDP program execution for cloned SKBs	d445516966dc	net: xdp: support xdp generic on virtual devices	backport		net/core/dev.c
+built	clean	af873495cbcb	bpf: Fix verifier WARN on narrow read of bpf_tcp_sock u64 fields	655a51e536c0	bpf: Add struct bpf_tcp_sock and BPF_FUNC_tcp_sock	backport		net/core/filter.c
 built	conflict	afec62cd0a41	flow_dissector: use RCU protection to fetch dev_net()	9b52e3f267a6	flow_dissector: handle no-skb use case	backport		net/core/flow_dissector.c
 built	conflict	b1a47b2708d4	bpf: Disable preemption in __bpf_get_stack	c195651e565a	bpf: add bpf_get_stack helper	backport		kernel/bpf/stackmap.c
 built	conflict	ba9db6f907ac	net: clear the dst when changing skb protocol	1b00e0dfe7d0	bpf: update skb->protocol in bpf_skb_net_grow	backport		net/core/filter.c
@@ -137,7 +131,7 @@ built	clean	c13fda93aca1	bpf: Remove tst_run from lwt_seg6local_prog_ops.	004d4b
 built	conflict	c180188ec022	net: set the minimum for net_hotdata.netdev_budget_usecs	7acf8a1e8a28	Replace 2 jiffies with sysctl netdev_budget_usecs to enable softirq tuning	backport		net/core/sysctl_net_core.c
 built	conflict	c889a99a21bf	net: prevent address rewrite in kernel_bind()	4fbac77d2d09	bpf: Hooks for sys_bind	backport		net/netfilter/ipvs/ip_vs_sync.c net/rds/tcp_connect.c net/rds/tcp_listen.c net/socket.c
 built	conflict	c9a368f1c0fb	bpf: net: Avoid incorrect bpf_sk_reuseport_detach call	5dc4c4b7d4e8	bpf: Introduce BPF_MAP_TYPE_REUSEPORT_SOCKARRAY	backport		include/net/sock.h kernel/bpf/reuseport_array.c
-built	clean	d1d53aa30ab3	bpf: Fix stack slot index in nospec checks	2039f26f3aca	bpf: Fix leakage due to insufficient speculative store bypass mitigation	backport		kernel/bpf/verifier.c
+built	conflict	ccb88db8dac8	bpf: Don't hand out a linked element as extra element	8c290e60fa2a	bpf: fix hashmap extra_elems logic	backport		kernel/bpf/hashtab.c
 built	conflict	d1f9f79fa2af	net: let net.core.dev_weight always be non-zero	3d48b53fb2ae	net: dev_weight: TX/RX orthogonality	backport		net/core/sysctl_net_core.c
 built	conflict	d836f5c69d87	net: rtnetlink: validate IFLA_MTU attribute in rtnl_create_link()	61e84623ace3	net: centralize net_device min/max MTU checking	backport		include/linux/netdevice.h net/core/dev.c net/core/rtnetlink.c
 built	clean	d85e8be2a5a0	net: Fix missing meta data in skb with vlan packet	de8f3a83b0a0	bpf: add meta pointer for direct access	backport		net/core/skbuff.c
@@ -145,24 +139,22 @@ built	clean	db38de39684d	flow_dissector: Fix potential use-after-free on BPF_PRO
 built	clean	dc633700f00f	net/af_packet: check len when min_header_len equals to 0	fd1894224407	bpf: Don't redirect packets with invalid pkt_len	backport		net/packet/af_packet.c
 built	conflict	e09299225d5b	bpf: Reject narrower access to pointer ctx fields	f96da09473b5	bpf: simplify narrower ctx access	backport		kernel/bpf/cgroup.c net/core/filter.c
 built	conflict	e16ec34039c7	bpf: fix potential deadlock in bpf_prog_register	c4f6699dfcb8	bpf: introduce BPF_RAW_TRACEPOINT	backport		kernel/trace/bpf_trace.c
-built	conflict	e47304232b37	bpf: Fix cgroup local storage prog tracking	de9cbbaadba5	bpf: introduce cgroup storage maps	backport		include/linux/bpf-cgroup.h kernel/bpf/core.c kernel/bpf/local_storage.c kernel/bpf/verifier.c
 built	clean	e4a62833adff	bpf: Disallow bpf_skb_pull_data() for LWT_SEG6LOCAL	004d4b274e2a	ipv6: sr: Add seg6local action End.BPF	backport		net/core/filter.c
 built	clean	e5f635edd393	bpf: Fix precedence bug in convert_bpf_ld_abs alignment check	e0cea7ce988c	bpf: implement ld_abs/ld_ind in native bpf	backport		net/core/filter.c
-built	conflict	e60b0d12a95d	bpf: Don't promote bogus looking registers after null check.	f1174f77b50c	bpf/verifier: rework value tracking	backport		kernel/bpf/verifier.c
 built	clean	e65a4955b0bb	net: check type when freeing metadata dst	3fcece12bc1b	net: store port/representator id in metadata_dst	backport		net/core/dst.c
+built	clean	e8b084646b94	bpf: Validate the SRH which End.DT6 uncovers in End.BPF	486cdf21583e	bpf: add End.DT6 action to bpf_lwt_seg6_action helper	backport		net/core/filter.c
 built	conflict	e8e36984080b	bpf: Fix [::] -> [::1] rewrite in sys_sendmsg	1cedee13d25a	bpf: Hooks for sys_sendmsg	backport		net/ipv6/udp.c
-built	conflict	eabe518de533	bpf: enforce precision of R0 on program/async callback return	b5dc0163d8fd	bpf: precise scalar_value tracking	backport		kernel/bpf/verifier.c
 built	clean	ead3d7b2b6af	bpf: Check flow_dissector ctx accesses are aligned	d58e468b1112	flow_dissector: implements flow dissector BPF hook	backport		net/core/filter.c
-built	conflict	eb86559a691c	bpf: Fix memory leaks in __check_func_call	fd978bf7fd31	bpf: Add reference tracking to verifier	backport		kernel/bpf/verifier.c
-built	conflict	ee114dd64c00	bpf: Fix verifier jsgt branch analysis on max bound	4f7b3e82589e	bpf: improve verifier branch analysis	backport		kernel/bpf/verifier.c
 built	conflict	ee2a098851bf	bpf: Adjust BPF stack helper functions to accommodate skip > 0	c195651e565a	bpf: add bpf_get_stack helper	backport		include/uapi/linux/bpf.h kernel/bpf/stackmap.c
 built	conflict	ee43e957ce2e	tcp: annotate data-races around tp->bytes_sent	ba113c3aa79a	tcp: add data bytes sent stats	backport		net/ipv4/tcp.c net/ipv4/tcp_output.c
+built	conflict	ee4f44e0e3c8	bpf: Look at all 64 bits of a BPF_JSET mask on 32-bit	960ea056561a	bpf: verifier: teach the verifier to reason about the BPF_JSET instruction	backport		kernel/bpf/verifier.c
 built	conflict	f12dd75959b0	bpf: net: Set sk_bpf_storage back to NULL for cloned sk	6ac99e8f23d4	bpf: Introduce bpf sk local storage	backport		net/core/sock.c
-built	conflict	f1db20814af5	bpf: Fix wrong reg type conversion in release_reference()	fd978bf7fd31	bpf: Add reference tracking to verifier	backport		kernel/bpf/verifier.c
 built	conflict	f202578efc73	flow_dissector: avoid u16 truncation of hlen in bpf_flow_dissect()	d58e468b1112	flow_dissector: implements flow dissector BPF hook	backport		net/core/flow_dissector.c
 built	conflict	f3dda7a679df	bpf: net: Avoid copying sk_user_data of reuseport_array during sk_clone	5dc4c4b7d4e8	bpf: Introduce BPF_MAP_TYPE_REUSEPORT_SOCKARRAY	backport		kernel/bpf/reuseport_array.c
 built	clean	f3f34ca45b96	bpf, sockmap: Fix wrong rsge offset in bpf_msg_push_data()	6fff607e2f14	bpf: sk_msg program helper bpf_msg_push_data	backport		net/core/filter.c
+built	conflict	f655badf2a8f	bpf: fix propagate_precision() logic for inner frames	529409ea92d5	bpf: propagate precision across all frames, not just the last one	backport		kernel/bpf/verifier.c
 built	clean	f72eed9b84fb	bpf: sockmap: fix tail fragment offset in bpf_msg_push_data	6fff607e2f14	bpf: sk_msg program helper bpf_msg_push_data	backport		net/core/filter.c
+built	conflict	f99351272933	bpf, cpumap: Hold the device of frames in the queue	1c601d829ab0	bpf: cpumap xdp_buff to skb conversion and allocation	backport		kernel/bpf/cpumap.c
 built	conflict	fa123ac022e4	bpf: Verifier, refine 32bit bound in do_refine_retval_range	849fa50662fb	bpf/verifier: refine retval R0 state for bpf_get_stack helper	backport		kernel/bpf/verifier.c
 built	conflict	fa45d484c52c	net: Fix a data-race around netdev_budget_usecs.	7acf8a1e8a28	Replace 2 jiffies with sysctl netdev_budget_usecs to enable softirq tuning	backport		net/core/dev.c
 built	conflict	fa9dcacdcdf4	bpf: Fix mmap_lock leak in irq_work path	eac9153f2b58	bpf/stackmap: Fix deadlock with rq_lock in bpf_get_stack()	backport		kernel/bpf/mmap_unlock_work.h kernel/bpf/stackmap.c kernel/bpf/task_iter.c
@@ -172,12 +164,10 @@ built	conflict	fd09af010788	bpf: sock_ops ctx access may stomp registers in corn
 built	conflict	01b2885d9415	net: Save and restore msg_namelen in sock_sendmsg	86a7e0b69bd5	net: prevent rewrite of msg_name in sock_sendmsg()	backport-via-missing		net/socket.c
 built	clean	065af3554705	net: fix bpf_xdp_adjust_head regression for generic-XDP	458bf2f224f0	net: core: support XDP generic on stacked devices.	backport-via-missing		net/core/dev.c
 built	conflict	0be9ae5486cd	bpf, events: Use prog to emit ksymbol event for main program	0108a4e9f358	bpf: ensure main program has an extable	backport-via-missing		kernel/events/core.c
-built	conflict	14a3d3ef02ba	bpf: Remove MEM_UNINIT from skb/xdp MTU helpers	4b3786a6c539	bpf: Zero former ARG_PTR_TO_{LONG,INT} args in case of error	backport-via-missing		net/core/filter.c
 built	conflict	22b6034323fd	net, xdp: Update pkt_type if generic XDP changes unicast MAC	297249569932	net: fix generic XDP to handle if eth header was mangled	backport-via-missing		net/core/dev.c
 built	conflict	23f852daa4ba	bpf: Fix stackmap overflow check in __bpf_get_stackid()	ee2a098851bf	bpf: Adjust BPF stack helper functions to accommodate skip > 0	backport-via-missing		kernel/bpf/stackmap.c
 built	conflict	325f3fb551f8	kprobes: Fix possible use-after-free issue on kprobe registration	28f6c37a2910	kprobes: Forbid probing on trampoline and BPF code areas	backport-via-missing		kernel/kprobes.c
 built	conflict	33bfe20dd711	bpf: Sockmap/tls, push write_space updates through ulp updates	95fa145479fb	bpf: sockmap/tls, close can race with map free	backport-via-missing		include/linux/skmsg.h include/net/tcp.h net/ipv4/tcp_ulp.c net/tls/tls_main.c
-built	conflict	34f0677e7afd	bpf: fix precision propagation verbose logging	529409ea92d5	bpf: propagate precision across all frames, not just the last one	backport-via-missing		kernel/bpf/verifier.c
 built	conflict	36ccdf85829a	net, xsk: Avoid taking multiple skbuff references	642e450b6b59	xsk: Do not discard packet when NETDEV_TX_BUSY	backport-via-missing		include/linux/netdevice.h net/core/dev.c net/xdp/xsk.c
 built	conflict	3880cdbed1c4	bpf: Fix WARN() in get_bpf_raw_tp_regs	9594dc3c7e71	bpf: fix nested bpf tracepoints with per-cpu data	backport-via-missing		kernel/trace/bpf_trace.c
 built	conflict	6fa6d28051e9	lib/strncpy_from_user.c: Mask out bytes after NUL terminator.	6ae08ae3dea2	bpf: Add probe_read_{user, kernel} and probe_read_{user, kernel}_str helpers	backport-via-missing		kernel/trace/bpf_trace.c lib/strncpy_from_user.c
@@ -185,8 +175,6 @@ built	conflict	83540fbc8812	tracing/perf: Use strndup_user() instead of buggy op
 built	conflict	8ccc99362b60	net/ulp: use consistent error code when blocking ULP	2c02d41d71f9	net/ulp: prevent ULP without clone op from entering the LISTEN status	backport-via-missing		net/ipv4/tcp_ulp.c
 built	conflict	94ce3b64c62d	net/tls: Use RCU API to access tls_ctx->netdev	c55dcdd435aa	net/tls: Fix use-after-free after the TLS device goes down and up	backport-via-missing		drivers/net/bonding/bond_main.c drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c include/net/tls.h net/tls/tls_device.c net/tls/tls_device_fallback.c
 built	conflict	978c4486cca5	bpf,perf: Fix invalid prog_array access in perf_event_detach_bpf_prog	0ee288e69d03	bpf,perf: Fix perf_event_detach_bpf_prog error handling	backport-via-missing		kernel/trace/bpf_trace.c
-built	conflict	98e948fb60d4	bpf: Allow delete from sockmap/sockhash only if update is allowed	ff9105993240	bpf, sockmap: Prevent lock inversion deadlock in map delete elem	backport-via-missing		kernel/bpf/verifier.c
-built	conflict	f655badf2a8f	bpf: fix propagate_precision() logic for inner frames	529409ea92d5	bpf: propagate precision across all frames, not just the last one	backport-via-missing		kernel/bpf/verifier.c
 built	conflict	f8414a8d886b	net: xdp: pull ethernet header off packet after computing skb->protocol	297249569932	net: fix generic XDP to handle if eth header was mangled	backport-via-missing	7f9bf6e82461	net/core/dev.c
 built	-	0113d9c9d1cc	ipv4: fix null-deref in ipv4_link_failure	ed0de45a1008	ipv4: recompile ip options in ipv4_link_failure	base		net/ipv4/route.c
 built	-	0135c482fa97	f2fs: fix error path handling in truncate_dnode()	7735730d39d7	f2fs: fix to propagate error from __get_meta_page()	base		fs/f2fs/node.c
@@ -248,6 +236,7 @@ built	-	17605afaae82	scsi: core: Avoid that a kernel warning appears during syst
 built	-	176ef3c4dea3	f2fs: replace ktype default_attrs with default_groups	fef4129ec2e6	f2fs: fix to be aware discard/preflush/dio command in is_idle()	base		fs/f2fs/sysfs.c
 built	-	17a9be317475	initramfs: Always do fput() and load modules after rootfs populate	08865514805d	initramfs: finish fput() before accessing any binary from initramfs	base		init/initramfs.c
 built	-	19258d05b619	random: modernize documentation comment on get_random_bytes()	f5b98461cb81	random: use chacha20 for get_random_int/long	base		drivers/char/random.c
+built	-	195bbe5e1c29	regulator: core: Fix rdev reference leak in regulator_resolve_supply()	4b639e254d3d	regulator: avoid resolve_supply() infinite recursion	base		drivers/regulator/core.c
 built	-	1a63dcd8765b	softirq: Reorder trace_softirqs_on to prevent lockdep splat	d59158162e03	tracing: Add support for preempt and irq enable/disable events	base		kernel/softirq.c
 built	-	1c024241d018	xhci: Improve the XHCI system resume time	253f588c70f6	xhci: Improve detection of device initiated wake signal.	base		drivers/usb/host/xhci.c
 built	-	1c6ceeee6ebb	drm/atomic: Fix memleak on ERESTARTSYS during non-blocking commits	24835e442f28	drm: reference count event->completion	base		drivers/gpu/drm/drm_atomic_helper.c include/drm/drm_atomic.h
@@ -334,6 +323,7 @@ built	-	44585f7bc0cb	psi: fix "defined but not used" warnings when CONFIG_PROC_F
 built	-	44d257e9012e	USB: dwc3: fix runtime pm imbalance on unbind	266d0493900a	usb: dwc3: core: don't trigger runtime pm when remove driver	base		drivers/usb/dwc3/core.c
 built	-	45a36a18d019	xfrmi: drop ignore_df check before updating pmtu	f203b76d7809	xfrm: Add virtual xfrm interfaces	base		net/xfrm/xfrm_interface.c
 built	-	460b360104d5	net_sched: fix a crash in tc_new_tfilter()	e368fdb61d8e	net: sched: use Qdisc rcu API instead of relying on rtnl lock	base		net/sched/cls_api.c
+built	-	4719b69bb66b	net: phy: restore the interrupt when the generic bind cycle fails	6d9f66ac7fec	net: phy: Fix PHY module checks and NULL deref in phy_attach_direct()	base		drivers/net/phy/phy_device.c
 built	-	48145a57d4bb	ndisc: ndisc_send_redirect() must use dev_get_by_index_rcu()	2f17becfbea5	vrf: check the original netdevice for generating redirect	base		net/ipv6/ndisc.c
 built	-	48f486e13ffd	net: xfrm: fix memory leak in xfrm_user_policy()	96392ee5a13b	xfrm/compat: Translate 32-bit user_policy from sockptr	base		net/xfrm/xfrm_state.c
 built	-	496bb99b7e66	ext4: fix the might_sleep() warnings in kvfree()	7c990728b99e	ext4: fix potential race between s_flex_groups online resizing and access	base		fs/ext4/mballoc.c fs/ext4/super.c
@@ -784,6 +774,7 @@ header	conflict	ee62ce7a1d90	page_pool: Track DMA-mapped pages and unmap them wh
 header	conflict	f09ced4053bc	xsk: Fix race in SKB mode transmit with shared cq	35fcde7f8deb	xsk: support for Tx	backport		include/net/xdp_sock.h include/net/xsk_buff_pool.h net/xdp/xsk.c net/xdp/xsk_buff_pool.c
 header	conflict	f170acda7ffa	bpf: Fix a typo of reuseport map in bpf.h.	2dbb9b9e6df6	bpf: Introduce BPF_PROG_TYPE_SK_REUSEPORT	backport		include/uapi/linux/bpf.h tools/include/uapi/linux/bpf.h
 header	conflict	f941eadd8d6d	bpf: Avoid races in __bpf_prog_run() for 32bit arches	492ecee892c2	bpf: enable program stats	backport		include/linux/filter.h
+header	clean	fa87b91c94a8	include/linux/mm.h: fix typo in VM_MPX definition	df3735c5b40f	x86,mpx: make mpx depend on x86-64 to free up VMA flag	backport		include/linux/mm.h
 header	conflict	fc6d80eb5044	tcp: prevent collapsing skbs across boundary in rtx queue	e8f69799810c	net/tls: Add generic NIC offload infrastructure	backport		include/net/tcp.h
 header	conflict	fd3ba21478d0	net: fix xdp_rxq_info build issue when CONFIG_SYSFS is not set	e817f85652c1	xdp: generic XDP handling of xdp_rxq_info	backport		include/linux/netdevice.h
 header	conflict	95920c2ed02b	page_pool: Fix PP_MAGIC_MASK to avoid crashing on some 32-bit arches	ee62ce7a1d90	page_pool: Track DMA-mapped pages and unmap them when destroying the pool	backport-via-missing		include/linux/mm.h net/core/page_pool.c
@@ -827,6 +818,7 @@ header	-	4578be130a64	overflow: Correct check_shl_overflow() comment	0c66847793d
 header	-	47227d27e2fc	string.h: fix incompatibility between FORTIFY_SOURCE and KASAN	6974f0c4555e	include/linux/string.h: add the option of fortified string.h functions	base		include/linux/string.h
 header	-	4d004099a668	lockdep: Fix lockdep recursion	a21ee6055c30	lockdep: Change hardirq{s_enabled,_context} to per-cpu variables	base		include/linux/lockdep.h kernel/locking/lockdep.c
 header	-	51e50fbd3efc	psi: fix "no previous prototype" warnings when CONFIG_CGROUPS=n	0e94682b73bf	psi: introduce psi monitor	base		include/linux/psi.h
+header	-	52ffeaa358d1	sctp: re-point retained control chunks on association migration	d04adf1b3551	sctp: reset owner sk for data chunks on out queues when migrating a sock	base		include/net/sctp/sm.h net/sctp/sm_make_chunk.c net/sctp/socket.c
 header	-	5393802c94e0	genalloc.h: fix htmldocs warning	52fbf1134d47	lib/genalloc.c: fix allocation of aligned buffer from non-aligned chunk	base		include/linux/genalloc.h
 header	-	55149d06534a	objtool, compiler.h: Fix __unreachable section relocation size	d1091c7fa3d5	objtool: Improve detection of BUG() and other dead ends	base		include/linux/compiler-gcc.h
 header	-	57a0ef02fefa	ima: Reset IMA_NONACTION_RULE_FLAGS after post_setattr	0d73a55208e9	ima: re-introduce own integrity cache lock	base		security/integrity/ima/ima.h security/integrity/ima/ima_main.c
@@ -915,6 +907,7 @@ header	-	af955bf15d2c	crypto: af_alg - Fix race around ctx->rcvused by making it
 header	-	baffd723e44d	lockdep: Revert "lockdep: Use raw_cpu_*() for per-cpu variables"	fddf9055a60d	lockdep: Use raw_cpu_*() for per-cpu variables	base-via-missing		include/linux/lockdep.h
 header	-	e269d79c7d35	net: missing check virtio	0f6925b3e8da	virtio_net: Do not pull payload in skb->head	base-via-missing		include/linux/virtio_net.h
 header	-	ec1e1b610917	objtool: Prevent GCC from merging annotate_unreachable(), take 2	3d1e236022cc	objtool: Prevent GCC from merging annotate_unreachable()	base-via-missing		include/linux/compiler.h
+header	-	fe7ca0c13f7d	ipv4: fix IP ID reuse in ip_select_ident_segs()	f866fbc842de	ipv4: fix data-races around inet->inet_id	base-via-missing		include/net/ip.h
 other	clean	7d32e69310d6	kbuild, btf: Fix dependencies for DEBUG_INFO_BTF	e83b9f55448a	kbuild: add ability to generate BTF type info for vmlinux	backport		lib/Kconfig.debug
 other	conflict	a4412fdd49dc	error-injection: Add prompt for function error injection	540adea3809f	error-injection: Separate error-injection from kprobe	backport		lib/Kconfig.debug
 other	-	1188e2a9ef22	cfg80211: don't print log output for building shipped-certs	90a53e4432b1	cfg80211: implement regdb signature checking	base		net/wireless/Makefile
@@ -1159,6 +1152,7 @@ unbuilt	-	2dd23cc4d0e6	usb: mon: Fix atomicity violation in mon_bin_vma_fault	19
 unbuilt	-	2dd2a1740ee1	libnvdimm/namespace: Fix reaping of invalidated block-window-namespace labels	c4703ce11c23	libnvdimm/namespace: Fix label tracking error	base		drivers/nvdimm/label.c
 unbuilt	-	2ee3757424be	KVM: Destroy I/O bus devices on unregister failure _after_ sync'ing SRCU	f65886606c2d	KVM: fix memory leak in kvm_io_bus_unregister_dev()	base		virt/kvm/kvm_main.c
 unbuilt	-	2f02fd3fa13e	fanotify: fix ignore mask logic for events on child and on dir	b469e7e47c8a	fanotify: fix handling of events on child sub-directory	base		fs/notify/fanotify/fanotify.c
+unbuilt	-	2f90facc7b94	crypto: algif_skcipher - rewind rounded output bytes	e870456d8e7c	crypto: algif_skcipher - overhaul memory management	base		crypto/algif_skcipher.c
 unbuilt	-	306381aec7c2	net_sched: fix a memory leak in atm_tc_init()	6529eaba33f0	net: sched: introduce tcf block infractructure	base		net/sched/sch_atm.c
 unbuilt	-	309b66970ee2	net: openvswitch: do not free vport if register_netdevice() is failed.	cf124db566e6	net: Fix inconsistent teardown and release of private netdev state.	base		net/openvswitch/vport-internal_dev.c
 unbuilt	-	30adce93d5c4	usb: gadget: f_printer: take kref only for successful open	e8d5f92b8d30	usb: gadget: function: printer: fix use-after-free in __lock_acquire	base		drivers/usb/gadget/function/f_printer.c
@@ -1236,6 +1230,7 @@ unbuilt	-	628980e5c8f0	mac80211_hwsim: fix locking when iterating radios during 
 unbuilt	-	62ec0d8c4f33	mm: fix BUG_ON() in vmf_insert_pfn_pud() from VM_MIXEDMAP removal	e1fb4a086495	dax: remove VM_MIXEDMAP for fsdax and device dax	base		mm/huge_memory.c
 unbuilt	-	6371a07148ee	ocfs2: fix buffer head management in ocfs2_read_blocks()	cf76c78595ca	ocfs2: don't put and assigning null to bh allocated outside	base		fs/ocfs2/buffer_head_io.c
 unbuilt	-	63ba2d07b4be	mcb: fix error handling for different scenarios when parsing	728ac3389296	mcb: mcb-parse: fix error handing in chameleon_parse_gdd()	base		drivers/mcb/mcb-core.c drivers/mcb/mcb-parse.c
+unbuilt	-	67aefeccc410	crypto: ccp - kill v5 IRQ tasklet during teardown	6263b51eb319	crypto: ccp - Change ISR handler method for a v5 CCP	base		drivers/crypto/ccp/ccp-dev-v5.c
 unbuilt	-	68dbe80f5b51	crypto: ccp - Release dma channels before dmaengine unrgister	54cce8ecb925	crypto: ccp - ccp_dmaengine_unregister release dma channels	base		drivers/crypto/ccp/ccp-dmaengine.c
 unbuilt	-	69ae94725f4f	tipc: fix memory leak in tipc_link_xmit	365ad353c256	tipc: reduce risk of user starvation during link congestion	base		net/tipc/link.c
 unbuilt	-	6a45ece4c9af	vfio/pci: Handle concurrent vma faults	11c4cd07ba11	vfio-pci: Fault mmaps to enable vma tracking	base		drivers/vfio/pci/vfio_pci.c
@@ -1349,6 +1344,7 @@ unbuilt	-	a3b5f242997a	mmc: vub300: fix use-after-free on probe failure	0613ad24
 unbuilt	-	a3bdcdd022c6	HID: hidraw: fix a problem of memory leak in hidraw_release()	a5623a203cff	HID: hidraw: fix memory leak in hidraw_release()	base		drivers/hid/hidraw.c
 unbuilt	-	a50e5fb8db83	mac80211: fix a kernel panic when TXing after TXQ teardown	77cfaf52eca5	mac80211: Run TXQ teardown code before de-registering interfaces	base		net/mac80211/iface.c net/mac80211/main.c
 unbuilt	-	a57ac7acdcc1	firmware: qemu_fw_cfg: fix NULL-pointer deref on duplicate entries	fe3c60684377	firmware: Fix a reference count leak.	base		drivers/firmware/qemu_fw_cfg.c
+unbuilt	-	a61fb39759d7	udf: Make sure there's enough space for LVID implementation use field	781d2a9a2fc7	udf: Check LVID earlier	base		fs/udf/super.c
 unbuilt	-	a6f810efabfd	gcov: clang: fix the buffer overflow issue	e178a5beb369	gcov: clang support	base		kernel/gcov/clang.c
 unbuilt	-	a7583e72a5f2	ACPI: sysfs: Change ACPI_MASKABLE_GPE_MAX to 0x100	0f27cff8597d	ACPI: sysfs: Make ACPI GPE mask kernel parameter cover all GPEs	base		Documentation/admin-guide/kernel-parameters.txt drivers/acpi/sysfs.c
 unbuilt	-	a7e7edfea23f	crc-t10dif: crc_t10dif_mutex can be static	b76377543b73	crc-t10dif: Pick better transform if one becomes available	base		lib/crc-t10dif.c
@@ -1359,6 +1355,7 @@ unbuilt	-	aade8abd8b86	nvmet: avoid recursive nvmet-wq flush in nvmet_ctrl_free	
 unbuilt	-	aaf2b2480375	enic: fix incorrect MTU comparison in enic_change_mtu()	ab123fe071c9	enic: handle mtu change for vf properly	base		drivers/net/ethernet/cisco/enic/enic_main.c
 unbuilt	-	ab06cf8152da	clk: scpi: register scpi-cpufreq once and clear on failure	67bcc2c5f1da	clk: scpi: don't add cpufreq device if the scpi dvfs node is disabled	base		drivers/clk/clk-scpi.c
 unbuilt	-	abc9b4e0549b	tipc: fix retrans failure due to wrong destination	365ad353c256	tipc: reduce risk of user starvation during link congestion	base		net/tipc/socket.c
+unbuilt	-	ac1d6a65a1e1	crypto: mxs-dcp - handle zero-length skcipher requests	fadd7a6e616b	crypto: mxs-dcp - Fix AES issues	base		drivers/crypto/mxs-dcp.c
 unbuilt	-	ac5105052dc8	sctp: chunk.c: correct format string for size_t in printk	5b5e0928f742	lib/vsprintf.c: remove %Z support	base		net/sctp/chunk.c
 unbuilt	-	aced969e9bf3	mmc: rtsx_pci_sdmmc: increase power-on settling delay to 5ms	1f311c94aabd	mmc: rtsx: add 74 Clocks in power on flow	base	ff112f1ecd10	drivers/mmc/host/rtsx_pci_sdmmc.c
 unbuilt	-	ad891bb3d079	ipvs: fix ipv4 null-ptr-deref in route error path	ed0de45a1008	ipv4: recompile ip options in ipv4_link_failure	base		net/netfilter/ipvs/ip_vs_xmit.c
@@ -1377,6 +1374,7 @@ unbuilt	-	b630c781bcf6	caif: reduce stack size, again	ce6289661b14	caif: reduce 
 unbuilt	-	b69edab47f1d	kheaders: Use array declaration instead of char	43d8ce9d65a5	Provide in-kernel headers to make extending kernel easier	base		kernel/kheaders.c
 unbuilt	-	b6ebcfdcac40	usb: dwc2: fix hang during shutdown if set as peripheral	4fdf228cdf69	usb: dwc2: Fix shutdown callback in platform	base		drivers/usb/dwc2/platform.c
 unbuilt	-	b6ee89638538	xfrm/compat: prevent potential spectre v1 gadget in xfrm_xlate32_attr()	5106f4a8acff	xfrm/compat: Add 32=>64-bit messages translator	base		net/xfrm/xfrm_compat.c
+unbuilt	-	b72a639bdee6	crypto: ccp - kill v3 IRQ tasklet during teardown	7b537b24e76a	crypto: ccp - Change ISR handler method for a v3 CCP	base		drivers/crypto/ccp/ccp-dev-v3.c
 unbuilt	-	b778e0e0a167	NFSD: check truncate permission under inode lock	783112f7401f	nfsd: special case truncates some more	base		fs/nfsd/vfs.c
 unbuilt	-	b79491896151	dma-buf/sw-sync: don't enable IRQ from sync_print_obj()	a6aa8fca4d79	dma-buf/sw-sync: Reduce irqsave/irqrestore from known context	base		drivers/dma-buf/sync_debug.c
 unbuilt	-	b871cb971c68	ALSA: hda/conexant: Partial revert of a quirk for Lenovo	f83bb2592482	ALSA: hda/conexant: Add quirk for LENOVO 20149 Notebook model	base		sound/pci/hda/patch_conexant.c
@@ -1389,6 +1387,7 @@ unbuilt	-	ba0533fc163f	tipc: clear sock->sk on the failed-insert path in tipc_sk
 unbuilt	-	ba0b084ac309	Btrfs: check for the full sync flag while holding the inode lock during fsync	0c713cbab620	Btrfs: fix race between ranged fsync and writeback of adjacent ranges	base		fs/btrfs/file.c
 unbuilt	-	babc3dc9524f	netfilter: nft_set_rbtree: overlap detection with element re-addition after deletion	d2df92e98a34	netfilter: nft_set_rbtree: handle element re-addition after deletion	base		net/netfilter/nft_set_rbtree.c
 unbuilt	-	bae8a5d2e759	net: wan: farsync: Fix use-after-free bugs caused by unfinished tasklets	2f623aaf9f31	net: farsync: Fix kmemleak when rmmods farsync	base		drivers/net/wan/farsync.c
+unbuilt	-	bb38473f1bcb	floppy: return the drive state flags from the 32-bit FDGETDRVSTAT	229b53c9bf4e	take floppy compat ioctls to sodding floppy.c	base		drivers/block/floppy.c
 unbuilt	-	bbd6f0a94813	bnxt_en: Fix RX consumer index logic in the error path.	a1b0e4e684e9	bnxt_en: Improve RX consumer index validity check.	base		drivers/net/ethernet/broadcom/bnxt/bnxt.c
 unbuilt	-	bc71d8b580ba	virt_wifi: fix use-after-free in virt_wifi_newlink()	c7cdba31ed8b	mac80211-next: rtnetlink wifi simulation device	base		drivers/net/wireless/virt_wifi.c
 unbuilt	-	bd1ad3cf07d1	kasan: fix quarantine_size accounting during cache removal	64abdcb24351	kasan: eliminate long stalls during quarantine reduction	base		mm/kasan/quarantine.c
@@ -1440,6 +1439,7 @@ unbuilt	-	da094e42848e	mm/cma_debug.c: fix stack corruption due to sprintf usage
 unbuilt	-	db4d8cb9c9f2	tpm: Fix TPM 1.2 Shutdown sequence to prevent future TPM operations	d1bd4a792d39	tpm: Issue a TPM2_Shutdown for TPM2 devices.	base		drivers/char/tpm/tpm-chip.c
 unbuilt	-	dc77acfeb979	vfio/pci: clear vdev->msi_perm after freeing it on init failure	30ea32ab1951	vfio/pci: Fix potential memory leak in vfio_msi_cap_len	base		drivers/vfio/pci/vfio_pci_config.c
 unbuilt	-	dca2307ed625	brcmfmac: fix double free upon register_netdevice() failure	cf124db566e6	net: Fix inconsistent teardown and release of private netdev state.	base		drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c
+unbuilt	-	ded106036984	ALSA: aloop: Don't constrain playback params in notify mode	898dfe4687f4	ALSA: aloop: Fix racy hw constraints adjustment	base		sound/drivers/aloop.c
 unbuilt	-	def602e498a4	netfilter: nf_tables: unconditionally bump set->nelems before insertion	35d0ac9070ef	netfilter: nf_tables: fix set->nelems counting with no NLM_F_EXCL	base		net/netfilter/nf_tables_api.c
 unbuilt	-	df205b5c6328	KVM: arm64: Filter out invalid core register IDs in KVM_GET_REG_LIST	d26c25a9d19b	arm64: KVM: Tighten guest core register access from userspace	base		arch/arm64/kvm/guest.c
 unbuilt	-	dfd375864ac1	9p: Uninitialized variable in v9fs_writeback_fid()	6636b6dcc3db	9p: add refcount to p9_fid struct	base		fs/9p/fid.c
@@ -1449,6 +1449,7 @@ unbuilt	-	e117765a117d	crypto: af_alg - update correct dst SGL entry	e870456d8e7
 unbuilt	-	e19ecbf105b2	ASoC: sgtl5000: Fix VDDA and VDDIO comparison	b6319b061ba2	ASoC: sgtl5000: Fix charge pump source assignment	base		sound/soc/codecs/sgtl5000.c
 unbuilt	-	e1c08cf23172	usb: dwc2: Add missing cleanups when usb_add_gadget_udc() fails	207324a321a8	usb: dwc2: Postponed gadget registration to the udc class driver	base		drivers/usb/dwc2/platform.c
 unbuilt	-	e23265766124	sch_sfq: fix null pointer dereference on init failure	6529eaba33f0	net: sched: introduce tcf block infractructure	base		net/sched/sch_sfq.c
+unbuilt	-	e2ef553dfe92	ALSA: line6: Reject too small max packet sizes	3450121997ce	ALSA: line6: Fix write on zero-sized buffer	base		sound/usb/line6/pcm.c
 unbuilt	-	e3f0c638f428	serial: 8250: omap: Fix unpaired pm_runtime_put_sync() in omap8250_remove()	4e0f5cc65098	serial: 8250_omap: Fix probe and remove for PM runtime	base		drivers/tty/serial/8250/8250_omap.c
 unbuilt	-	e47bd937e602	clk: samsung: Mark top ISP and CAM clocks on Exynos542x as critical	318fa46cc60d	clk/samsung: exynos542x: mark some clocks as critical	base		drivers/clk/samsung/clk-exynos5420.c
 unbuilt	-	e4a718a3a47e	tee: fix NULL pointer dereference in tee_shm_put	dfd0743f1d9e	tee: handle lookup of shm with reference count 0	base		drivers/tee/tee_shm.c
@@ -1484,6 +1485,7 @@ unbuilt	-	f1b4e32aca08	can: bcm: use call_rcu() instead of costly synchronize_rc
 unbuilt	-	f275a4659484	i2c: bcm2835: Clear current buffer pointers and counts after a transfer	e2474541032d	i2c: bcm2835: Fix hang for writing messages larger than 16 bytes	base		drivers/i2c/busses/i2c-bcm2835.c
 unbuilt	-	f2e19b36593c	nfc: st21nfca: fix incorrect sizing calculations in EVT_TRANSACTION	4fbcc1a4cb20	nfc: st21nfca: Fix potential buffer overflows in EVT_TRANSACTION	base		drivers/nfc/st21nfca/se.c
 unbuilt	-	f36938aa7440	ALSA: hda/realtek - Remove now-unnecessary XPS 13 headphone noise fixups	e4c9fd10eb21	ALSA: hda - Apply headphone noise quirk for another Dell XPS 13 variant	base		Documentation/sound/hd-audio/models.rst sound/pci/hda/patch_realtek.c
+unbuilt	-	f3d29dc9224b	wifi: mac80211: clear fragment cache entry 'is_protected'	7e44a0b597f0	mac80211: prevent attacks on TKIP/WEP as well	base		net/mac80211/rx.c
 unbuilt	-	f50714b57aec	dm flakey: don't corrupt the zero page	a00f5276e266	dm flakey: Properly corrupt multi-page bios.	base		drivers/md/dm-flakey.c
 unbuilt	-	f54aa97fb7e5	udf: Fix off-by-one error when discarding preallocation	16d055656814	udf: Discard preallocation before extending file with a hole	base		fs/udf/inode.c
 unbuilt	-	f54d801dda14	bcache: destroy dc->writeback_write_wq if failed to create dc->writeback_thread	9baf30972b55	bcache: fix for gc and write-back race	base		drivers/md/bcache/writeback.c
@@ -1538,6 +1540,7 @@ unbuilt	-	8fd36358ce82	net: dsa: fix panic on shutdown if multi-chip tree failed
 unbuilt	-	911600bf5a5e	tipc: fix use-after-free Read in tipc_named_reinit	d966ddcc3821	tipc: fix a deadlock when flushing scheduled work	base-via-missing		net/tipc/core.c
 unbuilt	-	9464cc37f367	net: openvswitch: free vport unless register_netdevice() succeeds	309b66970ee2	net: openvswitch: do not free vport if register_netdevice() is failed.	base-via-missing		net/openvswitch/vport-internal_dev.c
 unbuilt	-	97766512a995	mISDN: hfcpci: Fix warning when deleting uninitialized timer	175302f6b79e	mISDN: hfcpci: Fix use-after-free bug in hfcpci_softirq	base-via-missing		drivers/isdn/hardware/mISDN/hfcpci.c
+unbuilt	-	a55eb6a62214	tg3: Add Datto SIRIS 5 1U Server to restart AER quirk table	e0efe83ed325	tg3: Disable tg3 PCIe AER on system reboot	base-via-missing		drivers/net/ethernet/broadcom/tg3.c
 unbuilt	-	a5b21d8d791c	revert "squashfs: harden sanity check in squashfs_read_xattr_id_table"	72e544b1b283	squashfs: harden sanity check in squashfs_read_xattr_id_table	base-via-missing		fs/squashfs/xattr_id.c
 unbuilt	-	a5e63c7d38d5	net: phy: micrel: Fix detection of ksz87xx switch	8b95599c55ed	net: phy: micrel: Discern KSZ8051 and KSZ8795 PHYs	base-via-missing		drivers/net/phy/micrel.c
 unbuilt	-	ab0c3f1251b4	mm/khugepaged: fix collapse_pte_mapped_thp() to allow anon_vma	8d3c106e19e8	mm/khugepaged: take the right locks for page table retraction	base-via-missing		mm/khugepaged.c
@@ -1561,6 +1564,7 @@ unbuilt	-	f8e48a3dca06	lockdep: Fix preemption WARN for spurious IRQ-enable	4d00
 unbuilt	-	ff112f1ecd10	Revert "mmc: rtsx_pci_sdmmc: increase power-on settling delay to 5ms"	aced969e9bf3	mmc: rtsx_pci_sdmmc: increase power-on settling delay to 5ms	base-via-missing		drivers/mmc/host/rtsx_pci_sdmmc.c
 absent	-	04f8ef5643bc	cgroup: Fix memory leak caused by missing cgroup_bpf_offline	4bfc0bb2c60e	bpf: decouple the lifetime of cgroup_bpf from cgroup itself	backport	feb301c60970	kernel/cgroup/cgroup.c
 absent	-	178f6a5c8cb3	bpf, ktls: Fix data corruption when using bpf_msg_pop_data() in ktls	d3b18ad31f93	tls: add bpf support to sk_msg handling	backport		net/tls/tls_sw.c
+absent	-	1bf67c8fdbda	cgroup/cpuset-v1: Add missing support for cpuset_v2_mode	e1cba4b85daa	cgroup: Add mount flag to enable cpuset to use v2 behavior in v1 cgroup	backport		kernel/cgroup/cgroup.c
 absent	-	2190df6c9137	cgroup/bpf: only cgroup v2 can be attached by bpf programs	4bfc0bb2c60e	bpf: decouple the lifetime of cgroup_bpf from cgroup itself	backport		kernel/cgroup/cgroup.c
 absent	-	28cb6f1eaffd	bpf: tls_sw, init TLS ULP removes BPF proto hooks	02c558b2d5d6	bpf: sockmap, support for msg_peek in sk_msg with redirect ingress	backport		net/tls/tls_main.c
 absent	-	32cd3db7de97	xsk: fix OOB map writes when deleting elements	fbfc504a24f5	bpf: introduce new bpf AF_XDP map type BPF_MAP_TYPE_XSKMAP	backport		net/xdp/xskmap.c
@@ -1580,6 +1584,7 @@ absent	-	af253aef183a	bpf: fix order of args in call to bpf_map_kvcalloc	6ac99e8
 absent	-	b4f47f3848eb	net/tls: prevent bad memory access in tls_is_sk_tx_device_offloaded()	4799ac81e52a	tls: Add rx inline crypto offload	backport		include/net/tls.h
 absent	-	c329ef9684de	net/tls: take into account that bpf_exec_tx_verdict() may free the record	d3b18ad31f93	tls: add bpf support to sk_msg handling	backport		net/tls/tls_sw.c
 absent	-	c5a595000e26	net: tls, update curr on splice as well	d829e9c4112b	tls: convert to generic sk_msg interface	backport		net/tls/tls_sw.c
+absent	-	cd0490e671d7	bpf: Assume no bounds for a writable tp with tail calls	9df1c28bb752	bpf: add writable context for raw tracepoints	backport		kernel/bpf/fixups.c
 absent	-	d10523d0b3d7	net/tls: free the record on encryption error	d3b18ad31f93	tls: add bpf support to sk_msg handling	backport		net/tls/tls_sw.c
 absent	-	d468e4775c1c	bpf: Sockmap/tls, tls_sw can create a plaintext buf > encrypt buf	d3b18ad31f93	tls: add bpf support to sk_msg handling	backport		net/tls/tls_sw.c
 absent	-	db885e66d268	net/tls: fix async operation	d3b18ad31f93	tls: add bpf support to sk_msg handling	backport		net/tls/tls_sw.c
@@ -1733,6 +1738,7 @@ tools	-	a4174f0560f8	bpf: Fix tcp_bufs_kern.c sample program	390ee7e29fc8	bpf: e
 tools	-	bd98c8134646	objtool: Support repeated uses of the same C jump table	e55a73251da3	bpf: Fix ORC unwinding in non-JIT BPF code	backport		tools/objtool/check.c tools/objtool/check.h tools/objtool/elf.h
 tools	-	c01ac66b3866	bpf: Fix verifier log string check for bad alignment.	f1174f77b50c	bpf/verifier: rework value tracking	backport		tools/testing/selftests/bpf/test_verifier.c
 tools	-	c03079c9d93d	samples/bpf: deal with EBUSY return code from sendmsg in xdpsock sample	b4b8faa1ded7	samples/bpf: sample application and documentation for AF_XDP sockets	backport		samples/bpf/xdpsock_user.c
+tools	-	cf95f22a06b2	bpf, docs: Fix two struct names in btf.rst and kfuncs.rst	f063c889c945	bpf: add specification for BTF Var and DataSec kinds	backport		Documentation/bpf/btf.rst Documentation/bpf/kfuncs.rst
 tools	-	d62c1d7213b7	tools headers: Fixup tools/include/uapi/linux/bpf.h copy of kernel ABI header	2be7e212d541	bpf: add bpf_skb_adjust_room helper	backport		tools/include/uapi/linux/bpf.h
 tools	-	d6dbce8fdd2b	selftests/bpf: fix test_align liveliness expectations	2589726d12a1	bpf: introduce bounded loops	backport		tools/testing/selftests/bpf/test_align.c
 tools	-	d93a7cf6ca2c	samples/bpf: fix broken map lookup probe	7c4cd051add3	bpf: Fix syscall's stackmap lookup potential deadlock	backport		samples/bpf/tracex6.bpf.c
@@ -1796,10 +1802,12 @@ tools	-	2067e7a00aa6	selftests: nft_nat: ensuring the listening side is up befor
 tools	-	54367831c5d0	docs: net: dsa: document the shutdown behavior	0650bf52b31f	net: dsa: be compatible with masters which unregister on shutdown	base-via-missing		Documentation/networking/dsa/dsa.rst
 other-arch	-	01684e72f167	x86/error_inject: Make just_return_func() globally visible	540adea3809f	error-injection: Separate error-injection from kprobe	backport		arch/x86/lib/error-inject.c
 other-arch	-	1612a981b766	bpf, x64: fix JIT emission for dead code	2a5418a13fcf	bpf: improve dead code sanitizing	backport		arch/x86/net/bpf_jit_comp.c
+other-arch	-	59298997df89	x86/uaccess: avoid check_object_size() in copy_from_user_nmi()	0aef499f3172	mm/usercopy: Detect vmalloc overruns	backport		arch/x86/lib/usercopy.c
 other-arch	-	5fbc09eb0b4f	powerpc/uaccess: Move barrier_nospec() out of allow_read_{from/write}_user()	74e19ef0ff80	uaccess: Add speculation barrier to copy_from_user()	backport		arch/powerpc/include/asm/kup.h arch/powerpc/include/asm/uaccess.h
 other-arch	-	7c2e988f400e	bpf: fix x64 JIT code generation for jmp to 1st insn	2589726d12a1	bpf: introduce bounded loops	backport		arch/x86/net/bpf_jit_comp.c
 other-arch	-	c44768a33da8	sparc: Fix JIT fused branch convergance.	e0cea7ce988c	bpf: implement ld_abs/ld_ind in native bpf	backport		arch/sparc/net/bpf_jit_comp_64.c
 other-arch	-	e1d486445af3	bpf, arm32: Reject BPF-to-BPF calls and callbacks in the JIT	1c2a088a6626	bpf: x64: add JIT support for multi-function programs	backport		arch/arm/net/bpf_jit_32.c
+other-arch	-	8cebaa3be829	locking/atomic: arc, hexagon, openrisc: Define arch_cmpxchg_local()	ccb88db8dac8	bpf: Don't hand out a linked element as extra element	backport-via-missing		arch/arc/include/asm/cmpxchg.h arch/hexagon/include/asm/cmpxchg.h arch/openrisc/include/asm/cmpxchg.h
 other-arch	-	01336b555978	perf/amd/ibs: Account interrupt for discarded samples	26db2e0c51fe	perf/x86/amd/ibs: Work around erratum #1197	base		arch/x86/events/amd/ibs.c
 other-arch	-	0204750bd4c6	KVM: x86: Mask off unsupported and unknown bits of IA32_ARCH_CAPABILITIES	5b76a3cff011	KVM: VMX: Tell the nested hypervisor to skip L1D flush on vmentry	base		arch/x86/kvm/x86.c
 other-arch	-	02233c73f8ae	KVM: x86: nSVM: Set vmcb02.g_pat correctly for nested NPT	15038e147247	KVM: SVM: obey guest PAT	base		arch/x86/kvm/svm/nested.c
