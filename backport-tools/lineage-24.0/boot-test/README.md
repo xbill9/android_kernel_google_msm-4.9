@@ -27,7 +27,14 @@ images under `~/sargo-bpf-test/kmsglog/`, the tree in `~/android/lineage-24.0`.
   `qtelephony` and `vendor_init` on `default_prop`, `init-edge_sense-sh` on
   the SoC serial number. `org.protonaosp.elmyra`
   (Active Edge) restarts in a loop with `IndexOutOfBoundsException: Index 0
-  out of bounds for length 0`, in permissive boots too.
+  out of bounds for length 0`, in permissive boots too. The cause is CHRE:
+  `vendor.chre` exits every 5 s because the sensor DSP rejects its program
+  (`dynamic loading failed for chre_slpi on domain 0 (dlerror undefined
+  symbol #25 __sensors_island_start in ./libchre_slpi_skel.so)`), so the
+  vendor blob and the DSP firmware on the phone do not match.
+- Camera: Aperture opens camera 0 and the preview runs at 15 fps for 45 s
+  with the provider up; capture not yet tried. `dumpsys media.camera` piped
+  into `grep -m` kills the camera provider with SIGPIPE when grep exits.
 - The two failures below had separate causes:
   - **Permissive hang** (netd in `_rcu_barrier`, about 1 boot in 5): kernel
     `e7a12e10fc29`. `cgroup_sk_clone()` took no `cgroup_bpf` reference, so
