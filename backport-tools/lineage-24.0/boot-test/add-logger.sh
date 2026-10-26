@@ -16,7 +16,8 @@ case "$(file -b $W/u/ramdisk)" in
   *) echo "unknown ramdisk format"; exit 1 ;;
 esac | cpio -idm 2>/dev/null
 if [ -z "$NOLOG" ]; then
-  [ -e init.real ] || mv init init.real
+  # init.real may be a symlink into /system, which does not resolve here
+  [ -e init.real ] || [ -L init.real ] || mv init init.real
   cp $K/kmsglog init; chmod 750 init
 fi
 find . | cpio -o -H newc -R root:root 2>/dev/null | gzip -9 > $W/u/ramdisk
