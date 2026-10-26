@@ -47,7 +47,6 @@ built	clean	35edfdc77f68	net: set default network namespace in init_dummy_netdev
 built	clean	36e0f12bbfd3	xdp: add NULL pointer check in __xdp_return()	02b55e5657c3	xdp: add MEM_TYPE_ZERO_COPY	backport	eb91e4d4db06	net/core/xdp.c
 built	clean	37f3c421e8f0	net/core: Document reuseport_add_sock() bind_inany argument	2dbb9b9e6df6	bpf: Introduce BPF_PROG_TYPE_SK_REUSEPORT	backport		net/core/sock_reuseport.c
 built	clean	390e99cfdda1	bpf: mark bpf_event_notify and bpf_event_init as static	a38d1107f937	bpf: support raw tracepoints in modules	backport		kernel/trace/bpf_trace.c
-built	conflict	3ccd700543f1	bpf: Read the probe of a perf event under event_mutex	41bdc4b40ed6	bpf: introduce bpf subcommand BPF_TASK_FD_QUERY	backport		kernel/bpf/syscall.c kernel/trace/bpf_trace.c
 built	conflict	3f553b308bb0	module: propagate error in modules_open()	516fb7f2e73d	/proc/module: use the same logic as /proc/kallsyms for address exposure	backport		kernel/module.c
 built	conflict	3fcc5530bcb2	bpf: fix build without bpf_syscall	492ecee892c2	bpf: enable program stats	backport		kernel/sysctl.c
 built	conflict	406e8a651a7b	net: skmsg: preserve sg.copy across SG transforms	d3b18ad31f93	tls: add bpf support to sk_msg handling	backport		include/linux/skmsg.h net/core/filter.c net/core/skmsg.c net/tls/tls_sw.c
@@ -122,7 +121,6 @@ built	clean	a48802fb2cd2	bpf, sockmap: fix integer overflow in bpf_msg_pop_data(
 built	conflict	a5f4d9df1f7b	mm: usercopy: move the virt_addr_valid() below the is_vmalloc_addr()	0aef499f3172	mm/usercopy: Detect vmalloc overruns	backport		mm/usercopy.c
 built	conflict	a984705ca88b	tcp: annotate data-races around tp->dsack_dups	7e10b6554ff2	tcp: add dsack blocks received stats	backport		net/ipv4/tcp.c net/ipv4/tcp_input.c
 built	conflict	ad1e03b2b3d4	core: Don't skip generic XDP program execution for cloned SKBs	d445516966dc	net: xdp: support xdp generic on virtual devices	backport		net/core/dev.c
-built	clean	af873495cbcb	bpf: Fix verifier WARN on narrow read of bpf_tcp_sock u64 fields	655a51e536c0	bpf: Add struct bpf_tcp_sock and BPF_FUNC_tcp_sock	backport		net/core/filter.c
 built	conflict	afec62cd0a41	flow_dissector: use RCU protection to fetch dev_net()	9b52e3f267a6	flow_dissector: handle no-skb use case	backport		net/core/flow_dissector.c
 built	conflict	b1a47b2708d4	bpf: Disable preemption in __bpf_get_stack	c195651e565a	bpf: add bpf_get_stack helper	backport		kernel/bpf/stackmap.c
 built	conflict	ba9db6f907ac	net: clear the dst when changing skb protocol	1b00e0dfe7d0	bpf: update skb->protocol in bpf_skb_net_grow	backport		net/core/filter.c
@@ -131,7 +129,6 @@ built	clean	c13fda93aca1	bpf: Remove tst_run from lwt_seg6local_prog_ops.	004d4b
 built	conflict	c180188ec022	net: set the minimum for net_hotdata.netdev_budget_usecs	7acf8a1e8a28	Replace 2 jiffies with sysctl netdev_budget_usecs to enable softirq tuning	backport		net/core/sysctl_net_core.c
 built	conflict	c889a99a21bf	net: prevent address rewrite in kernel_bind()	4fbac77d2d09	bpf: Hooks for sys_bind	backport		net/netfilter/ipvs/ip_vs_sync.c net/rds/tcp_connect.c net/rds/tcp_listen.c net/socket.c
 built	conflict	c9a368f1c0fb	bpf: net: Avoid incorrect bpf_sk_reuseport_detach call	5dc4c4b7d4e8	bpf: Introduce BPF_MAP_TYPE_REUSEPORT_SOCKARRAY	backport		include/net/sock.h kernel/bpf/reuseport_array.c
-built	conflict	ccb88db8dac8	bpf: Don't hand out a linked element as extra element	8c290e60fa2a	bpf: fix hashmap extra_elems logic	backport		kernel/bpf/hashtab.c
 built	conflict	d1f9f79fa2af	net: let net.core.dev_weight always be non-zero	3d48b53fb2ae	net: dev_weight: TX/RX orthogonality	backport		net/core/sysctl_net_core.c
 built	conflict	d836f5c69d87	net: rtnetlink: validate IFLA_MTU attribute in rtnl_create_link()	61e84623ace3	net: centralize net_device min/max MTU checking	backport		include/linux/netdevice.h net/core/dev.c net/core/rtnetlink.c
 built	clean	d85e8be2a5a0	net: Fix missing meta data in skb with vlan packet	de8f3a83b0a0	bpf: add meta pointer for direct access	backport		net/core/skbuff.c
@@ -1805,9 +1802,9 @@ other-arch	-	1612a981b766	bpf, x64: fix JIT emission for dead code	2a5418a13fcf	
 other-arch	-	59298997df89	x86/uaccess: avoid check_object_size() in copy_from_user_nmi()	0aef499f3172	mm/usercopy: Detect vmalloc overruns	backport		arch/x86/lib/usercopy.c
 other-arch	-	5fbc09eb0b4f	powerpc/uaccess: Move barrier_nospec() out of allow_read_{from/write}_user()	74e19ef0ff80	uaccess: Add speculation barrier to copy_from_user()	backport		arch/powerpc/include/asm/kup.h arch/powerpc/include/asm/uaccess.h
 other-arch	-	7c2e988f400e	bpf: fix x64 JIT code generation for jmp to 1st insn	2589726d12a1	bpf: introduce bounded loops	backport		arch/x86/net/bpf_jit_comp.c
+other-arch	-	8cebaa3be829	locking/atomic: arc, hexagon, openrisc: Define arch_cmpxchg_local()	ccb88db8dac8	bpf: Don't hand out a linked element as extra element	backport		arch/arc/include/asm/cmpxchg.h arch/hexagon/include/asm/cmpxchg.h arch/openrisc/include/asm/cmpxchg.h
 other-arch	-	c44768a33da8	sparc: Fix JIT fused branch convergance.	e0cea7ce988c	bpf: implement ld_abs/ld_ind in native bpf	backport		arch/sparc/net/bpf_jit_comp_64.c
 other-arch	-	e1d486445af3	bpf, arm32: Reject BPF-to-BPF calls and callbacks in the JIT	1c2a088a6626	bpf: x64: add JIT support for multi-function programs	backport		arch/arm/net/bpf_jit_32.c
-other-arch	-	8cebaa3be829	locking/atomic: arc, hexagon, openrisc: Define arch_cmpxchg_local()	ccb88db8dac8	bpf: Don't hand out a linked element as extra element	backport-via-missing		arch/arc/include/asm/cmpxchg.h arch/hexagon/include/asm/cmpxchg.h arch/openrisc/include/asm/cmpxchg.h
 other-arch	-	01336b555978	perf/amd/ibs: Account interrupt for discarded samples	26db2e0c51fe	perf/x86/amd/ibs: Work around erratum #1197	base		arch/x86/events/amd/ibs.c
 other-arch	-	0204750bd4c6	KVM: x86: Mask off unsupported and unknown bits of IA32_ARCH_CAPABILITIES	5b76a3cff011	KVM: VMX: Tell the nested hypervisor to skip L1D flush on vmentry	base		arch/x86/kvm/x86.c
 other-arch	-	02233c73f8ae	KVM: x86: nSVM: Set vmcb02.g_pat correctly for nested NPT	15038e147247	KVM: SVM: obey guest PAT	base		arch/x86/kvm/svm/nested.c

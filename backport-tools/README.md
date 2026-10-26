@@ -152,6 +152,7 @@ absent from the 4.9 tree or not built for sargo.
 | `unbuilt2.tsv` | conflicting files in drivers not built for sargo |
 | `groundwork2.txt` | prerequisite commits pulled in ahead of the series |
 | `mapper.txt` | BPF helper ID → name table, for checking helper ABI order |
+| `check-upstream.sh` | fetch mainline, run `missing_fixes.py`, compare with the table |
 | `missing-fixes.tsv` | upstream fixes this tree lacks, from `missing_fixes.py` |
 | `verifier-fixes.tsv` | the fixes from it that were acted on: port commit or reason |
 
@@ -170,6 +171,19 @@ hash. A mainline clone without file contents is enough:
 
     git clone --bare --filter=blob:none https://github.com/torvalds/linux.git ~/sargo-bpf-test/linux-upstream.git
     APPLY=backport backport-tools/missing_fixes.py ~/sargo-bpf-test/linux-upstream.git > backport-tools/missing-fixes.tsv
+
+`check-upstream.sh` does the fetch and the run in one step and compares
+the result with the committed table: it prints the counts, the new and
+gone rows, and the result `verifier-fixes.tsv` records for each one.
+`--write` replaces `missing-fixes.tsv`. Run it before a 24.0 build:
+
+    backport-tools/check-upstream.sh            # report only
+    backport-tools/check-upstream.sh --write    # and refresh the table
+
+It finds missing upstream fixes only. A bug from two local commits that
+do not fit together, such as `e7a12e10fc29` (`cgroup_sk_clone()` from the
+base without the `cgroup_bpf` reference the backport added), shows up on
+the phone instead, as a warning in the kernel log.
 
 Columns of `missing-fixes.tsv`:
 
