@@ -137,8 +137,10 @@ The test loop runs without touching the phone:
 
   `add-logger.sh` puts it into a boot image; `KERNEL=` swaps the kernel and
   `EXTRA_CMDLINE=` appends to the command line.
-- pstore is no help on sargo: the ramoops area is encrypted with a key kept in
-  `/data`, and every reboot is a full PMIC reset.
+- pstore survives a warm reboot, such as kmsglog's reboot to the bootloader:
+  `/sys/fs/pstore/console-ramoops-0` then holds the previous boot's console
+  (seen on 24.0, 2026-10-26). A Power + Volume Down reset or a watchdog reset
+  wipes it.
 
 Each Android 16 blocker on this kernel showed up as one line in that log:
 
