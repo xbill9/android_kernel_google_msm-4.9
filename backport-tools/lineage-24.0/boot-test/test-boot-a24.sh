@@ -22,4 +22,6 @@ toslot b; timeout 60 fastboot boot ~/sargo-bpf-test/kmsglog/boot-24-perm-nolog.i
 for i in $(seq 1 100); do [ "$(timeout 5 adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = 1 ] && break; sleep 3; done
 timeout 30 adb root >/dev/null; sleep 3; timeout 30 adb wait-for-device
 adb pull /metadata/boot-kmsg.txt $OUT/ >/dev/null && adb pull /metadata/logcat.txt $OUT/ >/dev/null
+# pstore holds the console of the hung boot until the next reboot
+adb pull /sys/fs/pstore $OUT/pstore >/dev/null 2>&1
 log "logs pulled to $OUT (now on slot b test boot)"
