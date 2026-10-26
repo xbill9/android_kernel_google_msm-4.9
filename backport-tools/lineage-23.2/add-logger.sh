@@ -5,7 +5,7 @@
 #      EXTRA_CMDLINE=<args> appends to the kernel command line.
 set -e
 IN=$(realpath "$1"); OUTIMG=$(realpath -m "$2")
-H=~/android/lineage-23.2/out/host/linux-x86/bin
+H=${H:-~/android/lineage-24.0/out/host/linux-x86/bin}
 K=~/sargo-bpf-test/kmsglog
 W=$(mktemp -d); trap 'rm -rf $W' EXIT
 $H/unpack_bootimg --boot_img "$IN" --out $W/u --format=mkbootimg > $W/args
@@ -16,7 +16,8 @@ case "$(file -b $W/u/ramdisk)" in
   *) echo "unknown ramdisk format"; exit 1 ;;
 esac | cpio -idm 2>/dev/null
 if [ -z "$NOLOG" ]; then
-  [ -e init.real ] || mv init init.real
+  # init.real is a symlink to /system/bin/init on 24, which -e cannot follow here.
+  [ -e init.real ] || [ -L init.real ] || mv init init.real
   cp $K/kmsglog init; chmod 750 init
 fi
 find . | cpio -o -H newc -R root:root 2>/dev/null | gzip -9 > $W/u/ramdisk
