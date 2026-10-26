@@ -19,8 +19,13 @@ images under `~/sargo-bpf-test/kmsglog/`, the tree in `~/android/lineage-24.0`.
 - **Slot a, full build** (`24.0-20261026-UNOFFICIAL-sargo`, OTA installed
   2026-10-26 14:19, kernel `4.9.337-gb80340096fda`): boots with SELinux
   enforcing in 82 s; surfaceflinger, system_server, netd and Wi-Fi run.
-  19 enforced denials remain, none in boot-critical domains (one is
-  `hal_sensors_default` reading `ion_device`). `org.protonaosp.elmyra`
+  With bonito `a6e99a3` (sensors ION, Wi-Fi version props, USB gadget
+  config prop, power HAL as thermal client) three boots from flash took 81,
+  48 and 80 s, with no kernel errors and Wi-Fi up each time. Left per boot:
+  8 `qtidataservices_app` service lookups and one each of `nfc` on
+  `nfc_vendor_data_file`, `hal_camera_default` on `zygote_config_prop`,
+  `qtelephony` and `vendor_init` on `default_prop`, `init-edge_sense-sh` on
+  the SoC serial number. `org.protonaosp.elmyra`
   (Active Edge) restarts in a loop with `IndexOutOfBoundsException: Index 0
   out of bounds for length 0`, in permissive boots too.
 - The two failures below had separate causes:
