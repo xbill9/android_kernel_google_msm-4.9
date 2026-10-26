@@ -23,6 +23,19 @@ objects.
 | `hardware/qcom/audio` | `xbill9/android_hardware_qcom_audio` | `lineage-23.2` |
 | `prebuilts/gcc/linux-x86/{aarch64,arm}/*-4.9` | LineageOS | `lineage-19.1`; 24.0 dropped GCC |
 | `kernel/google/msm-4.9` | this repository | `main` |
+| `system/core` | `xbill9/android_system_core` | `lineage-24.0` |
+| `system/vold` | `xbill9/android_system_vold` | `lineage-24.0` |
+| `system/bpf` | `xbill9/android_system_bpf` | `lineage-24.0` |
+| `packages/modules/Connectivity` | `xbill9/android_packages_modules_Connectivity` | `lineage-24.0` |
+
+The four `system`/`packages` forks carry the Android 17 changes for a 4.9
+kernel: the legacy fscrypt session keyring (core, vold), a bpfloader that
+does not fail the boot on the ring buffer test program, and NetBpfLoad,
+netd and ConnectivityService changes for a kernel below 5.10.
+
+`manifest-pinned-20261026.xml` pins every project of the tree to the commit
+that built `lineage-24.0-20261026-UNOFFICIAL-sargo`, the first build that
+boots with SELinux enforcing.
 
 gs-common is not used: thermal comes from `hardware/google/pixel/thermal`.
 

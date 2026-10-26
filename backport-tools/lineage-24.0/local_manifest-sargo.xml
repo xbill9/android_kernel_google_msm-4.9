@@ -18,6 +18,15 @@
   <project name="LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9" path="prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9" remote="github" revision="lineage-19.1" clone-depth="1" />
   <project name="LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9" path="prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9" remote="github" revision="lineage-19.1" clone-depth="1" />
   <!-- clang and rust prebuilts are fetched by hand (partial clone, sparse checkout). -->
-  <remove-project name="platform/prebuilts/clang/host/linux-x86" />
   <remove-project name="platform/prebuilts/rust" />
+  <!-- Android 17 fixes for the 4.9 kernel: legacy fscrypt keyring (core, vold),
+       BPF loaders, netd programs and ConnectivityService ring buffers. -->
+  <remove-project name="LineageOS/android_system_core" />
+  <project name="xbill9/android_system_core" path="system/core" remote="github" revision="lineage-24.0" groups="pdk" />
+  <remove-project name="LineageOS/android_system_vold" />
+  <project name="xbill9/android_system_vold" path="system/vold" remote="github" revision="lineage-24.0" groups="pdk" />
+  <remove-project name="LineageOS/android_system_bpf" />
+  <project name="xbill9/android_system_bpf" path="system/bpf" remote="github" revision="lineage-24.0" groups="pdk" />
+  <remove-project name="LineageOS/android_packages_modules_Connectivity" />
+  <project name="xbill9/android_packages_modules_Connectivity" path="packages/modules/Connectivity" remote="github" revision="lineage-24.0" groups="pdk-cw-fs,pdk-fs" />
 </manifest>
