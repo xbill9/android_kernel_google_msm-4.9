@@ -154,3 +154,12 @@ VelvetTitan (tablets only) and needs 682 MiB of the 900 MiB `/product` reserve.
 Play Services installed by hand into `/data` crashes at start (`SingletonComponentRouterProvider
 requests FLAG_SINGLE_USER`), so uninstall any such copy first. An OTA installed from a
 system without GApps removes them; sideload again afterwards.
+
+Flashed onto a phone that is already set up, the default permission grants for Google
+apps never run, and Play Services refuses every location request (`FLPShim: failed to
+register flp shim request: uid 10185 does not have any of [ACCESS_FINE_LOCATION, ...]`).
+Grant its runtime permissions once after the first boot:
+
+    adb shell 'dumpsys package com.google.android.gms | grep -E "^ +android.permission\.[A-Z_]+: granted=false" | sed "s/:.*//" | sort -u | while read p; do pm grant com.google.android.gms $p; done'
+
+Network location then reports a fix within two minutes.
