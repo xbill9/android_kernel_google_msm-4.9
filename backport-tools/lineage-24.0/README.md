@@ -136,3 +136,21 @@ of about 233,000 steps in 7 h 49 min.
 - Claude Code stops background shells under memory pressure; Soong analysis
   triggers it. Set `CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP=1` or run the
   build in tmux.
+
+## Google apps
+
+MindTheGapps 17.0.0 ships Play Services as an APEX (`com.google.android.gmssystem`)
+whose payload is EROFS, which the 4.9 kernel cannot mount (`apexd: Mounting failed ...
+No such device`). Play Services then never installs and Play Store crashes looking for
+the `com.google.android.gsf.gservices` provider. `repack-gapps.sh` makes a zip that
+installs the same APK as `/product/priv-app/PrebuiltGmsCoreVic` with the APEX's
+permission files, and removes an earlier install before the installer's space check:
+
+    bash repack-gapps.sh MindTheGapps-17.0.0-arm64-20261022_132445.zip
+    adb reboot sideload && adb sideload MindTheGapps-17.0.0-arm64-20261022_132445-sargo.zip
+
+The zip is unsigned, so recovery asks to install anyway. On sargo the installer drops
+VelvetTitan (tablets only) and needs 682 MiB of the 900 MiB `/product` reserve.
+Play Services installed by hand into `/data` crashes at start (`SingletonComponentRouterProvider
+requests FLAG_SINGLE_USER`), so uninstall any such copy first. An OTA installed from a
+system without GApps removes them; sideload again afterwards.
