@@ -14,7 +14,36 @@ images under `~/sargo-bpf-test/kmsglog/`, the tree in `~/android/lineage-24.0`.
 | `ota-install-24.sh` | Waits for a build, then installs its OTA into the inactive slot with `update_engine_client` from the running system. |
 | `capture-24.sh` | Streams logcat and `dmesg -w` to the host and records Wi-Fi link, ping times and Bluetooth state every 30 s. Reconnects across adb drops. |
 
-## Status, 2026-10-24
+## Status, 2026-10-26
+
+- **Slot a, full build** (`24.0-20261026-UNOFFICIAL-sargo`, OTA installed
+  2026-10-26 14:19, kernel `4.9.337-gb80340096fda`): boots with SELinux
+  enforcing in 82 s; surfaceflinger, system_server, netd and Wi-Fi run.
+  19 enforced denials remain, none in boot-critical domains (one is
+  `hal_sensors_default` reading `ion_device`). `org.protonaosp.elmyra`
+  (Active Edge) restarts in a loop with `IndexOutOfBoundsException: Index 0
+  out of bounds for length 0`, in permissive boots too.
+- The two failures below had separate causes:
+  - **Permissive hang** (netd in `_rcu_barrier`, about 1 boot in 5): kernel
+    `e7a12e10fc29`. `cgroup_sk_clone()` took no `cgroup_bpf` reference, so
+    each `accept()`ed socket dropped one it did not hold, and removing a
+    cgroup freed its BPF programs while sockets still used them. The sign
+    was `percpu ref (cgroup_bpf_release_fn) <= 0` in the kernel log. Before
+    the fix 2 of 9 boots hung; after it 8 of 8 booted.
+  - **Enforcing black screen**: Android 17 removed the `/dev/ion` label and
+    every `ion_device` rule from the platform policy. bonito `2cbfb4b` and
+    `e2ca4b1` put back the label and the Android 16 rules.
+
+Method notes:
+
+- pstore survives the logger's reboot to the bootloader (a warm reboot), and
+  is wiped by a Power + Volume Down reset. An enforcing boot resets itself
+  at about 82 s, so use `EXTRA_CMDLINE=kmsglog.reboot=60` to reboot first.
+- With SELinux enforcing the logger loses its kmsg node once the policy
+  loads and stops; the permissive boots' `permissive=1` denials show what
+  enforcing would block.
+
+## Status, 2026-10-24 (superseded)
 
 - **Slot b, RAM-booted test image** (`boot-24-perm-nolog.img`: debugfs-patched
   system and vendor, SELinux permissive): reaches `boot_completed`; Wi-Fi and

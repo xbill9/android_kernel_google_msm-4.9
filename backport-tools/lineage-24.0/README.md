@@ -3,7 +3,8 @@
 Unofficial LineageOS 24.0 (Android 17) for sargo on this 4.9 kernel, started
 2026-10-21 from the 23.2 port in `../lineage-23.2`. The first full build
 completed on 2026-10-23 on EC2 (`lineage-24.0-20261023-UNOFFICIAL-sargo.zip`,
-1,208,903,032 bytes; see `aws/`). Boot status is in `boot-test/README.md`.
+1,208,903,032 bytes; see `aws/`). Since 2026-10-26 the full build boots with
+SELinux enforcing; boot status is in `boot-test/README.md`.
 
 ## Sources
 
