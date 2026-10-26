@@ -280,6 +280,12 @@ static void logger(void)
 			if (len + 8192 > sizeof(big)) break;
 			s64 n = sc(NR_read, in, big + len, 8192, 0);
 			if (n == -32) continue;		/* EPIPE: records overwritten */
+			/*
+			 * EACCES: an enforcing policy denies the kernel domain the
+			 * node once it loads. Each retry logs a denial, which floods
+			 * pstore, so stop here; the reboot timer keeps running.
+			 */
+			if (n == -13) return;
 			if (n <= 0) break;		/* -EAGAIN: nothing more now */
 			len += n;
 		}
