@@ -31,7 +31,14 @@ images under `~/sargo-bpf-test/kmsglog/`, the tree in `~/android/lineage-24.0`.
   `vendor.chre` exits every 5 s because the sensor DSP rejects its program
   (`dynamic loading failed for chre_slpi on domain 0 (dlerror undefined
   symbol #25 __sensors_island_start in ./libchre_slpi_skel.so)`), so the
-  vendor blob and the DSP firmware on the phone do not match.
+  vendor blob and the DSP firmware on the phone do not match. Active Edge is
+  not used: it is disabled on the phone (`pm disable-user`) and bonito
+  `7f1369f` drops ElmyraService from the build.
+- Play Store (`com.android.vending` 53.6.15-34) is a user app in `/data`,
+  with no system Play Services or GSF. It crashed at start with
+  `ForegroundServiceStartNotAllowedException` from
+  `SafeSelfUpdateService` (its recovery mode); `pm clear com.android.vending`
+  stopped that. A privileged system install of GApps would avoid it.
 - Camera: Aperture opens camera 0 and the preview runs at 15 fps for 45 s
   with the provider up; capture not yet tried. `dumpsys media.camera` piped
   into `grep -m` kills the camera provider with SIGPIPE when grep exits.

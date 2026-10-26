@@ -28,6 +28,11 @@ objects.
 | `system/bpf` | `xbill9/android_system_bpf` | `lineage-24.0` |
 | `packages/modules/Connectivity` | `xbill9/android_packages_modules_Connectivity` | `lineage-24.0` |
 
+Switching a project in the local manifest from a LineageOS repository to a
+fork makes `repo sync` refuse the existing checkout ("--force-sync not
+enabled; cannot overwrite a local work tree"). Once, with the checkout clean
+and its commits on the fork: `repo sync -c --force-sync <paths>`.
+
 The four `system`/`packages` forks carry the Android 17 changes for a 4.9
 kernel: the legacy fscrypt session keyring (core, vold), a bpfloader that
 does not fail the boot on the ring buffer test program, and NetBpfLoad,
