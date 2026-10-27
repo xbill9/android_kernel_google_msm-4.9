@@ -34,9 +34,10 @@ images under `~/sargo-bpf-test/kmsglog/`, the tree in `~/android/lineage-24.0`.
   third. Not built yet. Photos work with or without it.
 - **Wi-Fi latency**: pings over Wi-Fi take 100-250 ms in steps of about
   102 ms (the beacon interval) on both phones and on two networks; on
-  935AY06U23 also from the laptop to the phone. The same router answers a wired host in 2.3 ms. tcpdump on
-  the phone shows the replies reaching the kernel as late as `ping`
-  reports, so the delay is in the driver, the chip firmware or the air.
+  935AY06U23 also from the laptop to the phone. The same router answers a
+  wired host in 2.3 ms. tcpdump on the phone shows the replies reaching the
+  kernel as late as `ping` reports, so the delay is in the driver, the chip
+  firmware or the air.
   Measured on 935AY06U23, 12 or 15 pings at 1 s each:
 
   | Change | Phone to router | Laptop to phone |
