@@ -1,0 +1,59 @@
+# captured 2026-10-27T13:01:55-04:00 on build (192.168.50.45), grep of ~/sargo-bpf-test/logs
+##### Inappropriate ioctl
+10-24 00:26:27.896   778   778 E vold    : Failed to install fscrypt key to /data: Inappropriate ioctl for device
+10-24 00:26:27.896     0     0 E         : c7    778 vold: Failed to install fscrypt key to /data: Inappropriate ioctl for device
+11,1981,7127733,-;vold: Failed to install fscrypt key to /data: Inappropriate ioctl for device
+##### enablefilecrypto_failed
+10-24 00:26:27.897     0     0 E         : c7      1 init: Exec service failed, status 25: Rebooting into recovery, reason: enablefilecrypto_failed
+11,1986,7128897,-;init: Exec service failed, status 25: Rebooting into recovery, reason: enablefilecrypto_failed
+11,1986,7128897,-;init: Exec service failed, status 25: Rebooting into recovery, reason: enablefilecrypto_failed
+##### percpu ref (cgroup_bpf
+10-24 09:51:32.163     0     0 W         : c6     69 percpu ref (cgroup_bpf_release_fn) <= 0 (0) after switching to atomic
+[   55.613638] percpu ref (cgroup_bpf_release_fn) <= 0 (0) after switching to atomic
+10-23 22:59:58.807     0     0 W         : c7     78 percpu ref (cgroup_bpf_release_fn) <= 0 (0) after switching to atomic
+##### gralloc-mapper is missing
+10-23 21:07:05.428   801   826 F GraphicBufferMapper: gralloc-mapper is missing
+10-23 21:07:05.527   963   963 F DEBUG   : Abort message: 'gralloc-mapper is missing'
+10-23 21:07:05.428   801   826 F GraphicBufferMapper: gralloc-mapper is missing
+##### bpfloader-failed
+10-23 22:39:19.497     0     0 I         : c6      1 init: Got shutdown_command 'reboot,bpfloader-failed' Calling HandlePowerctlMessage()
+10-23 22:39:19.497     0     0 I         : c7      1 init: Reboot start, reason: reboot,bpfloader-failed, reboot_target: bpfloader-failed
+10-23 22:39:19.497     0     0 I         : c6      1 init: Got shutdown_command 'reboot,bpfloader-failed' Calling HandlePowerctlMessage()
+##### Failed to get program
+10-23 22:49:08.710  1595  1595 E NetdUpdatable: libnetd_updatable_init: Failed: Failed to get program from /sys/fs/bpf/netd_shared/prog_netd_egress_stats: No such file or directory
+10-23 22:49:08.710  1595  1595 E NetdUpdatable: libnetd_updatable_init: Failed: Failed to get program from /sys/fs/bpf/netd_shared/prog_netd_egress_stats: No such file or directory
+##### requires kernel version 0x504012e
+15,14751,52690633,-;NetBpfLoad: skipping map sk_storage which requires kernel version 0x504012e >= 0x50a0000
+15,14756,52690833,-;NetBpfLoad: skipping map packet_trace_ringbuf which requires kernel version 0x504012e >= 0x50a0000
+10-23 21:50:45.573     0     0 D         : c7   1188 NetBpfLoad: skipping map sk_storage which requires kernel version 0x504012e >= 0x50a0000
+##### netd stack 932-probe1/logcat.txt
+10-26 10:35:01.253     0     0 W         : c6   5454 [<0000000082807638>] __schedule+0x6c0/0xf10
+10-26 10:35:01.253     0     0 W         : c6   5454 [<00000000cc21a7ee>] schedule_timeout+0x98/0x2f4
+10-26 10:35:01.253     0     0 W         : c6   5454 [<000000008306f17d>] wait_for_common+0x108/0x268
+10-26 10:35:01.253     0     0 W         : c6   5454 [<00000000edff5dad>] _rcu_barrier+0x210/0x2b0
+10-26 10:35:01.253     0     0 W         : c6   5454 [<000000007d48fdfd>] netdev_run_todo+0xc4/0x9b4
+10-26 10:35:01.253     0     0 W         : c6   5454 [<00000000610d42d3>] rtnetlink_rcv+0x58/0x78
+10-26 10:35:01.253     0     0 W         : c6   5454 [<000000004b18ba16>] netlink_unicast+0x2b0/0x468
+10-26 10:35:01.253     0     0 W         : c6   5454 [<000000004bbdc794>] netlink_sendmsg+0x4bc/0x604
+10-26 10:35:01.253     0     0 W         : c6   5454 [<00000000ffafd517>] sock_write_iter+0x14c/0x1d0
+10-26 10:35:01.253     0     0 W         : c6   5454 [<00000000a0ef0e5d>] do_iter_readv_writev+0xf0/0x15c
+10-26 10:35:01.253     0     0 W         : c6   5454 [<00000000a8f47f40>] do_readv_writev+0x128/0x290
+10-26 10:35:01.253     0     0 W         : c6   5454 [<00000000a7b4978a>] do_writev+0x128/0x154
+10-26 10:35:01.253     0     0 W         : c6   5454 [<00000000d22a7f69>] SyS_writev+0x14/0x20
+10-26 10:35:01.253     0     0 W         : c6   5454 [<00000000d9c4d8ca>] el0_svc_naked+0x34/0x38
+10-26 10:35:01.253     0     0 I         : c6   5454 netd            S    0  1595      1 0x00000000
+##### ion denial
+01-11 01:15:55.540   743   743 I auditd  : type=1400 audit(0.0:15): avc:  denied  { read } for  comm="qseecomd" name="ion" dev="tmpfs" ino=12110 scontext=u:r:tee:s0 tcontext=u:object_r:device:s0 tclass=chr_file permissive=1
+##### ota install 1027b
+		/vendor/etc/selinux/vendor_file_contexts
+		/odm/etc/selinux/odm_file_contexts
+10:59:56 update_engine install to the inactive slot
+[INFO:update_engine_client_android.cc(94)] onStatusUpdate(UPDATE_STATUS_FINALIZING (5), 0.521073)
+[INFO:update_engine_client_android.cc(94)] onStatusUpdate(UPDATE_STATUS_FINALIZING (5), 0.630268)
+[INFO:update_engine_client_android.cc(94)] onStatusUpdate(UPDATE_STATUS_FINALIZING (5), 0.666667)
+[INFO:update_engine_client_android.cc(94)] onStatusUpdate(UPDATE_STATUS_FINALIZING (5), 1)
+[INFO:update_engine_client_android.cc(94)] onStatusUpdate(UPDATE_STATUS_FINALIZING (5), 1)
+[INFO:update_engine_client_android.cc(102)] onPayloadApplicationComplete(ErrorCode::kSuccess (0))
+[INFO:update_engine_client_android.cc(94)] onStatusUpdate(UPDATE_STATUS_UPDATED_NEED_REBOOT (6), 0)
+[INFO:update_engine_client_android.cc(367)] Command took 300501 ms
+11:04:57 installed; not rebooting

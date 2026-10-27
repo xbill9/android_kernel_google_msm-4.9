@@ -1,0 +1,16 @@
+adb=/home/xbill/android/lineage-24.0/out/host/linux-x86/bin/adb
+2026-10-27T13:02:23-04:00
+List of devices attached
+932AY05KVV             device usb:5-2 product:sargo model:Pixel_3a device:sargo transport_id:34
+
+24.0-20261027-UNOFFICIAL-sargo
+4.9.337-gf002f96f2646
+Enforcing
+1
+_b
+17
+2026-10-01
+Wifi is enabled
+Wifi scanning is only available when wifi is enabled
+789 1581 1969
+6997.30 54729.73

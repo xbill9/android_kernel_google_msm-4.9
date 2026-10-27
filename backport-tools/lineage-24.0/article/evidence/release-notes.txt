@@ -1,0 +1,59 @@
+title:	LineageOS 24.0 for Pixel 3a (sargo), 2026-10-27
+tag:	lineage-24.0-sargo-20261027
+draft:	false
+prerelease:	false
+author:	xbill9
+created:	2026-10-27T16:41:49Z
+published:	2026-10-27T16:43:24Z
+url:	https://github.com/xbill9/android_kernel_google_msm-4.9/releases/tag/lineage-24.0-sargo-20261027
+asset:	boot.img
+asset:	dtbo.img
+asset:	lineage-24.0-20261027-UNOFFICIAL-sargo.zip
+asset:	local_manifest-sargo.xml
+asset:	SHA256SUMS
+asset:	vbmeta.img
+--
+Unofficial LineageOS 24.0 (Android 17) for the Google Pixel 3a (sargo), built on the 4.9 kernel from this repository at `5a72ebfd04ec`. Security patch level 2026-10-01. Userdebug, signed with test keys.
+
+To install from a computer with only `adb`, follow [INSTALL.md](https://github.com/xbill9/android_kernel_google_msm-4.9/blob/main/INSTALL.md): one script installs this ROM over an earlier 24.0 build, adds Google apps and compiles the apps.
+
+#### Tested on a Pixel 3a (2026-10-27)
+
+- 🟢 Boots to the home screen with SELinux enforcing in 83 s; installs over the previous 24.0 build with `update_engine` and keeps user data.
+- 🟢 Wi-Fi connects; Bluetooth turns on.
+- 🟢 All sensors are detected; the accelerometer, barometer and light sensor report readings.
+- 🟢 Google apps from MindTheGapps 17.0.0 (`20261022_132445`), repacked for this kernel: Play Services runs as a system app, network location gives a fix (16 m).
+- 🟢 Chrome 156 opens pages; its sandboxed renderers start.
+- 🟢 Pokémon GO starts and runs without crashing. Gmail, once compiled, scrolls with 0.09% janky frames.
+- 🟢 Vibration works; both cameras enumerate, and the camera preview ran on an earlier build.
+- ⚠️ Not tested: calls, SMS and mobile data (no SIM fitted), audio by ear, taking photos, fingerprint enrolment, NFC payments, satellite GPS.
+- ❌ Active Edge (squeeze): the sensor DSP firmware rejects the CHRE program, so it is turned off.
+
+#### Files
+
+| File | What it is |
+|---|---|
+| `lineage-24.0-20261027-UNOFFICIAL-sargo.zip` | Full A/B OTA package |
+| `boot.img` | Kernel `4.9.337-g5a72ebfd04ec` and the 24.0 ramdisk with LineageOS recovery |
+| `dtbo.img`, `vbmeta.img` | Matching device tree overlay and vbmeta images |
+| `local_manifest-sargo.xml` | The `repo` local manifest used for this build |
+| `SHA256SUMS` | Checksums for all of the above |
+
+Google apps are not included: download MindTheGapps 17.0.0 arm64 from [its releases](https://github.com/MindTheGapps/17.0.0-arm64/releases). Its Play Services comes as an EROFS APEX that the 4.9 kernel cannot mount; `repack-gapps.sh` (run by the install script) moves it to a regular system app.
+
+#### What Android 17 needed beyond 23.2
+
+- **Native app zygote** ([xbill9/android_system_zygote](https://github.com/xbill9/android_system_zygote) `d6dadb5`): `zygote_next` aborted on capabilities 38-40, which the 4.9 kernel does not know, so Chrome's renderers never started and app launches stalled for minutes.
+- **ION**: Android 17 dropped the `/dev/ion` label and rules; bonito puts back the Android 16 rules, without which the screen stays black under SELinux enforcing.
+- **cgroup BPF**: kernel `e7a12e10fc29` takes a reference in `cgroup_sk_clone()`; without it netd hung in about 1 boot in 5.
+- **Forks for a kernel below 5.10**: legacy fscrypt keyring (system/core, vold), the BPF loader and netd/ConnectivityService ring buffers (system/bpf, Connectivity).
+- **CHRE** stops after boot instead of restarting every 5 s (bonito `3f29377`).
+
+#### Sources
+
+- Kernel: this repository, tag `lineage-24.0-sargo-20261027` (`5a72ebfd04ec`).
+- Device: [xbill9/android_device_google_bonito](https://github.com/xbill9/android_device_google_bonito) `lineage-24.0` at `3f29377`, and LineageOS `android_device_google_sargo` `lineage-23.0`.
+- Forks: xbill9 `android_system_core`, `android_system_vold`, `android_system_bpf`, `android_packages_modules_Connectivity`, `android_system_zygote`, all `lineage-24.0`.
+- Everything else: LineageOS `lineage-24.0`.
+
+The ROM contains Google's proprietary vendor blobs, as every Pixel custom ROM does.

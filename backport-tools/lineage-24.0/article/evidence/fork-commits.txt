@@ -1,0 +1,72 @@
+=== system/vold
+fce7dadf6510b8ac728eca0f77672daa582e2bb8 2026-10-23
+vold: Restore the legacy fscrypt session keyring
+
+Kernels without FS_IOC_ADD_ENCRYPTION_KEY (4.9, as on sargo) can only take
+fscrypt keys through the global session keyring. Android 17 removed that path,
+so enablefilecrypto failed with "Inappropriate ioctl for device" and init
+rebooted to recovery. Bring back isFsKeyringSupported(), installKeyLegacy(),
+evictKeyLegacy() and the cache drop after eviction from LineageOS 23.2, with
+inline keyctl wrappers since libkeyutils is gone.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Change-Id: I23c091f2503212ce5090463989e78dd6871a5073
+
+=== system/core
+5742820aad0e0c23dc295b22b655e986b87a7fc4 2026-10-23
+init: Restore the fscrypt session keyring for old kernels
+
+vold installs fscrypt keys into an "fscrypt" keyring in a session keyring
+shared by every process when the kernel lacks FS_IOC_ADD_ENCRYPTION_KEY.
+Android 17 dropped both setup steps; restore them as in LineageOS 23.2:
+init joins a session keyring at second stage, and mount_all creates the
+fscrypt keyring on encrypted devices.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Change-Id: I7f597e99a58ceee2a2af975076e9425ffe5864c6
+
+=== system/bpf
+72b37ef9d9dba32ddddcd6bb62970c4cb9f42523 2026-10-23
+bpfloader: Don't fail boot on bpfRingbufProg
+
+It is a test program, skipped on user builds. BPF ring buffers need kernel
+5.8; on the sargo 4.9 kernel the load fails and, as a critical program, it
+rebooted the device with bpfloader-failed on userdebug builds.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Change-Id: Ib1b11c70ac84e8a2d840bc69ae2d5a87f5577267
+
+=== packages/modules/Connectivity
+5c298deab55ce7cfefec3b1cc9c79e9898f669e7 2026-10-23
+Connectivity: Run on the sargo 4.9 kernel (reported as 5.4)
+
+- NetBpfLoad: warn instead of failing on kernels below 5.10, as 23.2 did.
+- NetBpfLoad: hand off to uprobestatsbpfload only on 5.8+; its programs need
+  BPF ring buffers.
+- netd.c: extend the 5.4 ingress/egress stats programs to the newest API
+  level; Android 17 had no stats program below 5.10 and netd aborted.
+- ConnectivityService: skip the local-net and loopback ring buffer listeners
+  when their maps are absent; opening them aborted system_server.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Change-Id: I6a2f5c00750c09196561fc58ae7cbb6acf97f258
+
+=== system/zygote
+d6dadb5e56c821e8dd44b13725d9de6e3085c733 2026-10-27
+zygote: Skip capabilities the kernel does not know
+
+Kernels older than 5.9 return EINVAL from PR_CAPBSET_READ for
+CAP_PERFMON, CAP_BPF and CAP_CHECKPOINT_RESTORE (38-40). The child
+process treated that as fatal and panicked while dropping the bounding
+set ("Failed to check capability bound: GetCapBoundFailure(EINVAL)"),
+so every native app zygote died at start on the 4.9 kernel. Chrome 156
+runs its renderers in one, and system_server's process-start thread
+then retried the dead socket for minutes, blocking all app starts.
+
+A capability the kernel does not know cannot be in the bounding set,
+so there is nothing to drop. The C++ zygote handles the same EINVAL
+the same way.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Change-Id: I8f7f42c26aaa207d8a20171f4bae1c151a2ef6ec
+

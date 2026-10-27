@@ -1,0 +1,80 @@
+=== 31b5a72ea3110ad6881d08bf56a102da100dc88f 2026-10-23
+bonito: Install ueventd.rc to vendor/etc
+
+Android 17's ueventd reads only /system/etc/ueventd.rc, which imports
+/vendor/etc/ueventd.rc. The legacy /vendor/ueventd.rc is no longer
+parsed, so /dev/qseecom, /dev/citadel0 and /dev/kgsl-3d0 kept root-only
+modes and keymaster, gatekeeper, citadeld and surfaceflinger aborted.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Change-Id: Ia4ce796d0120b74b22a903d069da86f64737161c
+=== 433912b5ec7230def455277e519f4a3305c6b758 2026-10-24
+bonito: Build libui with LEGACY_GRALLOC
+
+Android 17's libui only loads IMapper 4.0 and newer on API 36+, unless built
+with LEGACY_GRALLOC. The sdm845 display stack provides IMapper 2.1, so the
+composer HAL aborted with "gralloc-mapper is missing".
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Change-Id: If3586b56dc33d56d7af9eb7034733105b00d0648
+=== 2cbfb4ba20075d43eee94d851ac69ea7f30158aa 2026-10-26
+bonito: Label /dev/ion
+
+Android 17 removed /dev/ion from the platform file_contexts but kept
+the ion_device type, so the node came up as device. With SELinux
+enforcing, surfaceflinger, gralloc, the composer, keymaster,
+gatekeeper and tee lose ION and the boot stops at a black screen; in
+permissive boots 21 domains log denials on /dev/ion as device.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Change-Id: Ie1ab6bd44ccd20555a94fa059898b9d63bc69353
+=== e2ca4b102f7b5aab29d048ea67a8aadce94027a5 2026-10-26
+bonito: Restore the ION rules
+
+Android 17 removed every ion_device rule from the platform policy along
+with the /dev/ion label. With the label back, an enforcing boot still
+denies read on ion_device to surfaceflinger, keymaster, gatekeeper,
+qseecomd (tee) and gralloc. This kernel has ION and no DMA-BUF heaps.
+
+Restore the Android 16 (202504) rules in vendor policy, plus tee.
+fwk_bufferhub is a private platform type and is left out.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Change-Id: I2e7211fc827114d0181ccbd854f314157c4c220e
+=== a6e99a3bef6de22a80d67649cc7af9db81d3940c 2026-10-26
+bonito: Grant four HAL accesses an enforcing boot denies
+
+- hal_sensors_default: read ion_device.
+- hal_wifi_default: set vendor.wlan.{driver,firmware}.version, which
+  hal_wifi_ext set before Android 17.
+- hal_usb_gadget_impl: read vendor_usb_config_prop.
+- hal_power_default: client of the thermal HAL (libperfmgr asks it for
+  throttling status).
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Change-Id: I02b66f81c5f5151f52256bf02a925815e2bded64
+=== 7f1369f07547ff46c24ed70d67d188e6f5c9a6ac 2026-10-26
+bonito: Drop ElmyraService
+
+Active Edge needs CHRE, and CHRE cannot load on the sensor DSP with
+these blobs (undefined symbol __sensors_island_start in
+libchre_slpi_skel.so), so ElmyraService restarts in a loop with
+IndexOutOfBoundsException. It is not used on this device.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Change-Id: Ibd695a6ed2ebbb9d57fa70753365c9ccd2fe0de5
+=== 3f29377283f32269fd69fedf618822a7c3b5fc0a 2026-10-27
+bonito: Stop CHRE after boot
+
+The sensor DSP firmware rejects libchre_slpi_skel.so ("dlerror
+undefined symbol #25 __sensors_island_start"), so chre_daemon_msm exits
+and init restarts it about every 5 s: 146 starts and 1,870 CHRE error
+lines in the first 14 minutes of a boot. Its only user, Active Edge, is
+no longer built. Stop the service once boot completes; "start
+vendor.chre" brings it back.
+
+Tested on sargo with "stop vendor.chre": the service stayed stopped,
+and the accelerometer and light sensor kept reporting.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Change-Id: Ie34dab9f256e2a0c13d6e8e349865b74e40681d7

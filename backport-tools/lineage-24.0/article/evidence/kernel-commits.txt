@@ -1,0 +1,76 @@
+=== e7a12e10fc29c0f2d7954bd49cf3b268c81473a1 2026-10-26
+cgroup: Take a cgroup_bpf reference for a cloned socket
+
+cgroup_sk_clone() came from 4.9-stable ("cgroup: fix cgroup_sk_alloc()
+for sk_clone_lock()") before this tree had a cgroup_bpf refcount, so it
+takes only a cgroup reference. The BPF backport then added
+cgroup_bpf_get() to cgroup_sk_alloc() and cgroup_bpf_put() to
+cgroup_sk_free(), but not to the clone path. Each socket that
+sk_clone_lock() makes, for example by accept(), drops a cgroup_bpf
+reference it never took.
+
+When the cgroup is removed, the count is at or below zero after the
+switch to atomic:
+
+  percpu ref (cgroup_bpf_release_fn) <= 0 (0) after switching to atomic
+  WARNING: ... at lib/percpu-refcount.c:155 percpu_ref_switch_to_atomic_rcu
+
+and cgroup_bpf_release() frees the cgroup's programs and effective
+arrays and puts the cgroup while sockets in it can still run them.
+
+Take the reference as upstream does since ad0f75e5f57c.
+
+Fixes: cdb68a9f367a ("BACKPORT: bpf: decouple the lifetime of cgroup_bpf from cgroup itself")
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+=== 777de5b0ec6f85828cdcf6d001e828a1afb3753e 2026-10-22
+kbuild: Pass the full LLVMgold.so path to gold
+
+LineageOS 24's kernel build sets LD_LIBRARY_PATH only for its own LLVM
+flow. Ask clang for the plugin path so LTO links with GNU gold find it
+from any environment.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+=== c1276bba95157e2e43c5bcf206f985855c8cc6aa 2026-10-24
+arm64: Build fixes for newer clang and ld.lld
+
+- Makefile: link vmlinux with -shared -Bsymbolic -z notext -z norelro
+  instead of -pie, and pass the ld emulation through LDFLAGS instead of
+  appending -EL/-EB to LD.
+- vmlinux.lds.S: discard .gnu.hash and .eh_frame; name the relocation
+  section .rela.dyn.
+- memcpy/memmove/memset: use WEAK() instead of .weak plus ENTRY().
+- assembler.h: compare the dcache op with .ifc, which the integrated
+  assembler accepts, via a __dcache_op_workaround_clean_cache helper.
+- aes-ce-cipher-core.c: umov from v0.s[0] (v0.4s[0] is rejected).
+- aes-modes.S: build the CTR counter addends in general registers
+  instead of loading a 128-bit literal pool constant.
+- qcacld-3.0, wcd_cpe_services: prototype and enum-conversion fixes
+  for newer clang warnings.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+=== f877f2a0e53c5fd017e5c8230b29eb47b0d78bed 2026-10-25
+arm64: Do not pass an ld emulation to gold
+
+With full LTO, modules are linked by gold through the LLVMgold plugin,
+which rejects any -m emulation for bitcode input:
+
+  aarch64-linux-android-ld.gold: error: unrecognized emulation aarch64elf
+
+The ld-option probe passes because it runs gold without input files.
+Only add the emulation when the linker is not gold; -EL/-EB still apply.
+
+Fixes: c1276bba9515 ("arm64: Build fixes for newer clang and ld.lld")
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+=== 5a72ebfd04ec1d3199873ea8b7334c7bb251be1b 2026-10-26
+backport-tools: sync-24.sh checks the tree's filesystem
+
+Like build-24-guarded.sh, the guard read free space on ~, a different
+disk from the tree here (8 GB free there against a 15 GB limit), and
+would have stopped every sync. Check the tree for 15 GB and / for 2 GB.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
