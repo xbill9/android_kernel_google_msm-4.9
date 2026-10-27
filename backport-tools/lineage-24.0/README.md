@@ -27,16 +27,23 @@ objects.
 | `system/vold` | `xbill9/android_system_vold` | `lineage-24.0` |
 | `system/bpf` | `xbill9/android_system_bpf` | `lineage-24.0` |
 | `packages/modules/Connectivity` | `xbill9/android_packages_modules_Connectivity` | `lineage-24.0` |
+| `system/zygote` | `xbill9/android_system_zygote` | `lineage-24.0` |
 
 Switching a project in the local manifest from a LineageOS repository to a
 fork makes `repo sync` refuse the existing checkout ("--force-sync not
 enabled; cannot overwrite a local work tree"). Once, with the checkout clean
 and its commits on the fork: `repo sync -c --force-sync <paths>`.
 
-The four `system`/`packages` forks carry the Android 17 changes for a 4.9
+The `system`/`packages` forks carry the Android 17 changes for a 4.9
 kernel: the legacy fscrypt session keyring (core, vold), a bpfloader that
 does not fail the boot on the ring buffer test program, and NetBpfLoad,
-netd and ConnectivityService changes for a kernel below 5.10.
+netd and ConnectivityService changes for a kernel below 5.10. The
+`system/zygote` fork stops `zygote_next` from aborting on capabilities 38-40
+(PERFMON, BPF, CHECKPOINT_RESTORE), which the 4.9 kernel does not know.
+Without it every native app zygote dies at start: Chrome 156 runs its
+renderers in one, exits with `Timed out waiting for GPU channel`, and
+system_server's process-start thread retries the dead socket for minutes,
+which blocks every app launch.
 
 `manifest-pinned-20261026.xml` pins every project of the tree to the commit
 that built `lineage-24.0-20261026-UNOFFICIAL-sargo`, the first build that

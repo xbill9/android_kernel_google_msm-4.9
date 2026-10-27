@@ -27,6 +27,9 @@
   <project name="xbill9/android_system_vold" path="system/vold" remote="github" revision="lineage-24.0" groups="pdk" />
   <remove-project name="LineageOS/android_system_bpf" />
   <project name="xbill9/android_system_bpf" path="system/bpf" remote="github" revision="lineage-24.0" groups="pdk" />
+  <!-- Native app zygote (zygote_next): skip capabilities newer than the 4.9 kernel. -->
+  <remove-project name="platform/system/zygote" />
+  <project name="xbill9/android_system_zygote" path="system/zygote" remote="github" revision="lineage-24.0" groups="pdk" />
   <remove-project name="LineageOS/android_packages_modules_Connectivity" />
   <project name="xbill9/android_packages_modules_Connectivity" path="packages/modules/Connectivity" remote="github" revision="lineage-24.0" groups="pdk-cw-fs,pdk-fs" />
 </manifest>
