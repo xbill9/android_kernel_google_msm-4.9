@@ -12,6 +12,7 @@ images under `~/sargo-bpf-test/kmsglog/`, the tree in `~/android/lineage-24.0`.
 | `test-boot-b.sh` | Same on slot b, returning to slot a afterwards. |
 | `test-boot-a24.sh` | RAM-boots an image on slot a (24.0 full build). On a hang, boots slot b with the logger-free test image and pulls `/metadata` logs. |
 | `ota-install-24.sh` | Waits for a build, then installs its OTA into the inactive slot with `update_engine_client` from the running system. |
+| `post-install-24.sh` | After an OTA and the GApps sideload: grants Play Services its missing runtime permissions and runs `pm bg-dexopt-job`, so apps are compiled instead of left at `verify`. |
 | `capture-24.sh` | Streams logcat and `dmesg -w` to the host and records Wi-Fi link, ping times and Bluetooth state every 30 s. Reconnects across adb drops. |
 
 ## Status, 2026-10-26

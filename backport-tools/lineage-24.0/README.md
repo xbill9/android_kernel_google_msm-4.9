@@ -179,3 +179,10 @@ Grant its runtime permissions once after the first boot:
     adb shell 'dumpsys package com.google.android.gms | grep -E "^ +android.permission\.[A-Z_]+: granted=false" | sed "s/:.*//" | sort -u | while read p; do pm grant com.google.android.gms $p; done'
 
 Network location then reports a fix within two minutes.
+
+`boot-test/post-install-24.sh` does that grant and then runs the background
+compile job (`pm bg-dexopt-job`). After an OTA every app is left at the `verify`
+filter (`pm.dexopt.boot-after-ota=verify`) until the phone has been idle and
+charging. Uncompiled, Gmail on sargo started in 1,372 ms with 3.37% janky frames
+while scrolling; compiled (`speed-profile`), 1,010 ms and 0.09% (one run each).
+Run it after every OTA plus GApps sideload; the job took 2 min 53 s.
