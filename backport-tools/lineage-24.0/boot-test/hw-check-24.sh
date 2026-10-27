@@ -56,16 +56,17 @@ else
   res FAIL wifi-link "not connected: $(sh_ cmd wifi status | head -1)"
 fi
 
-# Bluetooth: turn off and on again, timing each
-bt() { sh_ dumpsys bluetooth_manager | grep -m1 -E '^ +state:' -i | awk '{print $2}'; }
-s0=$(bt)
-sh_ cmd bluetooth_manager disable >/dev/null; t=$(date +%s)
-if wait_for 20 '[ "$(bt)" = OFF ]'; then off=$(( $(date +%s) - t ))
-  sh_ cmd bluetooth_manager enable >/dev/null; t=$(date +%s)
-  wait_for 20 '[ "$(bt)" = ON ]' && res PASS bluetooth "was $s0; off in ${off}s, on in $(( $(date +%s) - t ))s" \
-    || res FAIL bluetooth "did not come back ON within 20 s (state $(bt))"
-else res FAIL bluetooth "did not turn OFF within 20 s (state $(bt))"; fi
-[ "$s0" = OFF ] && sh_ cmd bluetooth_manager disable >/dev/null
+# Bluetooth: switch to the other state and back, timing each. BLE_ON counts as off: it is
+# where the adapter stays when "Bluetooth scanning" (ble_scan_always_enabled) is on.
+bt() { sh_ dumpsys bluetooth_manager | grep -m1 -iE '^ +state:' | awk '{print ($2=="BLE_ON") ? "OFF" : $2}'; }
+bt_to() { # ON|OFF: echo the seconds it took, or fail after 20 s
+  local t=$(date +%s); sh_ cmd bluetooth_manager $([ $1 = ON ] && echo enable || echo disable) >/dev/null
+  wait_for 20 "[ \"\$(bt)\" = $1 ]" && echo $(( $(date +%s) - t )); }
+s0=$(bt); [ "$s0" = ON ] && s1=OFF || s1=ON
+if a=$(bt_to $s1); then
+  b=$(bt_to $s0) && res PASS bluetooth "was $s0; $s1 in ${a}s, back $s0 in ${b}s" \
+    || res FAIL bluetooth "did not return to $s0 within 20 s (state $(bt))"
+else res FAIL bluetooth "did not turn $s1 within 20 s (state $(bt))"; bt_to $s0 >/dev/null; fi
 
 # NFC
 n=$(sh_ dumpsys nfc | grep -m1 -o 'mState=[a-z_]*')
@@ -173,9 +174,10 @@ case "$wt$rt2" in *bytes*bytes*) res PASS storage "write: ${wt##*, }  read: ${rt
 # Logs since boot: crashes and SELinux denials
 $A logcat -b all -d > "$D/logcat-all.txt" 2>&1; sh_ dmesg > "$D/dmesg.txt"
 fe=$(grep -c 'FATAL EXCEPTION' "$D/logcat-all.txt"); fs=$(grep -c 'Fatal signal' "$D/logcat-all.txt"); an=$(grep -c 'ANR in' "$D/logcat-all.txt")
-tb=$(sh_ "ls /data/tombstones | grep -c tombstone_")
-[ $((fe + fs + an + tb)) = 0 ] && res PASS crashes "none in logcat (app, native, ANR) and no tombstones" \
-  || res FAIL crashes "$fe app, $fs native, $an ANR in logcat; $tb tombstones"
+up=$(( $(sh_ cut -d. -f1 /proc/uptime) / 60 + 1 ))
+tb=$(sh_ "find /data/tombstones -name 'tombstone_[0-9]*' ! -name '*.pb' -mmin -$up | grep -c ."); tball=$(sh_ "ls /data/tombstones | grep -v pb | grep -c tombstone_")
+[ $((fe + fs + an + tb)) = 0 ] && res PASS crashes "none since boot: logcat (app, native, ANR) and tombstones ($tball older ones kept)" \
+  || res FAIL crashes "since boot: $fe app, $fs native, $an ANR in logcat; $tb new tombstones"
 dn=$(cat "$D/logcat-all.txt" "$D/dmesg.txt" | grep 'avc:  denied' | sed -E 's/.*\{ ([^}]+)\}.*scontext=u:r:([a-z_0-9]+).*tcontext=u:[a-z_]+:([a-z_0-9]+).*tclass=([a-z_]+).*/\2 -> \3 \4 {\1}/' | sort | uniq -c | sort -rn)
 printf '%s\n' "$dn" > "$D/denials.txt"
 res INFO denials "$(printf '%s\n' "$dn" | awk '{s+=$1} END{print s+0}') SELinux denials in $(printf '%s\n' "$dn" | grep -c .) kinds (denials.txt)"
