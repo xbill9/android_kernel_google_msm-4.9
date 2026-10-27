@@ -2,7 +2,7 @@
 
 For a computer that only installs: no Android tree, no build. It downloads the ROM from
 this repository's GitHub releases and MindTheGapps from its own releases, then one command
-installs both and compiles the apps. Build machines use [BUILD.md](BUILD.md) instead.
+installs both and compiles the apps. Build machines use [BUILD-ROM.md](BUILD-ROM.md) instead.
 
 ## Once per laptop (Debian or Ubuntu)
 

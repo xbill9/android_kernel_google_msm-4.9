@@ -1,5 +1,8 @@
 # Building the sargo BPF backport kernel
 
+For the whole LineageOS 24.0 ROM (sync, build, install with Google apps) see
+[BUILD-ROM.md](BUILD-ROM.md); to install a published ROM, [INSTALL.md](INSTALL.md).
+
 Kernel for the Pixel 3a (`sargo`, `bonito_defconfig`) running LineageOS
 22.2: the LineageOS 4.9 kernel with eBPF support backported to roughly the
 5.4 level, arm64 uprobes, and BPF tracing. Details, test results and the
