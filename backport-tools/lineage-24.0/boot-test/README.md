@@ -16,6 +16,52 @@ images under `~/sargo-bpf-test/kmsglog/`, the tree in `~/android/lineage-24.0`.
 | `capture-24.sh` | Streams logcat and `dmesg -w` to the host and records Wi-Fi link, ping times and Bluetooth state every 30 s. Reconnects across adb drops. |
 | `hw-check-24.sh` | Checks the hardware of a booted phone over adb in about 2 minutes: Wi-Fi traffic, Bluetooth off and on, NFC, modem and SIM, GNSS HAL, sensors, rear and front camera photos (Aperture), speaker output, vibrator, fingerprint HAL, screen off and on, battery, storage speed, crashes and SELinux denials. Prints PASS, FAIL or SKIP with the evidence and counts them; results and logs go to `~/sargo-logs/<serial>-hwcheck-<time>/`. Not covered: microphone, GPS fix, calls, fingerprint enrolment. Apps the user disabled are enabled for their test only. |
 
+## Status, 2026-10-27
+
+- **Hardware check** (`hw-check-24.sh`, 24.0-20261027 with GApps): 20 pass,
+  0 fail, 2 skipped (no SIM, microphone) on both 937AY07L03 (slot a) and
+  935AY06U23 (slot a, 14:02 build). Rear and front camera photos, speaker
+  output at about 54,000 frames/s, Bluetooth off and on in 3 s, storage
+  write 164 MB/s and read 319 MB/s. No crashes since boot.
+- **qtidataservices_app** crashed at each start (`NullPointerException` in
+  `ActivityThread.attach`) because it was denied the `activity` service
+  lookup. bonito `3dbaf3e` grants `app_api_service`; with the 14:15 build
+  the denials and the crashes are gone.
+- **Camera denials**: `hal_camera_default` reads `ro.camera.req.fmq.size`
+  and `ro.camera.res.fmq.size` (unlabelled, so `default_prop`) and
+  `ro.bootimage.build.fingerprint` (`build_bootimage_prop`). bonito
+  `0e07c00` labels the first two `vendor_default_prop` and grants the
+  third. Not built yet. Photos work with or without it.
+- **Wi-Fi latency**: pings over Wi-Fi take 100-250 ms in steps of about
+  102 ms (the beacon interval) on both phones and on two networks; on
+  935AY06U23 also from the laptop to the phone. The same router answers a wired host in 2.3 ms. tcpdump on
+  the phone shows the replies reaching the kernel as late as `ping`
+  reports, so the delay is in the driver, the chip firmware or the air.
+  Measured on 935AY06U23, 12 or 15 pings at 1 s each:
+
+  | Change | Phone to router | Laptop to phone |
+  |---|---|---|
+  | none (screen off) | 16-231 ms | 129-4,221 ms, 6 of 15 lost |
+  | screen on | 23-484 ms | 4.7-2,307 ms |
+  | screen on, after a reboot | 2.6-632 ms | 92-3,700 ms |
+  | screen on, `iw dev wlan0 set power_save off` | 5.7-249 ms | 9.7-248 ms |
+  | `cmd wifi force-low-latency-mode enabled` | 5.7-211 ms | not run |
+  | all 8 CPUs busy | 14-226 ms | not run |
+  | `gIPAConfig=0x3d` (no IPA STA offload) | 2.5-257 ms | 463-4,948 ms, 1 of 15 lost |
+  | `gEnableBmps=0`, `gEnableImps=0`, `gEnableModulatedDTIM=0` | 3.5-210 ms | 9.5-527 ms |
+  | Bluetooth and BLE scanning off | 3.6-210 ms | not run |
+
+  The chip's power save (the stock `WCNSS_qcom_cfg.ini` settings) explains
+  the multi-second delays to the phone; nothing tried removes the ~100 ms
+  steps. `drivers/staging/qcacld-3.0` and `drivers/platform/msm/ipa` are
+  unchanged in this tree apart from build fixes. No 23.2 or stock
+  measurement exists to compare with. To test ini changes without a
+  reboot: `svc wifi disable`, `rmmod wlan`, bind-mount an edited copy
+  (label `vendor_firmware_file`) over
+  `/vendor/firmware/wlan/qca_cld/WCNSS_qcom_cfg.ini`,
+  `insmod /vendor/lib/modules/wlan.ko`, `svc wifi enable`. The
+  `svc wifi disable` setting survives a reboot.
+
 ## Status, 2026-10-26
 
 - **Slot a, full build** (`24.0-20261026-UNOFFICIAL-sargo`, OTA installed
