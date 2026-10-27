@@ -41,5 +41,5 @@ Leave the phone alone the rest of the time.
 - The phone needs USB debugging on and this computer allowed (`adb devices` shows `device`).
 - Each run installs into the phone's other slot, so the slot flips every time.
 
-Logs are in `~/sargo-bpf-test/logs/`: `sync-24-*.log`, `build-24.log`, `ota-install-last.log`.
+Logs are in `~/sargo-bpf-test/logs/`: `sync-24-*.log` and `build-24.log`; the install itself prints to the terminal.
 The details behind each step are in `backport-tools/lineage-24.0/README.md`.
