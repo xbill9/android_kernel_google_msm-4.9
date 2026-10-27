@@ -33,7 +33,9 @@ images under `~/sargo-bpf-test/kmsglog/`, the tree in `~/android/lineage-24.0`.
   symbol #25 __sensors_island_start in ./libchre_slpi_skel.so)`), so the
   vendor blob and the DSP firmware on the phone do not match. Active Edge is
   not used: it is disabled on the phone (`pm disable-user`) and bonito
-  `7f1369f` drops ElmyraService from the build.
+  `7f1369f` drops ElmyraService from the build. bonito `3f29377` stops
+  `vendor.chre` once boot completes (146 restarts in the first 14 minutes
+  before); the sensors keep reporting without it.
 - Play Store (`com.android.vending` 53.6.15-34) is a user app in `/data`,
   with no system Play Services or GSF. It crashed at start with
   `ForegroundServiceStartNotAllowedException` from
