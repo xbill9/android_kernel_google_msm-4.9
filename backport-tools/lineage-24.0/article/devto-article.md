@@ -305,7 +305,11 @@ The strategy for running Android 17 on a 4.9 kernel was validated with an increm
 - Build, install and boot-test notes: https://github.com/xbill9/android_kernel_google_msm-4.9/tree/main/backport-tools/lineage-24.0
 - Install from a laptop: https://github.com/xbill9/android_kernel_google_msm-4.9/blob/main/INSTALL.md
 - Device tree: https://github.com/xbill9/android_device_google_bonito/tree/lineage-24.0
-- Forks: https://github.com/xbill9/android_system_core, https://github.com/xbill9/android_system_vold, https://github.com/xbill9/android_system_bpf, https://github.com/xbill9/android_packages_modules_Connectivity, https://github.com/xbill9/android_system_zygote
+- Fork, system/core: https://github.com/xbill9/android_system_core
+- Fork, system/vold: https://github.com/xbill9/android_system_vold
+- Fork, system/bpf: https://github.com/xbill9/android_system_bpf
+- Fork, Connectivity: https://github.com/xbill9/android_packages_modules_Connectivity
+- Fork, system/zygote: https://github.com/xbill9/android_system_zygote
 - The 23.2 port: https://dev.to/gde/android-16-on-a-49-kernel-lineageos-232-on-the-pixel-3a-5e79
 - The EC2 build: https://dev.to/aws-builders/rent-the-cores-keep-the-phone-building-lineageos-24-on-ec2-and-iterating-at-home-4pmc
 - MindTheGapps 17.0.0 arm64: https://github.com/MindTheGapps/17.0.0-arm64
