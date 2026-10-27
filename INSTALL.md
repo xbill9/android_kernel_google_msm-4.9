@@ -53,11 +53,23 @@ Each run installs into the phone's other slot, so the slot flips every time.
 
 ## First install on a phone without this ROM (wipes the phone)
 
-Not tested with 24.0; this is the path the 23.2 release was tested with. Back up first. With
-the bootloader unlocked:
+Tested with 24.0 on a phone whose slots held a build that did not boot. Back up first. With
+the bootloader unlocked, also download `boot.img`, `dtbo.img` and `vbmeta.img` from the same
+release into `~/sargo-rom`, then:
 
-1. `adb reboot bootloader`, then `fastboot -w` to wipe user data.
-2. Boot to recovery: choose Apply update, Apply from ADB, then
-   `adb sideload lineage-24.0-20261027-UNOFFICIAL-sargo.zip`. Accept the signature warning.
-3. Reboot system now, set the phone up, turn on USB debugging, then run
-   step 2 above to add Google apps.
+1. `adb reboot bootloader`, then flash this ROM's recovery and wipe user data:
+
+       cd ~/sargo-rom
+       fastboot flash boot boot.img
+       fastboot flash dtbo dtbo.img
+       fastboot flash vbmeta vbmeta.img
+       fastboot -w
+
+2. Boot to recovery. This bootloader refuses `fastboot reboot recovery`, so go through
+   fastbootd: `fastboot reboot fastboot`, then `fastboot reboot recovery`.
+3. On the phone choose Apply update, Apply from ADB, then run
+   `adb sideload lineage-24.0-20261027-UNOFFICIAL-sargo.zip`. The progress stops near 47% and
+   adb exits with `Total xfer: 1.00x`: that is a complete transfer. Accept the signature
+   warning if asked.
+4. Reboot system now. After the first boot, accept "Allow USB debugging?" on the phone, then
+   run step 2 above to add Google apps.
