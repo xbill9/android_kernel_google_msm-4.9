@@ -34,6 +34,7 @@ Leave the phone alone the rest of the time.
 
 ## Before the first run on a machine
 
+- `sudo apt install tmux` if `tmux` is missing.
 - The repacked GApps zip `MindTheGapps-17.0.0-arm64-20261022_132445-sargo.zip` goes in
   `~/sargo-bpf-test/gapps/`. With only the original MindTheGapps 17 zip there, the script
   repacks it first.
