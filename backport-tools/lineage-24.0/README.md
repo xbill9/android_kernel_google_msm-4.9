@@ -34,6 +34,15 @@ fork makes `repo sync` refuse the existing checkout ("--force-sync not
 enabled; cannot overwrite a local work tree"). Once, with the checkout clean
 and its commits on the fork: `repo sync -c --force-sync <paths>`.
 
+`repo sync` brings upstream changes to every project except the forks.
+`update-forks.sh` reports, for each `<remove-project>` the local manifest
+replaces with a fork, how many own commits the fork has and how many upstream
+commits it lacks (LineageOS `lineage-24.0`, or the AOSP tag of the `aosp`
+remote). `update-forks.sh --apply [path...]` rebases the fork's commits onto
+the upstream tip and force-pushes the fork branch (with a lease on the old
+tip); a conflict leaves the checkout at the fork tip and exits 1. Run it before
+`sync-24.sh`, so the sync checks out the rebased forks.
+
 The `system`/`packages` forks carry the Android 17 changes for a 4.9
 kernel: the legacy fscrypt session keyring (core, vold), a bpfloader that
 does not fail the boot on the ring buffer test program, and NetBpfLoad,
