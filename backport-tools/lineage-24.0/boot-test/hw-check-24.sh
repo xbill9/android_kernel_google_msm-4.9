@@ -159,10 +159,12 @@ else res FAIL display "screen did not turn OFF (state $(st))"; fi
 
 # Battery and charging
 bat() { sh_ cat /sys/class/power_supply/battery/$1; }
-lvl=$(bat capacity); stat=$(bat status); tmp=$(bat temp); mv=$(( $(bat voltage_now) / 1000 )); usb=$(sh_ cat /sys/class/power_supply/usb/online)
+lvl=$(bat capacity); stat=$(bat status); tmp=$(bat temp); mv=$(( $(bat voltage_now) / 1000 ))
+# a charger shows up as usb, a computer's port as pc_port
+for ps in usb pc_port; do usb=$(sh_ cat /sys/class/power_supply/$ps/online); [ "$usb" = 1 ] && break; done
 if [ "$usb" = 1 ] && [ "$tmp" -gt 0 ] && [ "$tmp" -lt 450 ]; then
-  res PASS battery "$lvl%, $stat, $((tmp/10)).$((tmp%10)) C, $mv mV, USB online ($(sh_ cat /sys/class/power_supply/usb/type))"
-else res FAIL battery "$lvl%, $stat, temp $tmp (tenths C), $mv mV, USB online $usb"; fi
+  res PASS battery "$lvl%, $stat, $((tmp/10)).$((tmp%10)) C, $mv mV, $ps online ($(sh_ cat /sys/class/power_supply/$ps/type))"
+else res FAIL battery "$lvl%, $stat, temp $tmp (tenths C), $mv mV, usb and pc_port offline"; fi
 
 # Storage: write and read back 256 MB on /data
 f=/data/local/tmp/hwcheck.bin
