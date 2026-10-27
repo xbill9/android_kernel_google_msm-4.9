@@ -2,6 +2,7 @@
 
 One command does everything: sync, build, install on the phone, put Google apps back,
 and compile the apps. It runs on either build machine with its own phone plugged in.
+To install a published build from a computer that does not build, see [INSTALL.md](INSTALL.md).
 
 ## Every time
 

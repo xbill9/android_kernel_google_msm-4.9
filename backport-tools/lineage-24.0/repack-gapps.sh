@@ -9,6 +9,8 @@ set -eu
 IN=$(realpath "$1")
 OUT=$(realpath -m "${2:-${IN%.zip}-sargo.zip}")
 H=${HOST_BIN:-$HOME/android/lineage-24.0/out/host/linux-x86/bin}
+# Without the tree (an install-only machine), use fsck.erofs from erofs-utils.
+FSCK=$H/fsck.erofs; [ -x "$FSCK" ] || FSCK=$(command -v fsck.erofs) || { echo "need fsck.erofs: apt install erofs-utils"; exit 1; }
 APEX=system/product/apex/com.google.android.gmssystem.prodvic.apex
 ALLOW=system/product/etc/sysconfig/allowed_apex_com.google.android.gmssystem.xml
 UB=META-INF/com/google/android/update-binary
@@ -17,7 +19,7 @@ cd "$W"
 
 unzip -q "$IN" "$APEX" "$UB"
 unzip -q -d apex "$APEX" apex_payload.img
-"$H/fsck.erofs" --extract=payload apex/apex_payload.img >/dev/null
+"$FSCK" --extract=payload apex/apex_payload.img >/dev/null
 GMS=$(cd payload && ls priv-app/*/*.apk)
 mkdir -p add/system/product/priv-app/PrebuiltGmsCoreVic add/system/product/etc
 cp "payload/$GMS" add/system/product/priv-app/PrebuiltGmsCoreVic/PrebuiltGmsCoreVic.apk
