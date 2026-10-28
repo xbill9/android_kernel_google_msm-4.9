@@ -113,14 +113,31 @@ that drops to an app's uid and calls `socket(AF_INET, SOCK_STREAM, 0)`:
 The group check is the only one in force, so the option stays on and the test
 keeps failing.
 
-## SELinux: sensors and /dev/diag
+## Third install: bonito `30b695b`, all test sets
 
-bonito `30b695b` adds `dontaudit sensors diag_device:chr_file rw_file_perms`;
-the `sensors` -> `diag_device` denial comes once, 45 s after boot. It is in the
-compiled `vendor_sepolicy.cil`; not yet in a build on a phone.
+The same kernel, `4.9.337-gbc60684a38ed`, with bonito `30b695b`. Installed
+into slot b (14:29), `post-install-24.sh` (33 speed-profile, 189 verify), then
+the tests ran 14:36 to 16:02.
+
+| Suite | Result | Report |
+|---|---|---|
+| `smoke-test-24.sh` | 19 pass, 0 fail, 8 check | `~/sargo-logs/937AY07L03-smoke-20261028-1436/` |
+| `hw-check-24.sh` | 20 pass, 0 fail, 2 skip | `~/sargo-logs/937AY07L03-hwcheck-20261028-1437/` |
+| `vts-kernel-24.sh all` | 10 modules pass, 5 fail, 4 skip; 1789 tests pass, 89 fail | `~/sargo-logs/937AY07L03-vts-kernel-all-20261028-1436/` |
+
+- Against the overnight run on 20261027 (1784 pass, 94 fail): the three net
+  tests fixed by `c80273ae0788` and `bc60684a38ed`, the `drop_caches_test`
+  pass, and kselftest `mm_mremap_test` now passes as a module, in 1.8 s against
+  the 10 min 13 s it ran before TradeFed gave up. kselftest is 24 pass, 1 fail
+  (`net_psock_tpacket`).
+- LTP: 1125 pass, 13 fail, 386 ignored; the same 13 failures as overnight.
+- The whole set ran with no unplanned reboot; the three reboots are
+  `vts_kernel_checkpoint_test`.
+- The `sensors` -> `diag_device` denial is gone. 28 denials in 9 kinds: the 7
+  other kinds above, plus `dex2oat` -> `system_data_file` dir `search` and
+  `artd` -> `app_data_file` lnk_file `read`, 2 each, from the dexopt run by
+  `post-install-24.sh`.
 
 ## Next
 
-- Run the quick set, kselftest and LTP on `gbc60684a38ed` with bonito
-  `30b695b`.
 - The `ueventd` `mac_admin` denial from 935AY06U23.
