@@ -52,8 +52,20 @@ MindTheGapps 17 20261022. Installed with `phone-install-24.sh`; bonito at `3dbaf
 
   The two `hal_camera_default` property reads at the top (24 of the 78) are the
   ones bonito `0e07c00` fixes; it is on the fork and not in this build. The
-  `isolated_app`, `sysfs_msm_subsys`, `ueventd` and `artd` denials are new in
-  this report and not yet looked into.
+  others, checked against the 937AY07L03 logs of the same night:
+
+  - `untrusted_app_34` -> `sysfs_msm_subsys` dir `search`: apps' GPU threads
+    (`RenderThread`, Chrome's `CrGpuMain`) look up `5000000.qcom,kgsl-3d0`,
+    which bonito labels `sysfs_msm_subsys`
+    (`sepolicy/vendor/qcom/common/genfs_contexts:52`). Rendering works.
+  - `isolated_app` -> `app_data_file` file `setattr`: Chrome's isolated process
+    on its own downloads (`model.crx3`, `manifest.json`,
+    `verified_contents.json`). Platform rules forbid isolated apps writing app
+    data, so device policy cannot allow it.
+  - `artd` -> `app_data_file` lnk_file `read`: the app compiler following an
+    app's `lib` link; twice on 937AY07L03.
+  - `ueventd` -> `ueventd` capability `mac_admin`: not in the 937AY07L03 logs;
+    needs the 935AY06U23 log.
 
 ## VTS kernel, quick set
 
@@ -138,10 +150,20 @@ stayed cached; the test allows 2) and passed on an earlier run. Report:
 | vts_linux_kselftest_arm_64 | FAIL 23 pass, 2 fail, 4 ignored |
 | vts_ltp_test_arm_64 | FAIL 1125 pass, 13 fail, 386 ignored |
 
-- **The phone stops responding during `mm_mremap_test`.** The test started at
-  20:56:07. At 21:05:13 TradeFed logged `Device 937AY07L03 package manager is
-  unresponsive` and rebooted the phone (`reboot,shell` at 21:05:47); the reboot
-  ended the test with exit 143 and no output, recorded at 21:06:20.
+- **`mm_mremap_test` never ends on 4.9.** Run alone with a terminal on
+  2026-10-28, it passes subtests 1 and 2 and then spins in user space in
+  subtest 3, "Source Address Misaligned (1KB-aligned)". `get_source_mapping()`
+  asks `mmap` for an exact address with `MAP_FIXED_NOREPLACE`, which 4.9 does
+  not know: the kernel ignores the flag, treats the address as a hint and
+  returns a 4 KB-aligned address, which never passes the test's 1 KB-aligned
+  check, so it unmaps and retries forever. The phone stayed responsive for the
+  20 minutes it ran (1.43 GB available, swap untouched, nothing in the kernel
+  log). The night before, TradeFed logged `Device 937AY07L03 package manager is
+  unresponsive` 9 minutes into the test (20:56:07 to 21:05:13) and rebooted the
+  phone; why the package manager stopped answering that night is not known.
+  The kernel now has `MAP_FIXED_NOREPLACE` (upstream `a4ff8e8620d3` with the
+  overlap fix `7aa867dd8952`, value `0x100000` as in 4.17 and bionic); it is
+  not yet on a phone.
 - **`net_psock_tpacket`.** TPACKET_V1, V2 and V3 receive rings and V1, V2
   transmit rings pass 100 packets each; the V3 transmit ring fails with `EINVAL`,
   which 4.9 returns on purpose (`net/packet/af_packet.c:4332`).
@@ -159,10 +181,16 @@ stayed cached; the test allows 2) and passed on an earlier run. Report:
 
 ## Next
 
-- Run `mm_mremap_test` alone with the kernel log streaming, to see why the phone
-  stops responding.
+- Build with `MAP_FIXED_NOREPLACE` and rerun kselftest `mm_mremap_test`.
 - Sync and build to pick up bonito `0e07c00`, then repeat the three suites.
-- Decide on the 4 changeable network failures: backport the `SO_MARK` route
-  reset, turn off `CONFIG_ANDROID_PARANOID_NETWORK`, remove
-  `tcp_default_init_rwnd`.
-- Look into the new `isolated_app`, `sysfs_msm_subsys`, `ueventd` and `artd` denials.
+- The 4 changeable network failures each need more than one change:
+  - `SO_MARK`: upstream `50254256f382` (5.0). Its 4.4 stable backport was
+    dropped for breaking Android runtime tests as "an incomplete backport".
+  - `CONFIG_ANDROID_PARANOID_NETWORK=n` is safe only while netd's BPF program
+    blocks socket creation for apps without INTERNET.
+    `prog_netd_cgroupsock_inet_create` is loaded on 937AY07L03; that it blocks
+    such an app is untested.
+  - `tcp_default_init_rwnd` sets the initial receive window
+    (`net/ipv4/tcp_output.c:190`); the test then asks for at least 64,000
+    bytes, so removing the sysctl needs the newer window code with it.
+- Find the `ueventd` `mac_admin` denial in the 935AY06U23 log.
