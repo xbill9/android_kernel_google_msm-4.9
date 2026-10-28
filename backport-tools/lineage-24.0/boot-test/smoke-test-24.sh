@@ -61,7 +61,9 @@ sh input keyevent KEYCODE_WAKEUP; sh wm dismiss-keyguard; sleep 4
 ss=$(sh "dumpsys sensorservice")
 for s in "BMI160 Accelerometer" "TMD2725 Ambient Light" "BMP380 Barometer"; do
   n=$(echo "$ss" | grep -A60 "^$s: last" | grep -oE 'ts=[0-9.]+' | cut -d= -f2 | sort -n | tail -1 | cut -d. -f1)
-  [ -n "$n" ] && [ $((up - n)) -lt 60 ] 2>/dev/null && res PASS "sensor ${s%% *} ${s##* }" "event $((up - n)) s ago" || res FAIL "sensor ${s%% *} ${s##* }" "no event in the last minute"
+  # Nothing keeps the barometer open; Play Services samples it now and then, so any event since boot counts
+  case $s in *Barometer) win=$((up + 1)) ;; *) win=60 ;; esac
+  [ -n "$n" ] && [ $((up - n)) -lt $win ] 2>/dev/null && res PASS "sensor ${s%% *} ${s##* }" "event $((up - n)) s ago" || res FAIL "sensor ${s%% *} ${s##* }" "no event in the last $win s"
 done
 ns=$(echo "$ss" | grep -cE '^0x[0-9a-f]+\) .*\| ')
 res CHECK "sensor list" "$ns sensors registered"
