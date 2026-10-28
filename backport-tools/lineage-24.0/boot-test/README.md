@@ -18,6 +18,11 @@ images under `~/sargo-bpf-test/kmsglog/`, the tree in `~/android/lineage-24.0`.
 
 ## Status, 2026-10-27
 
+- **Test suites on the 14:44 build** (935AY06U23, slot b): smoke 18 pass and
+  1 fail (a test bug, fixed), hardware check 20 pass, VTS kernel quick set 10
+  modules pass and 5 fail. Details in
+  [test-results-20261027.md](test-results-20261027.md).
+
 - **Hardware check** (`hw-check-24.sh`, 24.0-20261027 with GApps): 20 pass,
   0 fail, 2 skipped (no SIM, microphone) on both 937AY07L03 (slot a) and
   935AY06U23 (slot a, 14:02 build). Rear and front camera photos, speaker
