@@ -67,9 +67,58 @@ The same as on 935AY06U23 with the 14:44 build, module for module, except
 `vts_virtual_ab_test` now show as SKIP. `vts_kernel_checkpoint_test` reboots the
 phone as part of the test (three reboots, 12:20 to 12:23).
 
+## Second install: SO_MARK and the initial receive window
+
+Kernel `4.9.337-gbc60684a38ed` adds `c80273ae0788` (`SO_MARK` resets the
+socket's cached route, upstream `50254256f382`) and `bc60684a38ed` (initial
+receive window of up to 64 KB and a 128 KB default `tcp_rmem[1]`, upstream
+`a337531b942b`, with Android's `tcp_default_init_rwnd` sysctl removed). Built
+in 29 min 27 s; installed into slot a, 2026-10-28 13:43 to 13:49.
+
+| Suite | Result | Report |
+|---|---|---|
+| `vts-kernel-24.sh vts_kernel_net_tests` | 577 pass, 70 fail, 6 ignored (403 s) | `~/sargo-logs/937AY07L03-vts-net-20261028-1350/` |
+| `smoke-test-24.sh` | 18 pass, 0 fail, 9 check | `~/sargo-logs/937AY07L03-smoke-20261028-1358/` |
+| `hw-check-24.sh` | 20 pass, 0 fail, 2 skip | `~/sargo-logs/937AY07L03-hwcheck-20261028-1359/` |
+
+- Of the 653 net tests, exactly three change, all from FAILED to PASSED:
+  `OutgoingTest#testIPv4Remarking`, `testIPv6Remarking` and
+  `TcpRcvWindowTest#testTcpCwndSize`. 4.9-stable dropped `50254256f382` in
+  4.9.205 for breaking Android networking tests; none of these breaks.
+- `/proc/sys/net/ipv4/tcp_default_init_rwnd` is gone; `tcp_rmem` reads
+  `4096 131072 6291456`. `net.tcp_def_init_rwnd` is still 60, so init still
+  writes the file at boot; no error from it is in logcat or the kernel log.
+- The smoke CHECK is "apps compiled" (1 speed-profile) after the OTA;
+  `post-install-24.sh` took it to 33 speed-profile, 189 verify.
+
+## Paranoid networking stays on
+
+`KernelFeatureTest#testRemovedAndroidParanoidNetwork` wants
+`CONFIG_ANDROID_PARANOID_NETWORK` off. On this kernel that would let apps
+without the INTERNET permission open sockets: netd attaches its socket-create
+BPF program (`prog_netd_cgroupsock_inet_create`, loaded) only on 4.14 and later
+(`packages/modules/Connectivity/bpf/netd/BpfHandler.cpp:157`). A test program
+that drops to an app's uid and calls `socket(AF_INET, SOCK_STREAM, 0)`:
+
+| uid | INTERNET | `inet` group (3003) | Result |
+|---|---|---|---|
+| 10147 (Recorder) | no | yes | ok |
+| 10147 | no | no | `EACCES` |
+| 10063 | yes | yes | ok |
+| 10063 | yes | no | `EACCES` |
+
+The group check is the only one in force, so the option stays on and the test
+keeps failing.
+
+## SELinux: sensors and /dev/diag
+
+bonito `30b695b` adds `dontaudit sensors diag_device:chr_file rw_file_perms`;
+the `sensors` -> `diag_device` denial comes once, 45 s after boot. It is in the
+compiled `vendor_sepolicy.cil`; not yet in a build on a phone.
+
 ## Next
 
-- `sensors` -> `diag_device`: check whether it comes only at boot.
-- The 4 changeable network failures (see
-  [test-results-20261027.md](test-results-20261027.md)).
+- Run the quick set, kselftest and LTP on `gbc60684a38ed` with bonito
+  `30b695b`.
+- The net test run took 403 s against 250 s on `g23ec590fc4aa`; find out why.
 - The `ueventd` `mac_admin` denial from 935AY06U23.
