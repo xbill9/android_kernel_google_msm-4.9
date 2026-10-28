@@ -66,7 +66,7 @@ MindTheGapps 17 20261022. Installed with `phone-install-24.sh`; bonito at `3dbaf
 | vts_memfd_class_selinux_test | SKIP (1 ignored) |
 | KernelApiSysfsTest | PASS 10, 2 skipped |
 | KernelAbilistTest | PASS 1 |
-| KernelDynamicPartitionsTest | FAIL, no results from TradeFed |
+| KernelDynamicPartitionsTest | SKIP, first API level 28 is below 29 |
 | vts_kernel_checkpoint_test | PASS 3 |
 | vts_kernel_fuse_bpf_test | PASS 1 |
 | f2fs_test | FAIL 0 pass, 4 fail |
@@ -74,7 +74,7 @@ MindTheGapps 17 20261022. Installed with `phone-install-24.sh`; bonito at `3dbaf
 | vts_kernel_isa_test | SKIP (1 ignored) |
 | zram_module_test | PASS 1 |
 | vts_test_binary_zram_module | FAIL 0 pass, 1 fail |
-| vts_virtual_ab_test | FAIL, no results from TradeFed |
+| vts_virtual_ab_test | SKIP, first API level 28 is below 30 |
 | vts_test_binary_bow_module | PASS 13 |
 
 Failures:
@@ -93,18 +93,76 @@ Failures:
   | 1 | `kernel_feature_test.KernelFeatureTest#testRemovedAndroidParanoidNetwork` |
   | 1 | `bpf_test.BpfTest#testGetNetNsCookie` |
 
-  Not yet sorted into features missing from 4.9 and bugs.
+  The net tests run in their own network namespace (`kernel/tests/net/test/namespace.py:142`).
+  69 of the 73 need features that 4.9 lacks:
+
+  | Count | Class | What the kernel is missing |
+  |---|---|---|
+  | 48 | `XfrmInterfaceMigrateTest` | `xfrm_do_migrate` passes no interface ID to `xfrm_migrate` (`net/xfrm/xfrm_user.c:2406`), so migrating a state on an XFRM interface finds nothing: `ESRCH` |
+  | 13 | `RIOTest` | `accept_ra_min_lft` is absent from `net/ipv6/addrconf.c` |
+  | 3 | `SysctlsTest` | The congestion control sysctls exist, but in the global `ipv4_table` (`net/ipv4/sysctl_net_ipv4.c:523`, `587`, `593`), which a new network namespace does not see |
+  | 2 | `TcpFastOpenTest` | `tcp_fastopen_blackhole_timeout_sec` is absent |
+  | 2 | `XfrmFunctionalTest` | IPv6 ESP in UDP: `EINVAL`; `net/ipv6/esp6.c` has no UDP encapsulation |
+  | 1 | `BpfTest#testGetNetNsCookie` | `SO_NETNS_COOKIE` is absent: `ENOPROTOOPT` |
+
+  The other 4 are behaviour or configuration that can change:
+
+  | Count | Test | Cause |
+  |---|---|---|
+  | 2 | `OutgoingTest#testIPv4Remarking`, `testIPv6Remarking` | Setting `SO_MARK` updates `sk_mark` and leaves the socket's cached route (`net/core/sock.c:951`), so a connected UDP socket keeps sending by the old route. A backport candidate |
+  | 1 | `KernelFeatureTest#testRemovedAndroidParanoidNetwork` | `CONFIG_ANDROID_PARANOID_NETWORK=y` (`net/Kconfig:95` defaults to y): a process in the `net_raw` group can open an `AF_PACKET` socket, and the test expects `EPERM` |
+  | 1 | `TcpRcvWindowTest#testTcpCwndSize` | The test requires `/proc/sys/net/ipv4/tcp_default_init_rwnd` to be gone; this kernel still has Android's old sysctl (`net/ipv4/sysctl_net_ipv4.c:1054`) |
 - **f2fs, 4.** Each test's setup mounts a loop image with `compress_mode=user`
   (`F2fsTest.cpp:79`), which returns -1: the 4.9 f2fs has no compression.
 - **zram, 1.** `ZramTest.cpp:50: Failed to read /proc/swaps`. The phone has zram
-  swap (`/dev/block/zram0`, 2 GB, in use), so the test process cannot read the
-  file; cause not found.
-- **KernelDynamicPartitionsTest, vts_virtual_ab_test.** Both modules built;
-  TradeFed reported "No test results available". No test ran.
+  swap (`/dev/block/zram0`, 2 GB, in use). The module runs as the shell user
+  (`RootTargetPreparer` with `force-root` false), and the platform SELinux policy
+  lets only `system_server`, `recovery`, `mmd`, `mmd_setup`, `fsck` and `e2fs`
+  read `proc_swaps`. As the shell user, `cat /proc/swaps` gives `Permission
+  denied`; the same test binary run as root passes.
+- **KernelDynamicPartitionsTest, vts_virtual_ab_test.** TradeFed skips both:
+  `Skipping module ... because API Level 28 from ro.product.first_api_level is
+  less than 29` (30 for virtual A/B). sargo launched on API 28. `vts-kernel-24.sh`
+  reports them as SKIP since `85f9252`.
+
+## VTS kernel, kselftest and LTP (937AY07L03)
+
+`vts-kernel-24.sh all` on 937AY07L03, slot a, the earlier `24.0-20261027` build
+(kernel `4.9.337-g5a72ebfd04ec`), 2026-10-27 20:23 to 22:01. Its quick set gave
+the same results as above, except `drop_caches_test`, which failed once (4 pages
+stayed cached; the test allows 2) and passed on an earlier run. Report:
+`~/sargo-logs/937AY07L03-vts-kernel-all-20261027-2023/`.
+
+| Module | Result |
+|---|---|
+| vts_linux_kselftest_arm_64 | FAIL 23 pass, 2 fail, 4 ignored |
+| vts_ltp_test_arm_64 | FAIL 1125 pass, 13 fail, 386 ignored |
+
+- **The phone stops responding during `mm_mremap_test`.** The test started at
+  20:56:07. At 21:05:13 TradeFed logged `Device 937AY07L03 package manager is
+  unresponsive` and rebooted the phone (`reboot,shell` at 21:05:47); the reboot
+  ended the test with exit 143 and no output, recorded at 21:06:20.
+- **`net_psock_tpacket`.** TPACKET_V1, V2 and V3 receive rings and V1, V2
+  transmit rings pass 100 packets each; the V3 transmit ring fails with `EINVAL`,
+  which 4.9 returns on purpose (`net/packet/af_packet.c:4332`).
+- **LTP, 7 for features 4.9 lacks** (LTP reports TCONF, VTS counts it as a fail):
+  `ioctl_ns07` (needs 4.11), `munmap04` (needs 4.17), `unshare03` (`clone3`),
+  `userfaultfd03` and `userfaultfd04` (`CONFIG_USERFAULTFD=n`), `statx10` and
+  `statx12` (`statx` gives `ENOSYS`).
+- **LTP, 5 that behave differently:** `getitimer01` and `setitimer01` (a
+  10,000 µs interval reads back as 13,323 and 13,332 µs; `CONFIG_HZ=300`, a
+  3,333 µs tick), `readahead01` (`readahead()` on a directory succeeds),
+  `inotify07` and `inotify08` (no events from files on overlayfs).
+- **LTP, 1 timeout:** `pty09`.
+- The LTP module stops the Android framework for its run (`StopServicesSetup`),
+  so the screen is black until it ends.
 
 ## Next
 
+- Run `mm_mremap_test` alone with the kernel log streaming, to see why the phone
+  stops responding.
 - Sync and build to pick up bonito `0e07c00`, then repeat the three suites.
-- Sort the 73 network failures into missing features and kernel bugs.
-- Find what blocks the zram test's read of `/proc/swaps`.
+- Decide on the 4 changeable network failures: backport the `SO_MARK` route
+  reset, turn off `CONFIG_ANDROID_PARANOID_NETWORK`, remove
+  `tcp_default_init_rwnd`.
 - Look into the new `isolated_app`, `sysfs_msm_subsys`, `ueventd` and `artd` denials.
