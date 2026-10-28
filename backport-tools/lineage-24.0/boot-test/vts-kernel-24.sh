@@ -4,10 +4,11 @@
 # per module with its test counts, or SKIP when no test ran (e.g. the feature is absent),
 # and saves each module's atest output.
 # Left out: the GKI, 16 KB page size and bootloader tests, which need a newer kernel or device.
-# Usage: vts-kernel-24.sh [quick|ltp|kselftest|all] [report dir]
+# Usage: vts-kernel-24.sh [quick|ltp|kselftest|all|<module>] [report dir]
 #   quick      the kernel API, file system, encryption, networking and BPF modules
 #   ltp        the Linux Test Project (long)
 #   kselftest  the kernel's own self-tests
+#   <module>   one module by name, e.g. f2fs_test
 set -u
 TREE=${LINEAGE_TREE:-$HOME/android/lineage-24.0}
 SET=${1:-quick}
@@ -21,7 +22,8 @@ case $SET in
   ltp) MODS=vts_ltp_test_arm_64; LIMIT=28800 ;;
   kselftest) MODS=vts_linux_kselftest_arm_64; LIMIT=7200 ;;
   all) MODS="$QUICK vts_linux_kselftest_arm_64 vts_ltp_test_arm_64"; LIMIT=28800 ;;
-  *) sed -n '7,10p' "$0"; exit 1 ;;
+  -*) sed -n '7,11p' "$0"; exit 1 ;;
+  *) MODS=$SET; LIMIT=28800 ;;
 esac
 
 [ "$(adb devices | grep -c 'device$')" = 1 ] || { echo "need exactly one phone (adb devices)"; exit 1; }
@@ -42,7 +44,14 @@ for m in $MODS; do
   # atest prints one line per ABI: "arm64-v8a <module>: Passed: 1, Failed: 0, Ignored: 0, Assumption Failed: 0"
   sum=$(grep -E "(^| )$m: Passed: [0-9]+" "$log" | awk -F'[:,] *' '{p+=$3; f+=$5; i+=$7; a+=$9} END {if (NR) print p, f, i, a}')
   if [ -z "$sum" ]; then
-    why=$( [ $rc = 124 ] && echo "timed out after ${LIMIT}s" || grep -m1 -iE 'error|fail' "$log" | cut -c1-80)
+    # The runner skips a whole module the phone is exempt from (e.g. first API level too low)
+    rdir=$(grep -m1 -oE '/tmp/atest_result_[^ ]+/log' "$log")
+    why=$( [ -n "$rdir" ] && grep -rhoE "Skipping module $m because .*" "$rdir" 2>/dev/null | head -1 | sed "s/Skipping module $m because //")
+    if [ -n "$why" ]; then
+      printf '%-5s %-34s %s\n' SKIP "$m" "runner skipped it: $why" | tee -a "$R"; skip=$((skip+1)); continue
+    fi
+    why=$( [ $rc = 124 ] && echo "timed out after ${LIMIT}s" \
+      || grep -m1 -E '^FAILED: |error: |No test results available' "$log" | cut -c1-100)
     printf '%-5s %-34s %s\n' FAIL "$m" "no result: ${why:-exit $rc}" | tee -a "$R"; fail=$((fail+1)); continue
   fi
   read p f i a <<< "$sum"; tp=$((tp+p)); tf=$((tf+f))
