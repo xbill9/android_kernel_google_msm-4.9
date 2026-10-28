@@ -16,6 +16,14 @@ images under `~/sargo-bpf-test/kmsglog/`, the tree in `~/android/lineage-24.0`.
 | `capture-24.sh` | Streams logcat and `dmesg -w` to the host and records Wi-Fi link, ping times and Bluetooth state every 30 s. Reconnects across adb drops. |
 | `hw-check-24.sh` | Checks the hardware of a booted phone over adb in about 2 minutes: Wi-Fi traffic, Bluetooth off and on, NFC, modem and SIM, GNSS HAL, sensors, rear and front camera photos (Aperture), speaker output, vibrator, fingerprint HAL, screen off and on, battery, storage speed, crashes and SELinux denials. Prints PASS, FAIL or SKIP with the evidence and counts them; results and logs go to `~/sargo-logs/<serial>-hwcheck-<time>/`. Not covered: microphone, GPS fix, calls, fingerprint enrolment. Apps the user disabled are enabled for their test only. |
 
+## Status, 2026-10-28
+
+- **24.0-20261028 on 937AY07L03** (slot b, kernel with `MAP_FIXED_NOREPLACE`,
+  bonito `0e07c00`): smoke 19 pass, hardware check 20 pass, VTS kernel quick
+  set 10 modules pass, 3 fail, 4 skip; kselftest `mremap_test` finishes in 2 s
+  instead of looping. SELinux denials down to 26 in 8 kinds. Details in
+  [test-results-20261028.md](test-results-20261028.md).
+
 ## Status, 2026-10-27
 
 - **Test suites on the 14:44 build** (935AY06U23, slot b): smoke 18 pass and
