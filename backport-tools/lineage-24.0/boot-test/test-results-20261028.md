@@ -77,10 +77,13 @@ in 29 min 27 s; installed into slot a, 2026-10-28 13:43 to 13:49.
 
 | Suite | Result | Report |
 |---|---|---|
-| `vts-kernel-24.sh vts_kernel_net_tests` | 577 pass, 70 fail, 6 ignored (403 s) | `~/sargo-logs/937AY07L03-vts-net-20261028-1350/` |
+| `vts-kernel-24.sh vts_kernel_net_tests` | 577 pass, 70 fail, 6 ignored (403 s, of which tests 3 min 38 s) | `~/sargo-logs/937AY07L03-vts-net-20261028-1350/` |
 | `smoke-test-24.sh` | 18 pass, 0 fail, 9 check | `~/sargo-logs/937AY07L03-smoke-20261028-1358/` |
 | `hw-check-24.sh` | 20 pass, 0 fail, 2 skip | `~/sargo-logs/937AY07L03-hwcheck-20261028-1359/` |
 
+- The tests ran 3 min 38 s (13:54:01 to 13:57:39 in the TradeFed host log),
+  against 3 min 40 s on `g23ec590fc4aa`; the rest of the 403 s is atest's build
+  step, the first after a platform build.
 - Of the 653 net tests, exactly three change, all from FAILED to PASSED:
   `OutgoingTest#testIPv4Remarking`, `testIPv6Remarking` and
   `TcpRcvWindowTest#testTcpCwndSize`. 4.9-stable dropped `50254256f382` in
@@ -120,5 +123,4 @@ compiled `vendor_sepolicy.cil`; not yet in a build on a phone.
 
 - Run the quick set, kselftest and LTP on `gbc60684a38ed` with bonito
   `30b695b`.
-- The net test run took 403 s against 250 s on `g23ec590fc4aa`; find out why.
 - The `ueventd` `mac_admin` denial from 935AY06U23.
