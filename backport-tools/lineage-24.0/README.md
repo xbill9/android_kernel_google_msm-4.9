@@ -133,7 +133,7 @@ With stub `gcc`/`cc`/`g++`/`c++` first on PATH that fail on use, it built
     bash build-24-guarded.sh     # build-24.sh in its own process group, stops at 10 GB free disk
 
 `build-24.sh` runs `lunch lineage_sargo cp2a userdebug` (the dashed form
-fails on 24) and `m bacon -j8`.
+fails on 24) and `m bacon -j$(nproc)` (`JOBS` overrides it).
 
 On the i7-3770 with 31 GB RAM, Soong analysis takes about 1 h 45 min and
 needs swap: `soong_build` held 31 GB resident with 44 GB of swap in use at the

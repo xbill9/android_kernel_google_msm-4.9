@@ -3,4 +3,4 @@
 cd ~/android/lineage-24.0 || exit 1
 source build/envsetup.sh
 lunch lineage_sargo cp2a userdebug || exit 1
-m bacon -j8
+m bacon -j${JOBS:-$(nproc)}
