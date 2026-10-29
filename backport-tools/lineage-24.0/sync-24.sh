@@ -5,6 +5,7 @@
 set -u
 T=~/android/lineage-24.0
 REF=~/android/lineage-23.2/.repo/project-objects
+HERE=$(dirname "$(readlink -f "$0")")
 log() { echo "$(date +%T) $*"; }
 mkdir -p $T && cd $T || exit 1
 
@@ -15,7 +16,7 @@ if [ ! -d .repo/manifests ]; then
 fi
 
 mkdir -p .repo/local_manifests
-cp "$(dirname "$(readlink -f "$0")")/local_manifest-sargo.xml" .repo/local_manifests/sargo.xml
+cp "$HERE/local_manifest-sargo.xml" .repo/local_manifests/sargo.xml
 
 # Disk guard: stop repo if free space drops under 15 GB.
 ( while sleep 30; do
