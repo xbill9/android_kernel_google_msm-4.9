@@ -19,14 +19,14 @@ The clone fetches only the install scripts, not the kernel source.
 
        git -C ~/sargo pull
        cd ~/sargo-rom
-       wget -nc https://github.com/xbill9/android_kernel_google_msm-4.9/releases/download/lineage-24.0-sargo-20261027/lineage-24.0-20261027-UNOFFICIAL-sargo.zip
+       wget -nc https://github.com/xbill9/android_kernel_google_msm-4.9/releases/download/lineage-24.0-sargo-20261101/lineage-24.0-20261101-UNOFFICIAL-sargo.zip
        wget -nc https://github.com/MindTheGapps/17.0.0-arm64/releases/download/MindTheGapps-17.0.0-arm64-20261022_132445/MindTheGapps-17.0.0-arm64-20261022_132445.zip
 
    For a newer build, take the ROM link from the newest `lineage-24.0-sargo-*` release.
 
 2. Plug in the phone, unlocked and booted, and run:
 
-       bash ~/sargo/backport-tools/lineage-24.0/phone-install-24.sh ~/sargo-rom/lineage-24.0-20261027-UNOFFICIAL-sargo.zip ~/sargo-rom/MindTheGapps-17.0.0-arm64-20261022_132445.zip
+       bash ~/sargo/backport-tools/lineage-24.0/phone-install-24.sh ~/sargo-rom/lineage-24.0-20261101-UNOFFICIAL-sargo.zip ~/sargo-rom/MindTheGapps-17.0.0-arm64-20261022_132445.zip
 
    The first run repacks MindTheGapps for this phone (a minute) and keeps the result
    next to it, so later runs reuse it.
@@ -68,7 +68,7 @@ release into `~/sargo-rom`, then:
 2. Boot to recovery. This bootloader refuses `fastboot reboot recovery`, so go through
    fastbootd: `fastboot reboot fastboot`, then `fastboot reboot recovery`.
 3. On the phone choose Apply update, Apply from ADB, then run
-   `adb sideload lineage-24.0-20261027-UNOFFICIAL-sargo.zip`. The progress stops near 47% and
+   `adb sideload lineage-24.0-20261101-UNOFFICIAL-sargo.zip`. The progress stops near 47% and
    adb exits with `Total xfer: 1.00x`: that is a complete transfer. Accept the signature
    warning if asked.
 4. Reboot system now. After the first boot, accept "Allow USB debugging?" on the phone, then
