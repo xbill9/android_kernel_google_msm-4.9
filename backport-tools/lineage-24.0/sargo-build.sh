@@ -7,7 +7,7 @@ T=~/android/lineage-24.0
 OUT=$T/out/target/product/sargo
 LOG=~/sargo-bpf-test/logs/build-24.log
 REPO=xbill9/android_kernel_google_msm-4.9
-DATE=$(date +%Y%m%d)
+DATE=$(date +%Y%m%d-%H%M)   # unique, so a rebuild never replaces a published release
 TAG=lineage-24.0-sargo-$DATE
 DIR=~/sargo-bpf-test/build-24.0-$DATE
 
@@ -36,11 +36,7 @@ cp .repo/local_manifests/sargo.xml "$DIR/local_manifest-sargo.xml"
 rm -f "$DIR/SHA256SUMS"
 (cd "$DIR" && sha256sum * > SHA256SUMS.tmp && mv SHA256SUMS.tmp SHA256SUMS)
 
-if gh release view "$TAG" -R "$REPO" >/dev/null 2>&1; then
-  gh release upload "$TAG" "$DIR"/* -R "$REPO" --clobber
-else
-  gh release create "$TAG" "$DIR"/* -R "$REPO" --prerelease \
-    --title "LineageOS 24.0 for Pixel 3a (sargo), $DATE" \
-    --notes "Automated build. Not tested on a phone."
-fi
+gh release create "$TAG" "$DIR"/* -R "$REPO" --prerelease \
+  --title "LineageOS 24.0 for Pixel 3a (sargo), $DATE" \
+  --notes "Automated build. Not tested on a phone."
 echo "== done: https://github.com/$REPO/releases/tag/$TAG"

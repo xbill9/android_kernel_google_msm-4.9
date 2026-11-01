@@ -27,7 +27,7 @@ install or a computer that does not build.
 Builds stay prereleases, and installers keep getting the release marked Latest. After testing
 on the phone, add the test notes and promote it:
 
-    gh release edit lineage-24.0-sargo-YYYYMMDD -R xbill9/android_kernel_google_msm-4.9 --prerelease=false --latest
+    gh release edit lineage-24.0-sargo-YYYYMMDD-HHMM -R xbill9/android_kernel_google_msm-4.9 --prerelease=false --latest
 
 ## If it stops
 
