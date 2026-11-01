@@ -2,7 +2,7 @@
 # LineageOS 24.0 for sargo on a fresh Ubuntu 24.04 EC2 instance: build packages, repo, a depth-1
 # sync with local_manifest-sargo.xml, then `m bacon` at full parallelism. Run it in tmux; it logs
 # to ~/build.log. Rerunning it skips finished steps (repo init, packages) and resumes the build.
-# Unlike sync-24.sh there is no 23.2 tree to reference, and repo fetches the platform clang itself
+# Unlike setup-24.sh, repo fetches the platform clang itself
 # instead of fetch-clang-24.sh's sparse checkout, so the clang remove-project line is dropped.
 set -u
 # Same absolute path as the local tree, so out/ can be copied home and built on incrementally.

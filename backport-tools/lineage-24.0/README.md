@@ -10,8 +10,7 @@ SELinux enforcing; boot status is in `boot-test/README.md`.
 
 `local_manifest-sargo.xml` goes in `.repo/local_manifests/sargo.xml` on top of
 `repo init -u https://github.com/LineageOS/android.git -b lineage-24.0 --git-lfs`.
-`sync-24.sh` does both, at depth 1 with `--reference` to the 23.2 tree's git
-objects.
+`setup-24.sh` does both, at depth 1, and fetches the clang prebuilts.
 
 | Path | Repository | Branch |
 |---|---|---|
@@ -40,8 +39,8 @@ replaces with a fork, how many own commits the fork has and how many upstream
 commits it lacks (LineageOS `lineage-24.0`, or the AOSP tag of the `aosp`
 remote). `update-forks.sh --apply [path...]` rebases the fork's commits onto
 the upstream tip and force-pushes the fork branch (with a lease on the old
-tip); a conflict leaves the checkout at the fork tip and exits 1. Run it before
-`sync-24.sh`, so the sync checks out the rebased forks.
+tip); a conflict leaves the checkout at the fork tip and exits 1. `sargo-build`
+stops when a fork is behind, and rerunning it after `--apply` picks up the rebased forks.
 
 The `system`/`packages` forks carry the Android 17 changes for a 4.9
 kernel: the legacy fscrypt session keyring (core, vold), a bpfloader that
@@ -130,10 +129,10 @@ With stub `gcc`/`cc`/`g++`/`c++` first on PATH that fail on use, it built
 
 ## Build
 
-    bash build-24-guarded.sh     # build-24.sh in its own process group, stops at 10 GB free disk
+    sargo-build
 
-`build-24.sh` runs `lunch lineage_sargo cp2a userdebug` (the dashed form
-fails on 24) and `m bacon -j$(nproc)` (`JOBS` overrides it).
+`sargo-build.sh` runs `lunch lineage_sargo cp2a userdebug` (the dashed form
+fails on 24) and `m bacon -j$(nproc)`.
 
 On the i7-3770 with 31 GB RAM, Soong analysis takes about 1 h 45 min and
 needs swap: `soong_build` held 31 GB resident with 44 GB of swap in use at the

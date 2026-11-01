@@ -85,7 +85,7 @@ The two hashes must match.
 
 ### The published release
 
-Published releases carry test notes. Download the latest and check it:
+Promoted releases carry test notes, and `gh` skips prereleases. Download the latest and check it:
 
     mkdir -p ~/sargo-rom && cd ~/sargo-rom
     gh release download -R xbill9/android_kernel_google_msm-4.9 --pattern 'lineage-24.0-*.zip' --pattern SHA256SUMS --clobber

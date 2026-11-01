@@ -1,46 +1,50 @@
 # Build and install LineageOS 24.0 on the Pixel 3a
 
-One command does everything: sync, build, install on the phone, put Google apps back,
-and compile the apps. It runs on either build machine with its own phone plugged in.
-To install a published build from a computer that does not build, see [INSTALL.md](INSTALL.md).
-To copy the tree between the build machines or fetch a ROM zip, see [SYNC-AND-PULL.md](SYNC-AND-PULL.md).
+Two commands. Both run on either build machine.
 
-## Every time
+## Build a new ROM
 
-    git -C ~/android_kernel_google_msm-4.9 pull
-    tmux new -s phone
-    bash ~/android_kernel_google_msm-4.9/backport-tools/lineage-24.0/phone-update-24.sh
+    tmux new -s rom
+    sargo-build
 
-`tmux` keeps it running if the window closes; `tmux attach -t phone` gets back to it.
-It takes about 30 minutes to 2 hours, mostly the build.
+It pulls upstream, builds, and publishes the ROM to
+[GitHub releases](https://github.com/xbill9/android_kernel_google_msm-4.9/releases) as a
+prerelease. It takes about 30 minutes to 2 hours. `tmux attach -t rom` gets back to it.
 
-## The one thing you do
+## Install it on the phone
 
-When the script prints `>>> ON THE PHONE`, the phone is in recovery:
+    sargo-install
 
-1. It says **Signature verification failed**: tap **Yes** (install anyway).
-2. When it finishes: tap **Reboot system now**.
+The phone must be plugged in with USB debugging on. When it prints `>>> ON THE PHONE`, tap
+**Yes** at "Signature verification failed", then **Reboot system now** when it finishes.
+Each install goes into the phone's other slot, so the slot flips every time.
 
-Leave the phone alone the rest of the time.
+The GApps zip goes in `~/sargo-bpf-test/gapps/`. See [INSTALL.md](INSTALL.md) for a first
+install or a computer that does not build.
 
-## How it ends
+## Promote a tested build
 
-- `=== DONE: 24.0-...-UNOFFICIAL-sargo on slot _a` (or `_b`): finished.
-- `!!! STOPPED: ...`: something failed. The line says what; send it and the log it names.
+Builds stay prereleases, and installers keep getting the release marked Latest. After testing
+on the phone, add the test notes and promote it:
 
-## Shortcuts
+    gh release edit lineage-24.0-sargo-YYYYMMDD -R xbill9/android_kernel_google_msm-4.9 --prerelease=false --latest
 
-    SKIP_SYNC=1 bash .../phone-update-24.sh               # build without syncing
-    SKIP_SYNC=1 SKIP_BUILD=1 bash .../phone-update-24.sh  # install the last build again
+## If it stops
 
-## Before the first run on a machine
+- **Forks are behind upstream:** run this, then `sargo-build` again. It rebases your fork
+  commits onto upstream and force-pushes the forks.
 
-- `sudo apt install tmux` if `tmux` is missing.
-- The repacked GApps zip `MindTheGapps-17.0.0-arm64-20261022_132445-sargo.zip` goes in
-  `~/sargo-bpf-test/gapps/`. With only the original MindTheGapps 17 zip there, the script
-  repacks it first.
-- The phone needs USB debugging on and this computer allowed (`adb devices` shows `device`).
-- Each run installs into the phone's other slot, so the slot flips every time.
+      bash ~/android_kernel_google_msm-4.9/backport-tools/lineage-24.0/update-forks.sh --apply
 
-Logs are in `~/sargo-bpf-test/logs/`: `sync-24-*.log` and `build-24.log`; the install itself prints to the terminal.
-The details behind each step are in `backport-tools/lineage-24.0/README.md`.
+  A conflict leaves that fork unchanged, and you rebase it by hand.
+- **Build failed:** the log is `~/sargo-bpf-test/logs/build-24.log`.
+
+## New machine
+
+    gh repo clone xbill9/android_kernel_google_msm-4.9 ~/android_kernel_google_msm-4.9
+    cd ~/android_kernel_google_msm-4.9/backport-tools/lineage-24.0
+    ln -s "$PWD/sargo-build.sh" ~/bin/sargo-build
+    ln -s "$PWD/phone-install-24.sh" ~/bin/sargo-install
+    bash setup-24.sh
+
+To copy the tree between build machines, see [SYNC-AND-PULL.md](SYNC-AND-PULL.md).

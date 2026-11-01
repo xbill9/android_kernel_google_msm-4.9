@@ -3,12 +3,12 @@
 # The phone must be booted into one of these 24.0 userdebug builds (adb root works). The OTA goes
 # into its inactive slot with update_engine, so each run flips the slot.
 # The only manual step is on the phone, in recovery: "Install anyway", then "Reboot system now".
-# Usage: phone-install-24.sh lineage-24.0-<date>-UNOFFICIAL-sargo.zip [gapps.zip]
+# Installed as ~/bin/sargo-install. Usage: sargo-install [rom.zip [gapps.zip]]; default: the newest build.
 #   gapps.zip: the repacked MindTheGapps-17...-sargo.zip, or the original MindTheGapps 17 zip
 #   (repacked first). Default: the newest one in ~/sargo-bpf-test/gapps or next to the OTA.
 set -u
 B=$(dirname "$(readlink -f "$0")")
-Z=$(realpath "${1:?usage: phone-install-24.sh rom.zip [gapps.zip]}")
+Z=$(realpath "${1:-$HOME/android/lineage-24.0/out/target/product/sargo/lineage_sargo-ota.zip}")
 for d in ~/android/lineage-24.0/out/host/linux-x86/bin ~/platform-tools; do [ -x $d/adb ] && PATH=$d:$PATH; done
 log() { echo; echo "=== $(date +%T) $*"; }
 die() { echo "!!! STOPPED: $*"; exit 1; }
