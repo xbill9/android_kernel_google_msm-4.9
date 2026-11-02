@@ -81,43 +81,15 @@ Leave the source tree alone until it finishes.
 
 The two hashes must match.
 
-## Get the ROM
+## Get the ROM and install it
 
-### The published release
+    sargo-install
 
-Promoted releases carry test notes, and `gh` skips prereleases. Download the latest and check it:
-
-    mkdir -p ~/sargo-rom && cd ~/sargo-rom
-    gh release download -R xbill9/android_kernel_google_msm-4.9 --pattern 'lineage-24.0-*.zip' --pattern SHA256SUMS --clobber
-    sha256sum -c --ignore-missing SHA256SUMS
-
-The last line must end in `OK`. With no tag, `gh` takes the latest release. See what is
-published with:
-
-    gh release list -R xbill9/android_kernel_google_msm-4.9
-
-Without `gh`, take the zip link from the
-[releases page](https://github.com/xbill9/android_kernel_google_msm-4.9/releases).
-
-### The latest build on `gpu`
-
-The zip is here, and the dated name is the same file:
-
-    /android/lineage-24.0/out/target/product/sargo/lineage_sargo-ota.zip
-
-### The latest build on `build`, without syncing the tree
-
-    mkdir -p ~/sargo-rom
-    rsync -aL --partial --info=progress2 xbill@192.168.50.45:/home/xbill/android/lineage-24.0/out/target/product/sargo/lineage_sargo-ota.zip ~/sargo-rom/
-
-### Install it
-
-With a phone already on a 24.0 build (keeps data):
-
-    bash ~/android_kernel_google_msm-4.9/backport-tools/lineage-24.0/phone-install-24.sh <zip>
-
-`adb devices` must show exactly one phone. A phone on anything other than 24.0 needs the
-wipe in [INSTALL.md](INSTALL.md), so check first with `adb shell getprop ro.lineage.version`.
+It finds the newest build on the
+[releases page](https://github.com/xbill9/android_kernel_google_msm-4.9/releases), uses the copy
+`sargo-build` left in `~/sargo-bpf-test/` or downloads it to `~/sargo-rom/`, checks it against
+`SHA256SUMS`, and installs it. `sargo-install tested` takes the newest build marked Latest
+instead. Every build is published, so neither machine needs to copy a zip from the other.
 
 ### Keep a zip
 

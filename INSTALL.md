@@ -1,43 +1,35 @@
 # Install LineageOS 24.0 on a Pixel 3a from a laptop
 
-For a computer that only installs: no Android tree, no build. It downloads the ROM from
-this repository's GitHub releases and MindTheGapps from its own releases, then one command
-installs both and compiles the apps. Build machines use [BUILD-ROM.md](BUILD-ROM.md) instead.
+For a computer that only installs: no Android tree, no build. One command downloads the newest
+ROM from this repository's GitHub releases and MindTheGapps, installs both and compiles the
+apps. Build machines use [BUILD-ROM.md](BUILD-ROM.md) instead.
 
 ## Once per laptop (Debian or Ubuntu)
 
-    sudo apt install adb git unzip python3 erofs-utils
+    sudo apt install adb git unzip curl python3 erofs-utils
     git clone --depth 1 --filter=blob:none --sparse https://github.com/xbill9/android_kernel_google_msm-4.9.git ~/sargo
     git -C ~/sargo sparse-checkout set backport-tools/lineage-24.0
-    mkdir -p ~/sargo-rom
+    mkdir -p ~/bin && ln -sf ~/sargo/backport-tools/lineage-24.0/phone-install-24.sh ~/bin/sargo-install
 
-The clone fetches only the install scripts, not the kernel source.
+The clone fetches only the install scripts, not the kernel source. `~/bin` is on the PATH after
+the next login; until then, run `~/bin/sargo-install`.
 
 ## Every time
 
-1. Get the newest scripts and the files:
+Plug in the phone, unlocked and booted, and run:
 
-       git -C ~/sargo pull
-       cd ~/sargo-rom
-       wget -nc https://github.com/xbill9/android_kernel_google_msm-4.9/releases/download/lineage-24.0-sargo-20261101/lineage-24.0-20261101-UNOFFICIAL-sargo.zip
-       wget -nc https://github.com/MindTheGapps/17.0.0-arm64/releases/download/MindTheGapps-17.0.0-arm64-20261022_132445/MindTheGapps-17.0.0-arm64-20261022_132445.zip
+    sargo-install
 
-   For a newer build, take the ROM link from the newest `lineage-24.0-sargo-*` release.
+It updates the scripts, downloads the newest build to `~/sargo-rom` (once; about 1.2 GB) and
+checks it, downloads and repacks MindTheGapps the first time, and installs. Leave the phone
+alone except for this: when the script prints `>>> ON THE PHONE`, the phone is in recovery.
 
-2. Plug in the phone, unlocked and booted, and run:
+- It says **Signature verification failed**: tap **Yes** (install anyway).
+- When it finishes: tap **Reboot system now**.
 
-       bash ~/sargo/backport-tools/lineage-24.0/phone-install-24.sh ~/sargo-rom/lineage-24.0-20261101-UNOFFICIAL-sargo.zip ~/sargo-rom/MindTheGapps-17.0.0-arm64-20261022_132445.zip
-
-   The first run repacks MindTheGapps for this phone (a minute) and keeps the result
-   next to it, so later runs reuse it.
-
-3. When the script prints `>>> ON THE PHONE`, the phone is in recovery:
-   - It says **Signature verification failed**: tap **Yes** (install anyway).
-   - When it finishes: tap **Reboot system now**.
-
-   Leave the phone alone the rest of the time. The whole run takes about 15 minutes.
-
-It ends with `=== DONE: 24.0-...` when finished, or `!!! STOPPED: ...` naming what failed.
+The whole run takes about 15 minutes, plus the download. It ends with `=== DONE: 24.0-...`, or
+`!!! STOPPED: ...` naming what failed. `sargo-install tested` takes the newest build marked
+Latest (tested on a phone) instead of the newest build.
 
 ## What the phone needs
 
@@ -54,8 +46,9 @@ Each run installs into the phone's other slot, so the slot flips every time.
 ## First install on a phone without this ROM (wipes the phone)
 
 Tested with 24.0 on a phone whose slots held a build that did not boot. Back up first. With
-the bootloader unlocked, also download `boot.img`, `dtbo.img` and `vbmeta.img` from the same
-release into `~/sargo-rom`, then:
+the bootloader unlocked, download the ROM zip, `boot.img`, `dtbo.img` and `vbmeta.img` from the
+newest `lineage-24.0-sargo-*` [release](https://github.com/xbill9/android_kernel_google_msm-4.9/releases)
+into `~/sargo-rom`, then:
 
 1. `adb reboot bootloader`, then flash this ROM's recovery and wipe user data:
 
@@ -68,8 +61,8 @@ release into `~/sargo-rom`, then:
 2. Boot to recovery. This bootloader refuses `fastboot reboot recovery`, so go through
    fastbootd: `fastboot reboot fastboot`, then `fastboot reboot recovery`.
 3. On the phone choose Apply update, Apply from ADB, then run
-   `adb sideload lineage-24.0-20261101-UNOFFICIAL-sargo.zip`. The progress stops near 47% and
+   `adb sideload lineage-24.0-*-UNOFFICIAL-sargo.zip`. The progress stops near 47% and
    adb exits with `Total xfer: 1.00x`: that is a complete transfer. Accept the signature
    warning if asked.
 4. Reboot system now. After the first boot, accept "Allow USB debugging?" on the phone, then
-   run step 2 above to add Google apps.
+   run `sargo-install` to add Google apps.

@@ -15,17 +15,18 @@ prerelease. It takes about 30 minutes to 2 hours. `tmux attach -t rom` gets back
 
     sargo-install
 
-The phone must be plugged in with USB debugging on. When it prints `>>> ON THE PHONE`, tap
-**Yes** at "Signature verification failed", then **Reboot system now** when it finishes.
-Each install goes into the phone's other slot, so the slot flips every time.
+It installs the newest build from GitHub releases, downloading it only if this machine did not
+build it, and downloads GApps if it has no copy. `sargo-install tested` takes the newest build
+marked Latest instead. The phone must be plugged in with USB debugging on. When it prints
+`>>> ON THE PHONE`, tap **Yes** at "Signature verification failed", then **Reboot system now**
+when it finishes. Each install goes into the phone's other slot, so the slot flips every time.
 
-The GApps zip goes in `~/sargo-bpf-test/gapps/`. See [INSTALL.md](INSTALL.md) for a first
-install or a computer that does not build.
+See [INSTALL.md](INSTALL.md) for a laptop that does not build, or a first install.
 
 ## Promote a tested build
 
-Builds stay prereleases, and installers keep getting the release marked Latest. After testing
-on the phone, add the test notes and promote it:
+Builds stay prereleases until tested; `sargo-install tested` installs the newest promoted one.
+After testing on the phone, add the test notes and promote it:
 
     gh release edit lineage-24.0-sargo-YYYYMMDD-HHMM -R xbill9/android_kernel_google_msm-4.9 --prerelease=false --latest
 
