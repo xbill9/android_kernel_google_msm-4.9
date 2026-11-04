@@ -26,24 +26,47 @@ qcril_qmi_imss_request_set_ims_registration_v02: ims_service_enabled = FALSE
 ```
 
 A voice-centric modem with no voice over LTE gives up LTE; T-Mobile has no 3G
-to fall back to, so the phone wanders to other networks and is denied. Stock
-gets this key from Google's CarrierSettings, which Lineage does not ship.
+to fall back to, so the phone wanders to other networks and is denied.
 
-Setting it on a running phone brought registration and data back after a modem
-restart (17 of 18 five-second samples in service, IPv6 ping 2/2):
+Where the value comes from: bonito sets `platform_carrier_config_package` to
+`com.google.android.carrier` (Google's CarrierSettings, a vendor blob), so the
+AOSP CarrierConfig app and its `vendor.xml` are never read. CarrierSettings maps
+the Fi SIM (carrier id 1989, specific 10014) to `fi_us.pb`, which carries four
+keys and no VoLTE key. On stock the `true` comes from the Google Fi app (Tycho)
+as the carrier app, read second:
 
 ```
-adb shell cmd phone cc set-value -s 0 -p carrier_volte_available_bool true
-adb shell 'echo restart > /sys/kernel/debug/msm_subsys/modem'
+Fetch config for default app: com.google.android.carrier ... carrierid=1989,specificCarrierId=10014
+Fetch config for carrier app: com.google.android.apps.tycho ...
+```
+
+A ROM without Tycho keeps `false`. The fix in this tree appends one record to
+`vendor/google/sargo/proprietary/product/etc/CarrierSettings/fi_us.pb`; protobuf
+merges repeated messages, so the file decodes to the original four keys plus
+`carrier_volte_available_bool: true`. Built with the tree's `aprotoc` and
+`lineage/scripts/carriersettings-extractor/carrier_settings.proto`:
+
+```
+printf 'configs { config { key: "carrier_volte_available_bool" bool_value: true } }' \
+  | out/host/linux-x86/bin/aprotoc -I$P --encode=com.google.carrier.CarrierSettings \
+    $P/carrier_settings.proto >> fi_us.pb
+```
+
+Re-extracting the blobs from a stock image reverts it.
+
+Bind-mounted over `/product/etc/CarrierSettings/fi_us.pb` on a running phone,
+after deleting
+`/data/user_de/0/com.android.phone/files/carrierconfig-*` (cached answers) and
+restarting `com.android.phone` and the modem:
+
+```
+fi_us.pb with VoLTE (bind-mounted), modem restart: data in service 17/18 samples, longest run 85s, timeline [.#################], ping: 0% packet loss
 ```
 
 **Check on another tree:** `cmd phone cc get-value carrier_volte_available_bool`
-for the SIM, and `grep -E 'VoLTE setting|ims_service_enabled'` in logcat right
-before any loss of registration. The build-time fix in this tree is a
-CarrierConfig `vendor.xml` overlay in `device/google/bonito`
-(`overlay-lineage/packages/apps/CarrierConfig/res/xml/vendor.xml`), which is read
-after the carrier's own config and matches `mcc="310" mnc="260"
-imsi="31026097.*"` only.
+for the SIM, `dumpsys carrier_config | grep 'Fetch config'` to see which app
+answers, and `grep -E 'VoLTE setting|ims_service_enabled'` in logcat right
+before any loss of registration.
 
 ---
 
