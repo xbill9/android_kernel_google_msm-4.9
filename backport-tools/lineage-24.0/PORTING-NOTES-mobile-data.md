@@ -46,7 +46,7 @@ for the carrier) is not written yet.
 
 #### 2. clatd exits with status 127: kernels before 5.11 lack close_range
 
-**Cause confirmed in source; fix built, not yet tested on the phone.** Fi's data
+**Confirmed; fixed by a kernel backport.** Fi's data
 network is IPv6-only, and IPv4 goes through clatd (464XLAT). On sargo the CLAT
 tracker sits in `STARTING`, `v4-rmnet_data0` appears and disappears, and logcat
 repeats:
@@ -72,6 +72,18 @@ existing `pidfd_open` backport: `include/uapi/linux/close_range.h`,
 `fs/file.c`, `include/linux/syscalls.h`, `include/uapi/asm-generic/unistd.h`
 (`__NR_syscalls` 437), `arch/arm64/include/asm/unistd32.h` and
 `arch/arm64/include/asm/unistd.h` (`__NR_compat_syscalls` 437).
+
+With that kernel flashed alone (`fastboot flash boot_b`, data kept), clatd
+comes up on `v4-rmnet_data2` with `192.0.0.4`, `8.8.8.8` routes through it,
+and on mobile data with no Wi-Fi network connected:
+
+```
+ROM + close_range kernel (IPv4 ping): data in service 18/18 samples, timeline [##################], ping: 0% packet loss
+```
+
+`ping google.com` and an IPv6 ping to `2001:4860:4860::8888` also answered
+3 of 3. libsigchain logs one stack trace from `posix_spawn` when clatd starts;
+no crash follows.
 
 **Check on another tree:** any kernel older than 5.11 under Android 17 will hit
 this for every caller of `POSIX_SPAWN_CLOEXEC_DEFAULT`, not only clatd. Grep
