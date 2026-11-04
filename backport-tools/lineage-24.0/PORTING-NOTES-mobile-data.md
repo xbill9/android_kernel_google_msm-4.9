@@ -6,6 +6,22 @@ SIM gets data on stock (SP2A.220505.008), on an iPhone, and on a OnePlus N200
 running official LineageOS 24. Each item below says what to look for on another
 tree, and whether it was confirmed on the phone.
 
+Result with all fixes, built from the committed trees on 2026-11-04 and
+installed fresh over a stock-reset modem, Wi-Fi off, nothing set by hand:
+
+```
+VoLTE setting : 1   ims_service_enabled = TRUE
+FINAL build 2, fresh install, no overrides: data in service 18/18 samples, timeline [##################], ping: 0% packet loss
+ping google.com: 3 received (IPv4 through clatd, v4-rmnet_data3 192.0.0.4); IPv6 ping 3 received
+```
+
+| Fix | Repository | Commit |
+|---|---|---|
+| VoLTE key for Fi in `fi_us.pb` | `xbill9/proprietary_vendor_google_sargo` | `84e78b4` |
+| `close_range` syscall | `xbill9/android_kernel_google_msm-4.9` | `5b86ef09ed48` |
+| Fi `h2g2` APN for 310260 | `xbill9/android_vendor_apn` | `6acda79` |
+| Mobile data on by default | `xbill9/android_vendor_lineage` | `fe3f792` |
+
 Symptoms on sargo before the fixes: the phone registers on 310260 LTE at boot,
 loses registration a few seconds later, then searches and is denied by 311480
 and 310410 (causes 15 and 13). The state survives modem restarts and reboots;
