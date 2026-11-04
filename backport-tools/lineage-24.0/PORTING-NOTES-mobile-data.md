@@ -39,8 +39,11 @@ adb shell 'echo restart > /sys/kernel/debug/msm_subsys/modem'
 
 **Check on another tree:** `cmd phone cc get-value carrier_volte_available_bool`
 for the SIM, and `grep -E 'VoLTE setting|ims_service_enabled'` in logcat right
-before any loss of registration. The build-time fix (a carrier config overlay
-for the carrier) is not written yet.
+before any loss of registration. The build-time fix in this tree is a
+CarrierConfig `vendor.xml` overlay in `device/google/bonito`
+(`overlay-lineage/packages/apps/CarrierConfig/res/xml/vendor.xml`), which is read
+after the carrier's own config and matches `mcc="310" mnc="260"
+imsi="31026097.*"` only.
 
 ---
 
@@ -100,7 +103,9 @@ connection after attach is IMS, requested by `com.qualcomm.qti.cne`. When cne
 dropped the request about one second later, Android tore the connection down
 (`onTearDown: reason=CONNECTIVITY_SERVICE_UNWANTED`), the last connection on
 LTE was gone, and registration was lost three seconds later. Changed to `true`
-in this tree.
+in the `xbill9/android_vendor_lineage` fork. A device tree cannot override it:
+the build rejects two different values for one property, and the product
+partition, where Lineage sets it, is loaded last.
 
 ---
 
@@ -110,7 +115,8 @@ in this tree.
 `/product/etc/CarrierSettings`), so the Lineage APN list
 (`vendor/apn/upstream/apns-conf.xml`) is all a ROM has. It has `h2g2` only for
 310240 with a GID match, so a Fi SIM on 310260 fell back to T-Mobile's
-`fast.t-mobile.com`. Added to `vendor/apn/US.xml`:
+`fast.t-mobile.com`. Added to `vendor/apn/US.xml` in the
+`xbill9/android_vendor_apn` fork (branch `main`):
 
 ```
 <apn mcc="310" mnc="260" carrier="Google Fi" apn="h2g2" authtype="3"

@@ -32,4 +32,9 @@
   <project name="xbill9/android_system_zygote" path="system/zygote" remote="github" revision="lineage-24.0" groups="pdk" />
   <remove-project name="LineageOS/android_packages_modules_Connectivity" />
   <project name="xbill9/android_packages_modules_Connectivity" path="packages/modules/Connectivity" remote="github" revision="lineage-24.0" groups="pdk-cw-fs,pdk-fs" />
+  <!-- Google Fi mobile data: h2g2 APN for 310260 (apn), mobile data on by default (lineage). -->
+  <remove-project name="LineageOS/android_vendor_apn" />
+  <project name="xbill9/android_vendor_apn" path="vendor/apn" remote="github" revision="main" />
+  <remove-project name="LineageOS/android_vendor_lineage" />
+  <project name="xbill9/android_vendor_lineage" path="vendor/lineage" remote="github" revision="lineage-24.0" />
 </manifest>
