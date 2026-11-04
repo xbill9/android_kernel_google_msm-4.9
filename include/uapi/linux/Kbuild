@@ -86,6 +86,7 @@ header-y += cciss_defs.h
 header-y += cciss_ioctl.h
 header-y += cdrom.h
 header-y += cgroupstats.h
+header-y += close_range.h
 header-y += chio.h
 header-y += cm4000_cs.h
 header-y += cn_proc.h

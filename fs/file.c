@@ -17,6 +17,7 @@
 #include <linux/vmalloc.h>
 #include <linux/file.h>
 #include <linux/fdtable.h>
+#include <linux/close_range.h>
 #include <linux/bitops.h>
 #include <linux/interrupt.h>
 #include <linux/spinlock.h>
@@ -654,6 +655,71 @@ int __close_fd(struct files_struct *files, unsigned fd)
 out_unlock:
 	spin_unlock(&files->file_lock);
 	return -EBADF;
+}
+
+/*
+ * close_range() backport (upstream 5.9, CLOSE_RANGE_CLOEXEC from 5.11).
+ * Bionic's posix_spawn(POSIX_SPAWN_CLOEXEC_DEFAULT) calls
+ * close_range(3, ~0U, CLOSE_RANGE_CLOEXEC) in the child and exits with 127
+ * when it fails; Android 17 starts clatd that way.
+ */
+SYSCALL_DEFINE3(close_range, unsigned int, fd, unsigned int, max_fd,
+		unsigned int, flags)
+{
+	struct files_struct *files;
+	struct fdtable *fdt;
+	unsigned int last;
+
+	if (flags & ~(CLOSE_RANGE_UNSHARE | CLOSE_RANGE_CLOEXEC))
+		return -EINVAL;
+	if (fd > max_fd)
+		return -EINVAL;
+
+	if (flags & CLOSE_RANGE_UNSHARE) {
+		struct files_struct *displaced;
+		int err = unshare_files(&displaced);
+
+		if (err)
+			return err;
+		if (displaced)
+			put_files_struct(displaced);
+	}
+	files = current->files;
+
+	spin_lock(&files->file_lock);
+	fdt = files_fdtable(files);
+	if (fd >= fdt->max_fds) {
+		spin_unlock(&files->file_lock);
+		return 0;
+	}
+	last = min(max_fd, fdt->max_fds - 1);
+
+	if (flags & CLOSE_RANGE_CLOEXEC) {
+		for (; fd <= last; fd++)
+			__set_close_on_exec(fd, fdt);
+		spin_unlock(&files->file_lock);
+		return 0;
+	}
+
+	for (; fd <= last; fd++) {
+		struct file *file;
+
+		fdt = files_fdtable(files);
+		if (fd >= fdt->max_fds)
+			break;
+		file = fdt->fd[fd];
+		if (!file)
+			continue;
+		rcu_assign_pointer(fdt->fd[fd], NULL);
+		__clear_close_on_exec(fd, fdt);
+		__put_unused_fd(files, fd);
+		spin_unlock(&files->file_lock);
+		filp_close(file, files);
+		cond_resched();
+		spin_lock(&files->file_lock);
+	}
+	spin_unlock(&files->file_lock);
+	return 0;
 }
 
 void do_close_on_exec(struct files_struct *files)
