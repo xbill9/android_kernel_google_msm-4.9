@@ -3,7 +3,7 @@ title: "Android 17 on a 4.9 Kernel: LineageOS 24.0 on the Pixel 3a"
 published: false
 description: "The Pixel 3a runs LineageOS 24.0, Android 17, on its original 4.9 kernel with SELinux enforcing and Google apps. One kernel fix, five platform forks and a set of device-tree changes, each traced to a line of a boot log."
 tags: android, linux, kernel, lineageos
-cover_image: https://raw.githubusercontent.com/xbill9/android_kernel_google_msm-4.9/main/backport-tools/lineage-24.0/article/devto-cover.db4df46f.jpg
+cover_image: https://raw.githubusercontent.com/xbill9/android_kernel_google_msm-4.9/main/backport-tools/lineage-24.0/article/devto-cover.e89cf62e.jpg
 ---
 
 This article provides a step by step guide to running LineageOS 24.0, which is Android 17, on a Google Pixel 3a and its original 4.9 Linux kernel. It continues the LineageOS 23.2 port on the same phone. Every patch, script and build is published.
