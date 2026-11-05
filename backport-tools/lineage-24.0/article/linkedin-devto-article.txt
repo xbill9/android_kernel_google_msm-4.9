@@ -1,0 +1,14 @@
+I've been using Android since the early days, but Claude opened up a whole new window for old phones.
+
+Google's last build for the Pixel 3a was Android 12. Mine now runs Android 17, LineageOS 24.0, on its original 4.9 kernel, with SELinux enforcing and Google apps. The aim is to keep it current and out of a landfill.
+
+What it took:
+
+- 🟢 One kernel fix: cgroup_sk_clone() takes its cgroup_bpf reference. Before it, 2 of 9 boots hung; after it, 8 of 8 booted.
+- 🟢 Five platform forks so Android 17 runs on a kernel older than 5.10: the fscrypt session keyring, the BPF loader, netd and Connectivity, and the native app zygote.
+- 🟢 Each fix traced to a line of a boot log, with Claude working through the logs beside me.
+- 🟢 Wi-Fi, Bluetooth, sensors and Chrome all work, and the update installs over the previous build without losing data.
+
+dev.to: https://dev.to/gde/android-17-on-a-49-kernel-lineageos-240-on-the-pixel-3a-1mok
+Medium: https://medium.com/@xbill999/android-17-on-a-4-9-kernel-lineageos-24-0-on-the-pixel-3a-afdbeff25203
+Substack: https://xbill9.substack.com/p/android-17-on-a-49-kernel-lineageos
