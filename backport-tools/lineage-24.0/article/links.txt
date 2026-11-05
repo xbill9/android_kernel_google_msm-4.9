@@ -1,0 +1,3 @@
+devto = https://dev.to/gde/android-17-on-a-49-kernel-lineageos-240-on-the-pixel-3a-1mok
+medium = https://medium.com/@xbill999/android-17-on-a-4-9-kernel-lineageos-24-0-on-the-pixel-3a-afdbeff25203
+substack = https://xbill9.substack.com/p/android-17-on-a-49-kernel-lineageos
