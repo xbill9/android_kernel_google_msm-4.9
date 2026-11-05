@@ -290,7 +290,8 @@ The goal of this project was to run Android 17 on the Pixel 3a's original 4.9 ke
 - 🟢 Play Services runs as a system app from repacked MindTheGapps 17, and network location gives a fix.
 - 🟢 Compiling apps after an update brings Gmail from 1,372 ms to 1,010 ms to start.
 - ⚠️ Signed with test keys; recovery shows a signature warning on every install.
-- ⚠️ Calls, SMS, mobile data, audio by ear, taking photos, fingerprint enrolment, NFC payments and satellite GPS are untested.
+- 🟢 Mobile data works from a Google Fi data-only SIM in the 20261104-1751 build, over IPv4 and IPv6; the four fixes are in the mobile data porting notes.
+- ⚠️ Calls, SMS, audio by ear, taking photos, fingerprint enrolment, NFC payments and satellite GPS are untested.
 - ❌ Active Edge is off: the sensor DSP firmware rejects the CHRE program.
 
 Scope: one Pixel 3a (sargo, 932AY05KVV) with no SIM fitted, LineageOS 24.0 built 2026-10-27 from bonito `lineage-24.0` at `3f29377` and the five `lineage-24.0` forks, kernel 4.9.337 from this repository. The hang counts come from 9 and 8 boots of one phone; the Gmail figures are one run each. Parts of the analysis and writing were done with AI assistance (Claude); every log line comes from the phone or the build machine.
@@ -303,6 +304,8 @@ The strategy for running Android 17 on a 4.9 kernel was validated with an increm
 
 - Release, build and kernel source: https://github.com/xbill9/android_kernel_google_msm-4.9/releases/tag/lineage-24.0-sargo-20261027
 - Build, install and boot-test notes: https://github.com/xbill9/android_kernel_google_msm-4.9/tree/main/backport-tools/lineage-24.0
+- Mobile data with Google Fi, porting notes: https://github.com/xbill9/android_kernel_google_msm-4.9/blob/main/backport-tools/lineage-24.0/PORTING-NOTES-mobile-data.md
+- Mobile data release: https://github.com/xbill9/android_kernel_google_msm-4.9/releases/tag/lineage-24.0-sargo-20261104-1751
 - Install from a laptop: https://github.com/xbill9/android_kernel_google_msm-4.9/blob/main/INSTALL.md
 - Device tree: https://github.com/xbill9/android_device_google_bonito/tree/lineage-24.0
 - Fork, system/core: https://github.com/xbill9/android_system_core
