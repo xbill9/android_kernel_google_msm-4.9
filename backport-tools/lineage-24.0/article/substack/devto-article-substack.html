@@ -1,0 +1,368 @@
+<!doctype html><meta charset="utf-8"><title>Substack paste</title><body>
+<p>This article provides a step by step guide to running LineageOS 24.0,
+which is Android 17, on a Google Pixel 3a and its original 4.9 Linux
+kernel. It continues the LineageOS 23.2 port on the same phone. Every
+patch, script and build is published.</p>
+<figure><img alt="Android 17 on a 4.9 Kernel: LineageOS 24.0 on the Pixel 3a" src="https://raw.githubusercontent.com/xbill9/android_kernel_google_msm-4.9/main/backport-tools/lineage-24.0/article/medium/img/devto-cover.e89cf62e.jpg"/></figure>
+<p><a href="https://github.com/xbill9/android_kernel_google_msm-4.9/releases/tag/lineage-24.0-sargo-20261027">https://github.com/xbill9/android_kernel_google_msm-4.9/releases/tag/lineage-24.0-sargo-20261027</a></p>
+<p><strong>The Pixel 3a boots LineageOS 24.0 on kernel 4.9.337 with
+SELinux enforcing in 83 s, with Wi-Fi, Bluetooth, the sensors, Chrome
+and Google Play Services working, and updates that keep user data.
+Android 17 assumes a kernel of at least 5.10 in more places than Android
+16 did. The port needed one kernel fix, for a cgroup BPF reference count
+the 4.9 backport had missed, five forks of platform code (fscrypt keys,
+the BPF loader, netd and Connectivity, and the native app zygote), and
+device-tree changes for <code>ueventd</code>, gralloc and the ION memory
+allocator. The <code>/init</code> logger from the 23.2 port found each
+one.</strong></p>
+<hr/>
+<h3 id="what-is-this-project-trying-to-do">What is this project trying
+to Do?</h3>
+<p>The Pixel 3a (codename sargo) has a Snapdragon 670 and a 4.9 kernel.
+Its last Google build is Android 12. LineageOS carries it officially to
+22.2, and the previous article in this series brought it to 23.2,
+Android 16, by backporting three kernel features.</p>
+<p>The goal here: keep the phone current and out of a landfill by
+running the newest LineageOS release, 24.0, on the kernel it already
+has.</p>
+<p>The kernel carries a BPF backport that reports itself to Android as
+5.4. The NetBpfLoad lines from the first 24.0 boot show the version
+Android reads, <code>0x504012e</code>, against the 5.10 it asks for:</p>
+<pre><code>NetBpfLoad: skipping map sk_storage which requires kernel version 0x504012e &gt;= 0x50a0000
+NetBpfLoad: skipping map packet_trace_ringbuf which requires kernel version 0x504012e &gt;= 0x50a0000</code></pre>
+<hr/>
+<h3 id="at-this-point-you-should-have">At This Point You Should
+Have…</h3>
+<ul>
+<li>A Google Pixel 3a (sargo), bootloader unlocked</li>
+<li>The LineageOS 24.0 source with the local manifest from the
+release</li>
+<li>A build machine with room for the tree; the 24.0 tree here is 266
+GB, and the home machine is an i7-3770 with 8 threads and 31 GB of
+RAM</li>
+<li><code>adb</code> and <code>fastboot</code></li>
+<li>A clone:
+<code>git clone https://github.com/xbill9/android_kernel_google_msm-4.9</code></li>
+</ul>
+<p>The first full build ran on a 192-core EC2 instance and the tree then
+moved to the home machine. That half of the work has its own article: <a href="https://dev.to/aws-builders/rent-the-cores-keep-the-phone-building-lineageos-24-on-ec2-and-iterating-at-home-4pmc">https://dev.to/aws-builders/rent-the-cores-keep-the-phone-building-lineageos-24-on-ec2-and-iterating-at-home-4pmc</a></p>
+<hr/>
+<h3 id="step-1--carry-the-232-tree-to-240">Step 1 — Carry the 23.2 Tree
+to 24.0</h3>
+<p>The device tree starts from the 23.2 port, on a new
+<code>lineage-24.0</code> branch of the bonito fork. Android 17 dropped
+several HIDL HALs and moved a few Pixel components, so the tree changed
+in the same places the Pixel 4a (sunfish) did:</p>
+<ul>
+<li>vibrator HAL (drv2624) carried in the tree; thermal from
+<code>hardware/google/pixel/thermal</code></li>
+<li>AIDL lights on <code>/sys/class/backlight/panel0-backlight</code>,
+since Android 17 has no HIDL lights</li>
+<li>power stats AIDL only, HIDL dumpstate dropped</li>
+<li>the fingerprint blob patched to
+<code>lineage.frameworks.stats@1.0</code>, as sunfish does</li>
+<li><code>KERNEL_CROSS_COMPILE</code> with the GCC 4.9 binutils:
+LineageOS 24 builds kernels with LLVM only, and 4.9 predates
+<code>LLVM=1</code> and links LTO with GNU gold</li>
+</ul>
+<p>The full build then stopped on six more device-tree errors, among
+them <code>unknown type logger_app</code>, two <code>genfscon</code>
+rules for <code>/sys/class/typec</code>, and a framework compatibility
+matrix that starts at level 7. A small shim keeps the SecureUI blob
+linking against Android 17's
+<code>SurfaceComposerClient::createSurface</code>. The list, with
+commits, is in the 24.0 README.</p>
+<p>The lunch form changed too:
+<code>lunch lineage_sargo cp2a userdebug</code>, with spaces. The first
+complete package:</p>
+<pre><code>lineage-24.0-20261023-UNOFFICIAL-sargo.zip  1,208,903,032 bytes</code></pre>
+<hr/>
+<h3 id="step-2--read-the-boot-with-the-init-logger">Step 2 — Read the
+Boot With the /init Logger</h3>
+<p>The 23.2 port built a 4 KB static <code>/init</code>,
+<code>kmsglog.c</code>, that execs the real init as process 1 and copies
+the kernel log to the <code>metadata</code> partition. For 24.0 it
+gained three things:</p>
+<ul>
+<li>it also appends logcat to <code>/metadata/logcat.txt</code>, by
+entering init's root through <code>/proc/1/root</code></li>
+<li><code>kmsglog.reboot=&lt;s&gt;</code> on the kernel command line
+dumps every blocked task and reboots to the bootloader after that many
+seconds, so a hung boot ends by itself</li>
+<li>the log file is truncated each boot and wraps at 2 MB</li>
+</ul>
+<p><code>add-logger.sh</code> repacks any boot image with it:</p>
+<pre><code>EXTRA_CMDLINE="androidboot.selinux=permissive kmsglog.reboot=150" \
+  ./add-logger.sh boot.img boot-log.img</code></pre>
+<p><code>test-boot-b.sh</code> RAM-boots the image on slot b, waits, and
+pulls <code>/metadata/boot-kmsg.txt</code> and
+<code>/metadata/logcat.txt</code> from the fallback system. The flashed
+slot keeps a working build, so a failed test falls back to it with no
+hands on the phone.</p>
+<p>🔎 <strong>Tip: <code>/metadata</code> is only 10 MB.</strong> It
+also holds vold's keys and the feature flags in
+<code>/metadata/aconfig</code>, so the logger caps the kernel log at 2
+MB, rotates logcat at 1 MB times two, and the test script deletes the
+logs after pulling them.</p>
+<hr/>
+<h3 id="step-3--ueventd">Step 3 — ueventd</h3>
+<p>The first permissive boot shows keymaster, gatekeeper, citadeld and
+surfaceflinger aborting. Their device nodes, <code>/dev/qseecom</code>,
+<code>/dev/citadel0</code> and <code>/dev/kgsl-3d0</code>, still have
+root-only permissions.</p>
+<p>Android 17's ueventd reads only <code>/system/etc/ueventd.rc</code>,
+which imports <code>/vendor/etc/ueventd.rc</code>. The device installed
+its rules to the old <code>/vendor/ueventd.rc</code>, which ueventd no
+longer parses. Bonito <code>31b5a72</code> installs them to
+<code>vendor/etc</code>.</p>
+<hr/>
+<h3 id="step-4--gralloc">Step 4 — Gralloc</h3>
+<p>Next, the composer HAL aborts:</p>
+<pre><code>F GraphicBufferMapper: gralloc-mapper is missing
+F DEBUG   : Abort message: 'gralloc-mapper is missing'</code></pre>
+<p>Android 17's <code>libui</code> loads only IMapper 4.0 and newer on
+API 36 and later. The sdm845 display stack provides IMapper 2.1.
+<code>libui</code> still has the older path behind
+<code>LEGACY_GRALLOC</code>, and bonito <code>433912b</code> builds it
+with that flag through Soong config.</p>
+<hr/>
+<h3 id="step-5--the-fscrypt-session-keyring">Step 5 — The fscrypt
+Session Keyring</h3>
+<p>With a full build flashed, the phone goes to recovery 4.9 s into the
+boot:</p>
+<pre><code>E vold    : Failed to install fscrypt key to /data: Inappropriate ioctl for device
+E init: Exec service failed, status 25: Rebooting into recovery, reason: enablefilecrypto_failed</code></pre>
+<p>The 4.9 kernel has no <code>FS_IOC_ADD_ENCRYPTION_KEY</code>, so file
+encryption keys go into a keyring that every process shares through a
+session keyring. Android 17 removed that path from both sides: init no
+longer joins a session keyring, and vold no longer installs keys into
+it.</p>
+<p>Two forks bring it back from 23.2:</p>
+<ul>
+<li><code>system/core</code> <code>5742820</code>: init joins a session
+keyring at second stage, and <code>mount_all</code> creates the
+<code>fscrypt</code> keyring on encrypted devices</li>
+<li><code>system/vold</code> <code>fce7dad</code>:
+<code>isFsKeyringSupported()</code>, <code>installKeyLegacy()</code>,
+<code>evictKeyLegacy()</code> and the cache drop after eviction, with
+inline <code>keyctl</code> wrappers since Android 17 removed
+<code>libkeyutils</code></li>
+</ul>
+<p>🔎 <strong>Tip: do not accept the factory reset.</strong> Recovery
+offers one after <code>enablefilecrypto_failed</code>. The data on
+<code>/data</code> is intact, and the other slot still boots it.</p>
+<hr/>
+<h3 id="step-6--bpf-on-a-kernel-that-reports-54">Step 6 — BPF on a
+Kernel That Reports 5.4</h3>
+<p>Android 17's network stack loads its BPF programs per kernel version,
+and several now need 5.8 or 5.10. Each missing one stopped the boot in a
+different place:</p>
+<pre><code>init: Reboot start, reason: reboot,bpfloader-failed, reboot_target: bpfloader-failed
+E NetdUpdatable: libnetd_updatable_init: Failed: Failed to get program from /sys/fs/bpf/netd_shared/prog_netd_egress_stats: No such file or directory</code></pre>
+<p>Two forks handle them:</p>
+<ul>
+<li><code>system/bpf</code> <code>72b37ef</code>:
+<code>bpfRingbufProg</code> is a test program that needs BPF ring
+buffers, from 5.8. It is marked critical, so its load failure rebooted
+userdebug builds. It is now non-critical.</li>
+<li><code>packages/modules/Connectivity</code> <code>5c298de</code>:
+NetBpfLoad warns below 5.10, as it did in 23.2; it hands off to
+<code>uprobestatsbpfload</code> only on 5.8 and later; the 5.4 ingress
+and egress stats programs in <code>netd.c</code> extend to the newest
+API level, since Android 17 has none below 5.10; and ConnectivityService
+skips the two ring-buffer listeners when their maps are absent, which
+aborted system_server.</li>
+</ul>
+<hr/>
+<h3 id="step-7--netd-stuck-in-rcu_barrier">Step 7 — netd Stuck in
+rcu_barrier</h3>
+<p>With the forks in, about one permissive boot in five reaches the boot
+animation and stops. The logger's task dump shows netd blocked in the
+kernel:</p>
+<pre><code>[&lt;00000000edff5dad&gt;] _rcu_barrier+0x210/0x2b0
+[&lt;000000007d48fdfd&gt;] netdev_run_todo+0xc4/0x9b4
+[&lt;00000000610d42d3&gt;] rtnetlink_rcv+0x58/0x78
+[&lt;000000004b18ba16&gt;] netlink_unicast+0x2b0/0x468
+[&lt;000000004bbdc794&gt;] netlink_sendmsg+0x4bc/0x604
+netd            S    0  1595      1 0x00000000</code></pre>
+<p>system_server waits for netd until its watchdog kills it, and the
+cycle repeats. The kernel log of these boots carries one warning that
+names the cause:</p>
+<pre><code>percpu ref (cgroup_bpf_release_fn) &lt;= 0 (0) after switching to atomic</code></pre>
+<p><code>cgroup_sk_clone()</code> reached this tree from 4.9-stable
+before the tree had a <code>cgroup_bpf</code> reference count. The BPF
+backport added <code>cgroup_bpf_get()</code> to
+<code>cgroup_sk_alloc()</code> and <code>cgroup_bpf_put()</code> to
+<code>cgroup_sk_free()</code>, and left the clone path out. Every socket
+made by <code>accept()</code> dropped a reference it never took. When a
+cgroup was removed, its BPF programs were freed while sockets in it
+could still run them.</p>
+<p>Kernel <code>e7a12e10fc29</code> is one line: take the reference, as
+upstream does since <code>ad0f75e5f57c</code>. Before the fix 2 of 9
+boots hung; after it 8 of 8 booted.</p>
+<hr/>
+<h3 id="step-8--ion-under-selinux-enforcing">Step 8 — ION Under SELinux
+Enforcing</h3>
+<p>Permissive boots reached the home screen. Enforcing boots stopped at
+a black screen with no USB. The permissive logs show the reason, from 21
+domains:</p>
+<pre><code>avc:  denied  { read } for  comm="qseecomd" name="ion" dev="tmpfs" ino=12110 scontext=u:r:tee:s0 tcontext=u:object_r:device:s0 tclass=chr_file permissive=1</code></pre>
+<p>Android 17 removed <code>/dev/ion</code> from the platform
+<code>file_contexts</code> and every <code>ion_device</code> rule from
+the platform policy. This kernel has ION and no DMA-BUF heaps. Three
+bonito commits put it back in vendor policy:</p>
+<ul>
+<li><code>2cbfb4b</code>: label <code>/dev/ion</code> as
+<code>ion_device</code></li>
+<li><code>e2ca4b1</code>: the Android 16 <code>ion_device</code> rules
+for surfaceflinger, keymaster, gatekeeper, gralloc and qseecomd</li>
+<li><code>a6e99a3</code>: four more accesses an enforcing boot denies,
+for the sensors, Wi-Fi, USB gadget and power HALs</li>
+</ul>
+<p>Three boots from flash with all three took 81, 48 and 80 s, with
+Wi-Fi up each time.</p>
+<hr/>
+<h3 id="step-9--the-native-app-zygote">Step 9 — The Native App
+Zygote</h3>
+<p>The phone booted, but Chrome exited with
+<code>Timed out waiting for GPU channel</code> and then every app launch
+stalled for minutes. Chrome 156 runs its renderers in a native app
+zygote, and the zygote died on start:</p>
+<pre><code>Failed to check capability bound: GetCapBoundFailure(EINVAL)</code></pre>
+<p>Android 17's <code>zygote_next</code> drops the capability bounding
+set before it forks apps, and it reads every capability up to 40. Linux
+5.9 added <code>CAP_PERFMON</code>, <code>CAP_BPF</code> and
+<code>CAP_CHECKPOINT_RESTORE</code> (38 to 40); 4.9 returns
+<code>EINVAL</code> for them. A capability the kernel does not know
+cannot be in the bounding set, so the <code>system/zygote</code> fork,
+<code>d6dadb5</code>, skips it, as the C++ zygote already does. Chrome
+opens pages and its sandboxed renderers start.</p>
+<hr/>
+<h3 id="step-10--chre-and-active-edge">Step 10 — CHRE and Active
+Edge</h3>
+<p>One service still restarted about every 5 s, 146 times in the first
+14 minutes:</p>
+<pre><code>dynamic loading failed for chre_slpi on domain 0 (dlerror undefined symbol #25 __sensors_island_start in ./libchre_slpi_skel.so)</code></pre>
+<p>The sensor DSP firmware on the phone rejects the CHRE program from
+the vendor blobs. Its only user is Active Edge, the squeeze gesture.
+Bonito <code>7f1369f</code> drops ElmyraService, and
+<code>3f29377</code> stops <code>vendor.chre</code> once boot completes.
+The accelerometer and light sensor keep reporting without it.</p>
+<hr/>
+<h3 id="step-11--google-apps">Step 11 — Google Apps</h3>
+<p>MindTheGapps 17.0.0 ships Play Services as an APEX whose payload is
+EROFS, a filesystem the 4.9 kernel cannot mount:</p>
+<pre><code>apexd: Mounting failed ... No such device</code></pre>
+<p><code>repack-gapps.sh</code> rebuilds the zip with the same APK
+installed as <code>/product/priv-app/PrebuiltGmsCoreVic</code>, with the
+APEX's permission files. On sargo it needs 682 MiB of the 900 MiB
+<code>/product</code> reserve.</p>
+<p>Flashed onto a phone that is already set up, Google apps never get
+their default runtime permissions, and Play Services refuses location
+requests. <code>post-install-24.sh</code> grants them, then runs the
+background compile job. After an update every app sits at the
+<code>verify</code> filter until the phone is idle and charging. Gmail,
+one run each:</p>
+<p><img alt="Table: Gmail, Start, Janky frames scrolling" src="https://raw.githubusercontent.com/xbill9/android_kernel_google_msm-4.9/main/backport-tools/lineage-24.0/article/medium/img/devto-article-table-1.png"/></p>
+<p>The compile job took 2 min 53 s.</p>
+<hr/>
+<h3 id="step-12--install-and-update-without-wiping">Step 12 — Install
+and Update Without Wiping</h3>
+<p><code>update_engine</code> installs a full build into the inactive
+slot from the running system and keeps <code>/data</code>:</p>
+<pre><code>10:59:56 update_engine install to the inactive slot
+[INFO:update_engine_client_android.cc(102)] onPayloadApplicationComplete(ErrorCode::kSuccess (0))
+[INFO:update_engine_client_android.cc(94)] onStatusUpdate(UPDATE_STATUS_UPDATED_NEED_REBOOT (6), 0)
+[INFO:update_engine_client_android.cc(367)] Command took 300501 ms
+11:04:57 installed; not rebooting</code></pre>
+<p>On a build machine, <code>phone-update-24.sh</code> syncs, builds,
+installs, sideloads the repacked Google apps and compiles the apps. On a
+laptop with only <code>adb</code>, <code>phone-install-24.sh</code> does
+the same from the release zip; <code>INSTALL.md</code> has the steps.
+The one manual step is in recovery: accept the test-key signature
+warning, then reboot.</p>
+<p>The phone after the update:</p>
+<pre><code>932AY05KVV             device usb:5-2 product:sargo model:Pixel_3a device:sargo transport_id:34
+24.0-20261027-UNOFFICIAL-sargo
+4.9.337-gf002f96f2646
+Enforcing
+1
+_b
+17
+2026-10-01
+Wifi is enabled</code></pre>
+<p>🔎 <strong>Tip: list every fork in the local manifest.</strong>
+<code>repo sync</code> resets any project the local manifest does not
+replace to LineageOS upstream, and a build from that tree loses the fork
+commits. On this phone that build went straight back to
+<code>enablefilecrypto_failed</code>. <code>update-forks.sh</code>
+reports how far each fork is behind upstream and rebases it.</p>
+<hr/>
+<h3 id="compare-and-contrast">Compare and Contrast</h3>
+<p><img alt="Table: LineageOS 23.2 on this kernel, LineageOS 24.0 on this kernel" src="https://raw.githubusercontent.com/xbill9/android_kernel_google_msm-4.9/main/backport-tools/lineage-24.0/article/medium/img/devto-article-table-2.png"/></p>
+<hr/>
+<h3 id="so-which-one">So, Which One?</h3>
+<p>For a spare Pixel 3a, 24.0 is the current one: Android 17, the
+October 2026 security patch level, and the same update path that keeps
+your data. Back up before moving from 23.2: the update tools here
+install over 24.0 builds only, and a first install wipes the phone.</p>
+<hr/>
+<h3 id="summary">Summary</h3>
+<p>The goal of this project was to run Android 17 on the Pixel 3a's
+original 4.9 kernel. The key to the solution was the same
+<code>/init</code> logger as the 23.2 port, now with logcat and a task
+dump on a timed reboot, which turned each stopped boot into a log line.
+The results were:</p>
+<ul>
+<li>🟢 LineageOS 24.0 boots on kernel 4.9.337 with SELinux enforcing in
+83 s and installs over the previous build, keeping user data.</li>
+<li>🟢 One kernel fix: <code>cgroup_sk_clone()</code> takes its
+<code>cgroup_bpf</code> reference. 2 of 9 boots hung before it; 8 of 8
+booted after.</li>
+<li>🟢 Five platform forks cover a kernel below 5.10: the fscrypt
+session keyring, the BPF loader, netd and Connectivity, and the native
+app zygote.</li>
+<li>🟢 Wi-Fi connects, Bluetooth turns on, the sensors report, Chrome
+renders pages.</li>
+<li>🟢 Play Services runs as a system app from repacked MindTheGapps 17,
+and network location gives a fix.</li>
+<li>🟢 Compiling apps after an update brings Gmail from 1,372 ms to
+1,010 ms to start.</li>
+<li>⚠️ Signed with test keys; recovery shows a signature warning on
+every install.</li>
+<li>🟢 Mobile data works from a Google Fi data-only SIM in the
+20261104-1751 build, over IPv4 and IPv6; the four fixes are in the
+mobile data porting notes.</li>
+<li>⚠️ Calls, SMS, audio by ear, taking photos, fingerprint enrolment,
+NFC payments and satellite GPS are untested.</li>
+<li>❌ Active Edge is off: the sensor DSP firmware rejects the CHRE
+program.</li>
+</ul>
+<p>Scope: one Pixel 3a (sargo, 932AY05KVV) with no SIM fitted, LineageOS
+24.0 built 2026-10-27 from bonito <code>lineage-24.0</code> at
+<code>3f29377</code> and the five <code>lineage-24.0</code> forks,
+kernel 4.9.337 from this repository. The hang counts come from 9 and 8
+boots of one phone; the Gmail figures are one run each. Parts of the
+analysis and writing were done with AI assistance (Claude); every log
+line comes from the phone or the build machine.</p>
+<p>The strategy for running Android 17 on a 4.9 kernel was validated
+with an incremental step by step approach.</p>
+<hr/>
+<h3 id="references">References</h3>
+<ul>
+<li>Release, build and kernel source: <a href="https://github.com/xbill9/android_kernel_google_msm-4.9/releases/tag/lineage-24.0-sargo-20261027">https://github.com/xbill9/android_kernel_google_msm-4.9/releases/tag/lineage-24.0-sargo-20261027</a></li>
+<li>Build, install and boot-test notes: <a href="https://github.com/xbill9/android_kernel_google_msm-4.9/tree/main/backport-tools/lineage-24.0">https://github.com/xbill9/android_kernel_google_msm-4.9/tree/main/backport-tools/lineage-24.0</a></li>
+<li>Mobile data with Google Fi, porting notes: <a href="https://github.com/xbill9/android_kernel_google_msm-4.9/blob/main/backport-tools/lineage-24.0/PORTING-NOTES-mobile-data.md">https://github.com/xbill9/android_kernel_google_msm-4.9/blob/main/backport-tools/lineage-24.0/PORTING-NOTES-mobile-data.md</a></li>
+<li>Mobile data release: <a href="https://github.com/xbill9/android_kernel_google_msm-4.9/releases/tag/lineage-24.0-sargo-20261104-1751">https://github.com/xbill9/android_kernel_google_msm-4.9/releases/tag/lineage-24.0-sargo-20261104-1751</a></li>
+<li>Install from a laptop: <a href="https://github.com/xbill9/android_kernel_google_msm-4.9/blob/main/INSTALL.md">https://github.com/xbill9/android_kernel_google_msm-4.9/blob/main/INSTALL.md</a></li>
+<li>Device tree: <a href="https://github.com/xbill9/android_device_google_bonito/tree/lineage-24.0">https://github.com/xbill9/android_device_google_bonito/tree/lineage-24.0</a></li>
+<li>Fork, system/core: <a href="https://github.com/xbill9/android_system_core">https://github.com/xbill9/android_system_core</a></li>
+<li>Fork, system/vold: <a href="https://github.com/xbill9/android_system_vold">https://github.com/xbill9/android_system_vold</a></li>
+<li>Fork, system/bpf: <a href="https://github.com/xbill9/android_system_bpf">https://github.com/xbill9/android_system_bpf</a></li>
+<li>Fork, Connectivity: <a href="https://github.com/xbill9/android_packages_modules_Connectivity">https://github.com/xbill9/android_packages_modules_Connectivity</a></li>
+<li>Fork, system/zygote: <a href="https://github.com/xbill9/android_system_zygote">https://github.com/xbill9/android_system_zygote</a></li>
+<li>The 23.2 port: <a href="https://dev.to/gde/android-16-on-a-49-kernel-lineageos-232-on-the-pixel-3a-5e79">https://dev.to/gde/android-16-on-a-49-kernel-lineageos-232-on-the-pixel-3a-5e79</a></li>
+<li>The EC2 build: <a href="https://dev.to/aws-builders/rent-the-cores-keep-the-phone-building-lineageos-24-on-ec2-and-iterating-at-home-4pmc">https://dev.to/aws-builders/rent-the-cores-keep-the-phone-building-lineageos-24-on-ec2-and-iterating-at-home-4pmc</a></li>
+<li>MindTheGapps 17.0.0 arm64: <a href="https://github.com/MindTheGapps/17.0.0-arm64">https://github.com/MindTheGapps/17.0.0-arm64</a></li>
+</ul>
+</body>
