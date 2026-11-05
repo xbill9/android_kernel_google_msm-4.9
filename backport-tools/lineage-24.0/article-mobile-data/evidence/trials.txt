@@ -1,0 +1,11 @@
+# sample.sh / trial.sh output lines, verbatim, 2026-11-03 and 2026-11-04
+FINAL build 2, fresh install, no overrides: data in service 18/18 samples, timeline [##################], ping: 0% packet loss
+FINAL build, fresh install, no overrides: data in service 0/18 samples, timeline [..................], ping: Network is unreachable
+without com.google.android.carrier (disabled=1): data in service 0/18 samples, longest run 0s, timeline [..................], ping: Network is unreachable
+without com.google.android.carriersetup: data in service 0/18 samples, longest run 0s, timeline [..................], ping: Network is unreachable
+without com.google.android.grilservice (disabled=1): data in service 0/18 samples, longest run 0s, timeline [..................], ping: Network is unreachable
+without com.google.android.ims: data in service 0/18 samples, longest run 0s, timeline [..................], ping: Network is unreachable
+without com.google.RilConfigService (disabled=1): data in service 0/18 samples, longest run 0s, timeline [..................], ping: Network is unreachable
+without com.qualcomm.qcrilmsgtunnel: data in service 0/18 samples, longest run 0s, timeline [..................], ping: Network is unreachable
+without com.qualcomm.qti.telephonyservice: data in service 0/18 samples, longest run 0s, timeline [..................], ping: Network is unreachable
+without org.codeaurora.ims: data in service 0/18 samples, longest run 0s, timeline [..................], ping: Network is unreachable

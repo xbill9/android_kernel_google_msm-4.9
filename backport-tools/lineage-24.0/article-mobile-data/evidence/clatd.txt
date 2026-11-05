@@ -1,0 +1,7 @@
+# clatd on kernel 4.9 before close_range, 2026-11-04
+
+# bionic libc/bionic/spawn.cpp
+  if ((flags & POSIX_SPAWN_CLOEXEC_DEFAULT) != 0) {
+    // mark all open fds except stdin/out/err as close-on-exec
+    if (close_range(3, ~0U, CLOSE_RANGE_CLOEXEC)) _exit(127);
+  }

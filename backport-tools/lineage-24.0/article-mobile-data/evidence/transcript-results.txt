@@ -1,0 +1,75 @@
+# Tool output lines from the 2026-11-03/04 debugging session transcript, verbatim
+3 packets transmitted, 0 received, 100% packet loss, time 2022ms
+3 packets transmitted, 3 received, 0% packet loss, time 2012ms
+3 packets transmitted, 3 received, 0% packet loss, time 2008ms
+[0;32m#### build completed successfully (35:00 (mm:ss)) ####
+[0;32m#### build completed successfully (22:17 (mm:ss)) ####
+3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+3 packets transmitted, 3 received, 0% packet loss, time 2010ms
+baseline: data in service 1/18 samples, longest run 5s, timeline [.#................], ping: Network is unreachable
+baseline+FiAPN: data in service 0/18 samples, longest run 0s, timeline [..................], ping: Network is unreachable
+multisim_switch_support=false: data in service 0/18 samples, longest run 0s, timeline [..................], ping: Network is unreachable
+without com.google.android.grilservice (disabled=1): data in service 0/18 samples, longest run 0s, timeline [..................], ping: Network is unreachable
+without com.google.RilConfigService (disabled=1): data in service 0/18 samples, longest run 0s, timeline [..................], ping: Network is unreachable
+without com.google.android.carrier (disabled=1): data in service 0/18 samples, longest run 0s, timeline [..................], ping: Network is unreachable
+h2g2 IPV4V6/IPV4V6: data in service 0/18 samples, longest run 0s, timeline [..................], ping: Network is unreachable
+eSIM apps enabled: data in service 0/18 samples, longest run 0s, timeline [..................], ping: Network is unreachable
+without com.google.android.ims: data in service 0/18 samples, longest run 0s, timeline [..................], ping: Network is unreachable
+without com.google.android.carriersetup: data in service 0/18 samples, longest run 0s, timeline [..................], ping: Network is unreachable
+without com.qualcomm.qcrilmsgtunnel: data in service 0/18 samples, longest run 0s, timeline [..................], ping: Network is unreachable
+without com.qualcomm.qti.telephonyservice: data in service 0/18 samples, longest run 0s, timeline [..................], ping: Network is unreachable
+without org.codeaurora.ims: data in service 0/18 samples, longest run 0s, timeline [..................], ping: Network is unreachable
+h2g2 IP/IP: data in service 0/18 samples, longest run 0s, timeline [..................], ping: Network is unreachable
+stock qti+modem_svc+radioext: data in service 0/18 samples, longest run 0s, timeline [..................], ping: Network is unreachable
+ROM-only data props blanked: data in service 0/18 samples, longest run 0s, timeline [..................], ping: Network is unreachable
+stock SP2A, fresh: data in service 18/18 samples, timeline [##################], ping: 0% packet loss
+ROM, mobile data ON: data in service 0/18 samples, timeline [..................], ping: Network is unreachable
+ROM fresh, mobile data ON, modem restart: data in service 0/18 samples, longest run 0s, timeline [..................], ping: Network is unreachable
+Fi APN h2g2 IPv4v6 + mobile data ON: data in service 0/18 samples, longest run 0s, timeline [..................], ping: Network is unreachable
+[0;32m#### build completed successfully (32:31 (mm:ss)) ####
+stock reset: data in service 18/18 samples, timeline [##################], ping: 0% packet loss
+Fi APN auth PAP/CHAP like stock: data in service 0/18 samples, longest run 0s, timeline [..................], ping: Network is unreachable
+Fi APN profile_id 0 like stock: data in service 0/18 samples, longest run 0s, timeline [..................], ping: Network is unreachable
+[0;32m#### build completed successfully (20:30 (mm:ss)) ####
+stock reset 3: data in service 18/18 samples, timeline [##################], ping: 0% packet loss
+stock baseline: data in service 18/18 samples, timeline [##################], ping: 0% packet loss
+stock after airplane toggle 1: data in service 18/18 samples, timeline [##################], ping: 0% packet loss
+stock after airplane toggle 2: data in service 18/18 samples, timeline [##################], ping: 0% packet loss
+[0;32m#### build completed successfully (21:12 (mm:ss)) ####
+IMS disabled + modem restart: data in service 0/18 samples, longest run 0s, timeline [..................], ping: Network is unreachable
+[0;32m#### build completed successfully (23:08 (mm:ss)) ####
+stock reset 5: data in service 18/18 samples, timeline [##################], ping: 0% packet loss
+11-04 12:56:53.115  2150  2297 I RILQ    : (0/2150):RIL[0][(2150,2297)] qcril_qmi_imss_request_set_ims_srv_status_v02: VoLTE setting : 0
+11-04 12:56:53.180  2150  2297 I RILQ    : (0/2150):RIL[0][(2150,2297)] qcril_qmi_imss_request_set_ims_registration_v02: ims_service_enabled = FALSE
+carrier_volte_available_bool                                           BOOLEAN         false
+carrier_volte_available_bool                                           BOOLEAN         true
+11-04 13:02:02.360  2150  2297 I RILQ    : (0/2150):RIL[0][(2150,2297)] qcril_qmi_imss_request_set_ims_srv_status_v02: VoLTE setting : 1
+11-04 13:02:02.364  2150  2297 I RILQ    : (0/2150):RIL[0][(2150,2297)] qcril_qmi_imss_request_set_ims_registration_v02: ims_service_enabled = TRUE
+VoLTE available=true + modem restart: data in service 17/18 samples, longest run 85s, timeline [.#################], ping: Network is unreachable
+3 packets transmitted, 3 received, 0% packet loss, time 2002ms
+2 packets transmitted, 2 received, 0% packet loss, time 1001ms
+11-04 13:04:46.375  1979  4723 D jniClatCoordinator: clatd process 8939 terminated status=32512
+11-04 13:09:54.883  1979  4723 D jniClatCoordinator: clatd process 10827 terminated status=32512
+11-04 13:09:55.308  1979  4723 D jniClatCoordinator: clatd process 10832 terminated status=32512
+[0;32m#### build completed successfully (50:04 (mm:ss)) ####
+ffffff800846c57c t SyS_close_range.cfi
+v4-rmnet_data2   UNKNOWN        192.0.0.4/32
+3 packets transmitted, 3 received, 0% packet loss, time 2007ms
+ROM + close_range kernel (IPv4 ping): data in service 18/18 samples, timeline [##################], ping: 0% packet loss
+3 packets transmitted, 3 received, 0% packet loss, time 2014ms
+8.8.8.8 dev v4-rmnet_data2 table 1033 src 192.0.0.4 uid 2000
+stock reset (final): data in service 18/18 samples, timeline [##################], ping: 0% packet loss
+11-04 15:42:52.582  2160  2292 I RILQ    : (0/2160):RIL[0][(2160,2292)] qcril_qmi_imss_request_set_ims_srv_status_v02: VoLTE setting : 0
+FINAL build, fresh install, no overrides: data in service 0/18 samples, timeline [..................], ping: Network is unreachable
+fi_us.pb with VoLTE (bind-mounted), modem restart: data in service 17/18 samples, longest run 85s, timeline [.#################], ping: 0% packet loss
+19	modem `VoLTE setting : 0` and `ims_service_enabled = FALSE` about one second
+24	qcril_qmi_imss_request_set_ims_srv_status_v02: VoLTE setting : 0
+25	qcril_qmi_imss_request_set_ims_registration_v02: ims_service_enabled = FALSE
+[0;32m#### build completed successfully (39:34 (mm:ss)) ####
+stock reset (final 2): data in service 18/18 samples, timeline [##################], ping: 0% packet loss
+mi_imss_request_set_ims_registration_v02: ims_service_enabled = TRUE
+mi_imss_request_set_ims_srv_status_v02: VoLTE setting : 1
+FINAL build 2, fresh install, no overrides: data in service 18/18 samples, timeline [##################], ping: 0% packet loss
+8.8.8.8 dev v4-rmnet_data3 table 1033 src 192.0.0.4 uid 2000
+[0;32m#### build completed successfully (03:10:10 (hh:mm:ss)) ####
+release 20261104-1751 after OTA: data in service 18/18 samples, timeline [##################], ping: 0% packet loss

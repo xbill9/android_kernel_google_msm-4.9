@@ -1,0 +1,11 @@
+Wed Nov  4 05:06:16 PM EST 2026
+1
+mi_imss_request_set_ims_registration_v02: ims_service_enabled = TRUE
+mi_imss_request_set_ims_srv_status_v02: VoLTE setting : 1
+FINAL build 2, fresh install, no overrides: data in service 18/18 samples, timeline [##################], ping: 0% packet loss
+3 packets transmitted, 3 received, 0% packet loss, time 2012ms
+rtt min/avg/max/mdev = 26.683/49.401/63.790/16.254 ms
+rtt min/avg/max/mdev = 29.989/47.032/56.366/12.070 ms
+8.8.8.8 dev v4-rmnet_data3 table 1033 src 192.0.0.4 uid 2000 
+
+[exited with code 0]

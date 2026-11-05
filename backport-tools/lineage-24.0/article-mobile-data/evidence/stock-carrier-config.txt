@@ -1,0 +1,12 @@
+# Stock SP2A.220505.008 carrier config, captured 2026-11-03 (dumpsys carrier_config)
+            carrier_volte_available_bool = false
+            carrier_volte_available_bool = true
+2026-11-03T10:30:23.871 - Fetch config for default app: com.google.android.carrier carrierid: CarrierIdentifier{mcc=310,mnc=260,spn=,imsi=[****],gid1=4276,gid2=null,carrierid=1989,specificCarrierId=10014}
+2026-11-03T10:30:26.603 - Fetch config for carrier app: com.google.android.apps.tycho carrierid: CarrierIdentifier{mcc=310,mnc=260,spn=,imsi=[****],gid1=4276,gid2=null,carrierid=1989,specificCarrierId=10014}
+2026-11-03T10:30:45.329 - Fetch config for carrier app: com.google.android.apps.tycho carrierid: CarrierIdentifier{mcc=310,mnc=260,spn=Google Fi,imsi=[****],gid1=4276,gid2=null,carrierid=1989,specificCarrierId=10014}
+2026-11-03T10:30:47.908 - Fetch config for carrier app: com.google.android.apps.tycho carrierid: CarrierIdentifier{mcc=310,mnc=260,spn=Google Fi,imsi=[****],gid1=4276,gid2=null,carrierid=1989,specificCarrierId=10014}
+2026-11-03T10:30:48.992 - Fetch config for carrier app: com.google.android.apps.tycho carrierid: CarrierIdentifier{mcc=310,mnc=260,spn=Google Fi,imsi=[****],gid1=4276,gid2=null,carrierid=1989,specificCarrierId=10014}
+2026-11-03T10:39:27.622 - Fetch config for carrier app: com.google.android.apps.tycho carrierid: CarrierIdentifier{mcc=310,mnc=260,spn=Google Fi,imsi=[****],gid1=4276,gid2=null,carrierid=1989,specificCarrierId=10014}
+2026-11-03T10:41:16.273 - Fetch config for carrier app: com.google.android.apps.tycho carrierid: CarrierIdentifier{mcc=310,mnc=260,spn=Google Fi,imsi=[****],gid1=4276,gid2=null,carrierid=1989,specificCarrierId=10014}
+2026-11-03T10:41:20.413 - Fetch config for default app: com.google.android.carrier carrierid: CarrierIdentifier{mcc=310,mnc=260,spn=Google Fi,imsi=[****],gid1=4276,gid2=null,carrierid=1989,specificCarrierId=10014}
+2026-11-03T10:41:22.898 - Fetch config for default app: com.google.android.carrier carrierid: CarrierIdentifier{mcc=310,mnc=260,spn=Google Fi,imsi=[****],gid1=4276,gid2=null,carrierid=1989,specificCarrierId=10014}
