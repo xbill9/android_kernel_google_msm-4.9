@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Unofficial LineageOS 24.0 for the Pixel 3a (sargo), started from the 23.2 port.
-     Device trees: LineageOS stops at lineage-23.0; bonito, vendor and sdm845 display are xbill9 lineage-24.0 forks.
-     gs-common: not used; thermal comes from hardware/google/pixel/thermal.
-     Vendor and audio: the 23.2 forks. Kernel: the BPF backport tree. -->
+<!-- Unofficial LineageOS 24.0 for the Pixel 3a (sargo).
+     Every project here is on a lineage-24.0 branch (the kernel: main). LineageOS has no 24.0 branch
+     for the sargo/bonito device trees, the sdm845 HALs, the audio HAL or the GCC prebuilts, so those
+     are xbill9 forks. gs-common: not used; thermal comes from hardware/google/pixel/thermal. -->
 <manifest>
-  <project name="LineageOS/android_device_google_sargo" path="device/google/sargo" remote="github" revision="lineage-23.0" />
+  <project name="xbill9/android_device_google_sargo" path="device/google/sargo" remote="github" revision="lineage-24.0" />
   <project name="xbill9/android_device_google_bonito" path="device/google/bonito" remote="github" revision="lineage-24.0" />
   <project name="LineageOS/android_packages_apps_ElmyraService" path="packages/apps/ElmyraService" remote="github" revision="lineage-24.0" />
   <project name="xbill9/android_kernel_google_msm-4.9" path="kernel/google/msm-4.9" remote="github" revision="main" />
   <project name="xbill9/proprietary_vendor_google_sargo" path="vendor/google/sargo" remote="github" revision="lineage-24.0" />
   <project name="xbill9/proprietary_vendor_google_bonito" path="vendor/google/bonito" remote="github" revision="lineage-24.0" />
-  <!-- Dropped from LineageOS 24.0 (no sdm845-family devices); the 23.2 versions sargo built with. -->
+  <!-- Dropped from LineageOS 24.0 (no sdm845-family devices). -->
   <project name="xbill9/android_hardware_qcom_sdm845_display" path="hardware/qcom/sdm845/display" remote="github" revision="lineage-24.0" groups="qcom,qcom_sdm845" />
-  <project name="LineageOS/android_hardware_qcom_sdm845_gps" path="hardware/qcom/sdm845/gps" remote="github" revision="lineage-23.2" groups="qcom,qcom_sdm845" />
-  <project name="xbill9/android_hardware_qcom_audio" path="hardware/qcom/audio" remote="github" revision="lineage-23.2" groups="qcom,qcom_audio,pdk-qcom" />
-  <!-- LineageOS 24 dropped GCC; the 4.9 kernel still links with GNU binutils (gold for LTO), as in 23.2. -->
-  <project name="LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9" path="prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9" remote="github" revision="lineage-19.1" clone-depth="1" />
-  <project name="LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9" path="prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9" remote="github" revision="lineage-19.1" clone-depth="1" />
+  <project name="xbill9/android_hardware_qcom_sdm845_gps" path="hardware/qcom/sdm845/gps" remote="github" revision="lineage-24.0" groups="qcom,qcom_sdm845" />
+  <project name="xbill9/android_hardware_qcom_audio" path="hardware/qcom/audio" remote="github" revision="lineage-24.0" groups="qcom,qcom_audio,pdk-qcom" />
+  <!-- LineageOS 24.0 dropped GCC; the 4.9 kernel still links with GNU binutils (gold for LTO). -->
+  <project name="xbill9/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9" path="prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9" remote="github" revision="lineage-24.0" clone-depth="1" />
+  <project name="xbill9/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9" path="prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9" remote="github" revision="lineage-24.0" clone-depth="1" />
   <!-- clang and rust prebuilts are fetched by hand (partial clone, sparse checkout). -->
   <remove-project name="platform/prebuilts/rust" />
   <!-- Android 17 fixes for the 4.9 kernel: legacy fscrypt keyring (core, vold),

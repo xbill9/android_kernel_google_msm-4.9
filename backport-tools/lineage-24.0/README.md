@@ -15,18 +15,24 @@ SELinux enforcing; boot status is in `boot-test/README.md`.
 | Path | Repository | Branch |
 |---|---|---|
 | `device/google/bonito` | `xbill9/android_device_google_bonito` | `lineage-24.0` |
-| `device/google/sargo` | `LineageOS/android_device_google_sargo` | `lineage-23.0` |
+| `device/google/sargo` | `xbill9/android_device_google_sargo` | `lineage-24.0` |
 | `vendor/google/{sargo,bonito}` | `xbill9/proprietary_vendor_google_*` | `lineage-24.0` |
 | `hardware/qcom/sdm845/display` | `xbill9/android_hardware_qcom_sdm845_display` | `lineage-24.0` |
-| `hardware/qcom/sdm845/gps` | LineageOS | `lineage-23.2`; 24.0 dropped it |
-| `hardware/qcom/audio` | `xbill9/android_hardware_qcom_audio` | `lineage-23.2` |
-| `prebuilts/gcc/linux-x86/{aarch64,arm}/*-4.9` | LineageOS | `lineage-19.1`; 24.0 dropped GCC |
+| `hardware/qcom/sdm845/gps` | `xbill9/android_hardware_qcom_sdm845_gps` | `lineage-24.0` |
+| `hardware/qcom/audio` | `xbill9/android_hardware_qcom_audio` | `lineage-24.0` |
+| `prebuilts/gcc/linux-x86/{aarch64,arm}/*-4.9` | `xbill9/android_prebuilts_gcc_linux-x86_*-4.9` | `lineage-24.0` |
 | `kernel/google/msm-4.9` | this repository | `main` |
 | `system/core` | `xbill9/android_system_core` | `lineage-24.0` |
 | `system/vold` | `xbill9/android_system_vold` | `lineage-24.0` |
 | `system/bpf` | `xbill9/android_system_bpf` | `lineage-24.0` |
 | `packages/modules/Connectivity` | `xbill9/android_packages_modules_Connectivity` | `lineage-24.0` |
 | `system/zygote` | `xbill9/android_system_zygote` | `lineage-24.0` |
+
+Every project in the local manifest is on a `lineage-24.0` branch, the kernel
+on `main`. LineageOS has no `lineage-24.0` branch for the sargo device tree,
+the sdm845 GPS HAL, the audio HAL or the GCC 4.9 prebuilts (24.0 has no
+sdm845-family device and no GCC), so each is an xbill9 fork whose
+`lineage-24.0` branch starts at the LineageOS commit the build used before.
 
 Switching a project in the local manifest from a LineageOS repository to a
 fork makes `repo sync` refuse the existing checkout ("--force-sync not

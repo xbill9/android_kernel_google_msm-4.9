@@ -19,7 +19,11 @@ The xbill9 forks, listed as `<project name="xbill9/...">` lines in
 | `vendor/google/bonito` | `xbill9/proprietary_vendor_google_bonito` | `lineage-24.0` |
 | `kernel/google/msm-4.9` | `xbill9/android_kernel_google_msm-4.9` (this repository) | `main` |
 | `hardware/qcom/sdm845/display` | `xbill9/android_hardware_qcom_sdm845_display` | `lineage-24.0` |
-| `hardware/qcom/audio` | `xbill9/android_hardware_qcom_audio` | `lineage-23.2` |
+| `hardware/qcom/audio` | `xbill9/android_hardware_qcom_audio` | `lineage-24.0` |
+| `hardware/qcom/sdm845/gps` | `xbill9/android_hardware_qcom_sdm845_gps` | `lineage-24.0` |
+| `device/google/sargo` | `xbill9/android_device_google_sargo` | `lineage-24.0` |
+| `prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9` | `xbill9/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9` | `lineage-24.0` |
+| `prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9` | `xbill9/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9` | `lineage-24.0` |
 | `system/core` | `xbill9/android_system_core` | `lineage-24.0` |
 | `system/vold` | `xbill9/android_system_vold` | `lineage-24.0` |
 | `system/bpf` | `xbill9/android_system_bpf` | `lineage-24.0` |
