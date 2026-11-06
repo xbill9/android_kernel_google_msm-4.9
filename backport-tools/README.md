@@ -104,13 +104,11 @@ flashed for daily use (see below). Last tested kernel:
   kprobe and uprobe PMUs count every hit too (`probe_pmu_bpf.c`). Each
   test kernel was built with no local changes.
 
-## LineageOS 23.2 (Android 16)
+## Android 16 and later
 
-An unofficial LineageOS 23.2 build boots to the home screen on
-`4.9.337-g416f6a9fd740` with SELinux enforcing, and Wi-Fi connects and
-validates. LineageOS lists 4.14 as the minimum kernel for 23.x; Android 16
+LineageOS lists 4.14 as the minimum kernel for 23.x and 24.0. Android 16
 needs three things from the kernel that 4.9 lacked, each of which stops
-init before `on boot`:
+init before `on boot`; LineageOS 24.0 (`lineage-24.0/`) runs on them too:
 
 - `MADV_WIPEONFORK` (upstream 4.14, `d2cd9ede6e19`). Bionic's arc4random
   calls it and aborts the process on `EINVAL`, so every program died at
@@ -128,11 +126,6 @@ init before `on boot`:
   `b8eb5fd5bdb4`). libprocessgroup mounts cpuset with it, and
   `SetupCgroups` failed with `ENOENT` without it, so no service could
   start.
-
-Still open on 23.2: the camera provider crashes in
-`CamX::TuningDataManager::GetChromatix()` and restarts every 5 seconds,
-and netd aborts once in `libnetd_updatable_init` at boot and then runs
-normally after init restarts it.
 
 ## Replaying a series
 

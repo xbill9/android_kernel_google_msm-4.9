@@ -11,7 +11,7 @@ OUT=~/sargo-bpf-test/logs/boot-tests/$LABEL; mkdir -p $OUT
 log() { echo "$(date +%T) $*" | tee -a $OUT/run.log; }
 usb() { lsusb | grep -o '18d1:[0-9a-f]*' | head -1; }
 # Kernel build string of an image, to tell the tested kernel from the flashed one.
-kver() { ~/android/lineage-23.2/out/host/linux-x86/bin/unpack_bootimg --boot_img "$1" --out $OUT/u >/dev/null &&
+kver() { ~/android/lineage-24.0/out/host/linux-x86/bin/unpack_bootimg --boot_img "$1" --out $OUT/u >/dev/null &&
          lz4 -dc $OUT/u/kernel 2>/dev/null | strings | grep -m1 "^Linux version 4" | cut -d' ' -f3,12-; rm -rf $OUT/u; }
 WANT=$(kver "$IMG")
 log "testing kernel: $WANT"
