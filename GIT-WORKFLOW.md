@@ -3,7 +3,8 @@
 The ROM tree at `/android/lineage-24.0` holds about a thousand separate git
 repositories, one per folder, managed by `repo`. Each folder (`vendor/apn`,
 `device/google/bonito`, ...) has its own history and its own GitHub home, so
-changes are committed and pushed inside that folder.
+changes are committed and pushed inside that folder. Setting up a build
+machine from scratch: `backport-tools/lineage-24.0/BUILD.md`.
 
 ---
 

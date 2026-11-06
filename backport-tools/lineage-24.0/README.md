@@ -6,6 +6,8 @@ completed on 2026-10-23 on EC2 (`lineage-24.0-20261023-UNOFFICIAL-sargo.zip`,
 1,208,903,032 bytes; see `aws/`). Since 2026-10-26 the full build boots with
 SELinux enforcing; boot status is in `boot-test/README.md`.
 
+Clean build on a new machine, and moving to another machine: `BUILD.md`.
+
 ## Sources
 
 `local_manifest-sargo.xml` goes in `.repo/local_manifests/sargo.xml` on top of
