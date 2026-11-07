@@ -14,7 +14,8 @@ a GitHub login, and the steps in order.
 | | Measured |
 |---|---|
 | Memory | RAM plus swap of about 80 GB. Soong analysis held 31 GB resident with 44 GB of swap in use on a 31 GB machine. |
-| Disk | 267 GB for the tree with the build at 82 % (`.repo` 33 GB, `out` 130 GB). |
+| Disk | 294 GB for the tree after a complete build (`.repo` 60 GB, `out` 140 GB), plus 1.2 GB per published build in `~/sargo-bpf-test`. |
+| Time | 9 h 27 min for `sargo-build` from an empty `out/` on `gpu` (12 threads, `-j12`): 9 h 26 min in `m bacon`, 231,681 ninja steps (2026-11-06). |
 | OS | Debian sid (forky) on x86_64 here; Ubuntu 24.04 on EC2 (`aws/ec2-build.sh`). |
 
 Machines this has run on:
