@@ -227,7 +227,7 @@ The phone has run that build for two days since. VTS kernel and CTS results for 
 | | Stock Android 12 | LineageOS 24.0, port build | LineageOS 24.0, this build |
 | :--- | :--- | :--- | :--- |
 | Data with the Fi SIM | 🟢 18/18 | ❌ lost seconds after attach | 🥇 🟢 18/18 |
-| IPv4 on IPv6-only data | 🟢 | ❌ clatd exits 127 | 🟢 through clatd |
+| IPv4 on IPv6-only data | 🟢 through clatd | ❌ clatd exits 127 | 🟢 through clatd |
 | Fi APN | CarrierSettings | ❌ none for 310260 | 🟢 `h2g2` |
 | VoLTE key for Fi | 🟢 from Tycho | ❌ `false` | 🟢 in `fi_us.pb` |
 | Mobile data default | 🟢 on | ❌ off | 🟢 on |

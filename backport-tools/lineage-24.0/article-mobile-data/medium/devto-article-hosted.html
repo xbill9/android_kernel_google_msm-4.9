@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.11" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Mobile Data on Android 17 and a 4.9 Kernel: Google Fi on the Pixel 3a</title>
+  <meta name="description" content="LineageOS 24.0 on the Pixel 3a gets mobile data from a Google Fi data-only SIM after four fixes: mobile data on by default, a Fi APN, VoLTE in the carrier settings and a close_range() backport for IPv4. Each one traced from the radio log." />
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    body{font-family:-apple-system,'Segoe UI',Roboto,'Liberation Sans',Arial,sans-serif;
+         font-size:18px;line-height:1.58;max-width:42em;color:#242424;}
+    h1,h2,h3,h4{font-weight:700;line-height:1.25;margin-top:1.8em;}
+    h4{font-size:1.25em;}
+    img{max-width:100%;height:auto;display:block;margin:1.6em 0;}
+    pre{background:#f7f7f7;border:1px solid #e6e6e6;border-radius:4px;
+        padding:12px 14px;overflow-x:auto;font-size:14px;line-height:1.45;}
+    code{font-family:'Liberation Mono',Menlo,Consolas,monospace;}
+    :not(pre)>code{background:#f2f2f2;padding:1px 5px;border-radius:3px;font-size:.9em;}
+    blockquote{border-left:3px solid #ddd;margin-left:0;padding-left:1em;color:#555;}
+    hr{border:0;border-top:1px solid #e6e6e6;margin:2.4em 0;}
+  </style>
+</head>
+<body>
+<p>This article provides a step by step guide to getting mobile data
+working on LineageOS 24.0, which is Android 17, on a Google Pixel 3a and
+its original 4.9 Linux kernel, with a Google Fi data-only SIM. It
+continues the LineageOS 24.0 port on the same phone. Every patch, script
+and build is published.</p>
+<figure><img src="https://raw.githubusercontent.com/xbill9/android_kernel_google_msm-4.9/main/backport-tools/lineage-24.0/article-mobile-data/medium/img/devto-cover.eca0f5c3.jpg" alt="Mobile Data on Android 17 and a 4.9 Kernel: Google Fi on the Pixel 3a" /></figure>
+<p><a
+href="https://github.com/xbill9/android_kernel_google_msm-4.9/releases/tag/lineage-24.0-sargo-20261106-1132">https://github.com/xbill9/android_kernel_google_msm-4.9/releases/tag/lineage-24.0-sargo-20261106-1132</a></p>
+<p><strong>A Fi data-only SIM gets IPv4 and IPv6 data on the Pixel 3a's
+LineageOS 24.0 build from a fresh install, with nothing set by hand.
+Four changes do it: mobile data on by default, a Google Fi APN for
+310260, the VoLTE key in Google's carrier settings for Fi, and a
+<code>close_range()</code> backport that lets Android 17 start clatd on
+a 4.9 kernel. Before them the phone registered on T-Mobile LTE at boot
+and lost it seconds later.</strong></p>
+<hr />
+<h4 id="what-is-this-project-trying-to-do">What is this project trying
+to Do?</h4>
+<p>The Pixel 3a (codename sargo) runs LineageOS 24.0 on its 4.9 kernel,
+and that build was tested with no SIM fitted. The previous article in
+this series covers the boot:</p>
+<p><a
+href="https://dev.to/gde/android-17-on-a-49-kernel-lineageos-240-on-the-pixel-3a-1mok">https://dev.to/gde/android-17-on-a-49-kernel-lineageos-240-on-the-pixel-3a-1mok</a></p>
+<p>The goal here: mobile data from a Google Fi data-only SIM, the same
+SIM that gets data in an iPhone and on the phone's stock Android 12. The
+phone's modem build is <code>MPSS.AT.4.0.2.c4.1-00145</code>, from
+2022.</p>
+<hr />
+<h4 id="at-this-point-you-should-have">At This Point You Should
+Have…</h4>
+<ul>
+<li>A Google Pixel 3a (sargo) running the LineageOS 24.0 port,
+bootloader unlocked</li>
+<li>The stock factory image, <code>sargo-sp2a.220505.008</code>,
+unpacked with its <code>flash-all.sh</code></li>
+<li>A Google Fi data-only SIM</li>
+<li><code>adb</code> and <code>fastboot</code>, with rooted debugging on
+in Developer options</li>
+<li>A clone:
+<code>git clone https://github.com/xbill9/android_kernel_google_msm-4.9</code></li>
+</ul>
+<p>The port itself: <a
+href="https://dev.to/gde/android-17-on-a-49-kernel-lineageos-240-on-the-pixel-3a-1mok">https://dev.to/gde/android-17-on-a-49-kernel-lineageos-240-on-the-pixel-3a-1mok</a>
+for 24.0, and <a
+href="https://dev.to/gde/android-16-on-a-49-kernel-lineageos-232-on-the-pixel-3a-5e79">https://dev.to/gde/android-16-on-a-49-kernel-lineageos-232-on-the-pixel-3a-5e79</a>
+for 23.2.</p>
+<hr />
+<h4 id="step-1--measure-stock-and-reset-the-modem-with-it">Step 1 —
+Measure Stock and Reset the Modem With It</h4>
+<p>Every test below is the same 90 second check: sample
+<code>mDataRegState</code> from <code>dumpsys telephony.registry</code>
+every 5 s, eighteen times, then ping <code>8.8.8.8</code>. Stock Android
+12 with the Fi SIM and Wi-Fi off:</p>
+<pre class="text"><code>stock SP2A, fresh: data in service 18/18 samples, timeline [##################], ping: 0% packet loss
+stock baseline: data in service 18/18 samples, timeline [##################], ping: 0% packet loss
+stock after airplane toggle 1: data in service 18/18 samples, timeline [##################], ping: 0% packet loss
+stock after airplane toggle 2: data in service 18/18 samples, timeline [##################], ping: 0% packet loss</code></pre>
+<p>The airplane-mode toggles make the modem detach and attach again.
+Stock comes back every time.</p>
+<p>The failure the ROM produces stays in the modem across reboots, ROM
+reinstalls and modem restarts
+(<code>echo restart &gt; /sys/kernel/debug/msm_subsys/modem</code>).
+<code>flash-all.sh</code> from the stock image clears it, so each ROM
+test here starts from a stock flash that passed the 90 second check,
+followed by a fresh install of the ROM.</p>
+<p>🔎 <strong>Tip: record the first boot.</strong> The failure happens
+within 20 seconds of the first boot after stock. Dump
+<code>logcat -b all</code> as soon as <code>adb</code> connects; the
+radio buffer still holds the attach.</p>
+<hr />
+<h4 id="step-2--mobile-data-is-off-by-default">Step 2 — Mobile Data Is
+Off by Default</h4>
+<p>The first boot of the ROM after stock registers on 310260 and loses
+it 11 s later:</p>
+<pre class="text"><code>11-03 21:31:17.800  [0092]&lt; DATA_REGISTRATION_STATE {.base = {.regState = REG_HOME
+11-03 21:31:23.125  [0225]&gt; SETUP_DATA_CALL ... dataProfile=[DataProfile=[ApnSetting] T-Mobile US IMS, 2655, 310260, ims
+11-03 21:31:25.751  [0249]&gt; DEACTIVATE_DATA_CALL cid = 0 reason = NORMAL [PHONE0]
+11-03 21:31:28.430  [0256]&lt; DATA_REGISTRATION_STATE {.base = {.regState = NOT_REG_MT_SEARCHING_OP_EM</code></pre>
+<p>LineageOS sets <code>ro.com.android.mobiledata=false</code> in
+<code>vendor/lineage/config/telephony.mk</code>, so the only connection
+after attach is IMS, requested by Qualcomm's
+<code>com.qualcomm.qti.cne</code>. When cne drops the request, Android
+tears the connection down
+(<code>onTearDown: reason=CONNECTIVITY_SERVICE_UNWANTED</code>), the
+phone has no connection left on LTE, and it detaches.</p>
+<p>The fork <code>xbill9/android_vendor_lineage</code>
+<code>fe3f792</code> turns mobile data on. A device tree cannot override
+this property: the build refuses two different values for it, and the
+product partition, where LineageOS sets it, is read last.</p>
+<hr />
+<h4 id="step-3--a-google-fi-apn-for-310260">Step 3 — A Google Fi APN for
+310260</h4>
+<p>Stock Pixels take APNs from Google's CarrierSettings. The ROM reads
+the LineageOS APN list, <code>vendor/apn</code>. It has
+<code>h2g2</code> only for 310240, so the Fi SIM on 310260 attached with
+T-Mobile's <code>fast.t-mobile.com</code>, as in the log above.</p>
+<p>The fork <code>xbill9/android_vendor_apn</code> <code>6acda79</code>
+adds the entry, with the values a stock Pixel sends in
+<code>SET_INITIAL_ATTACH_APN</code>:</p>
+<pre class="xml"><code>&lt;apn mcc=&quot;310&quot; mnc=&quot;260&quot; carrier=&quot;Google Fi&quot; apn=&quot;h2g2&quot; authtype=&quot;3&quot;
+     mmsc=&quot;http://mmsc1.g-mms.com/mms/wapenc&quot; modem_cognitive=&quot;true&quot;
+     mvno_match_data=&quot;31026097&quot; mvno_type=&quot;imsi&quot; profile_id=&quot;0&quot;
+     protocol=&quot;IPV6&quot; roaming_protocol=&quot;IP&quot;
+     type=&quot;default,ia,mms,supl,hipri,fota,cbs&quot; /&gt;</code></pre>
+<p><code>profile_id="0"</code> with <code>modem_cognitive</code> makes
+qcril reuse the modem's own attach profile, as stock does; without them
+the framework sends profile id -1 and qcril creates a new modem
+profile.</p>
+<hr />
+<h4 id="step-4--ims-switched-off-drops-lte">Step 4 — IMS Switched Off
+Drops LTE</h4>
+<p>With mobile data on and the Fi APN in place, the phone still lost
+registration about a second after this:</p>
+<pre class="text"><code>11-04 12:56:53.115  qcril_qmi_imss_request_set_ims_srv_status_v02: VoLTE setting : 0
+11-04 12:56:53.180  qcril_qmi_imss_request_set_ims_registration_v02: ims_service_enabled = FALSE</code></pre>
+<p>The carrier config for the SIM has
+<code>carrier_volte_available_bool=false</code>, so Android switches IMS
+off in the modem. A modem set up as voice-centric gives up LTE when it
+has no voice over LTE, and T-Mobile has no 3G to fall back to. The phone
+then searches and is denied by 311480 and 310410 (causes 15 and 13),
+which is the state that survives a modem restart.</p>
+<p>Setting the key on the running phone brings service back:</p>
+<pre class="text"><code>adb shell cmd phone cc set-value -s 0 -p carrier_volte_available_bool true
+qcril_qmi_imss_request_set_ims_srv_status_v02: VoLTE setting : 1
+qcril_qmi_imss_request_set_ims_registration_v02: ims_service_enabled = TRUE
+VoLTE available=true + modem restart: data in service 17/18 samples, longest run 85s, timeline [.#################], ping: Network is unreachable</code></pre>
+<p>The SIM has no voice plan. IMS tries to register and fails, as it
+does on stock, and LTE data stays up.</p>
+<hr />
+<h4 id="step-5--where-the-carrier-config-comes-from">Step 5 — Where the
+Carrier Config Comes From</h4>
+<p>The bonito tree sets <code>platform_carrier_config_package</code> to
+<code>com.google.android.carrier</code>, Google's CarrierSettings from
+the vendor blobs. The stock phone answers the same question in two
+passes:</p>
+<pre class="text"><code>Fetch config for default app: com.google.android.carrier carrierid: CarrierIdentifier{mcc=310,mnc=260,...,gid1=4276,...,carrierid=1989,specificCarrierId=10014}
+Fetch config for carrier app: com.google.android.apps.tycho carrierid: CarrierIdentifier{mcc=310,mnc=260,spn=Google Fi,...}
+            carrier_volte_available_bool = false
+            carrier_volte_available_bool = true</code></pre>
+<p>CarrierSettings maps the Fi SIM to <code>fi_us.pb</code>, which
+carries four keys and no VoLTE key, so its answer is <code>false</code>.
+The <code>true</code> comes from the Google Fi app, Tycho, as the SIM's
+carrier app. A ROM without Tycho keeps <code>false</code>.</p>
+<p>The fix appends one record to <code>fi_us.pb</code> in
+<code>xbill9/proprietary_vendor_google_sargo</code>
+<code>84e78b4</code>. Protobuf merges repeated messages, so the original
+keys stay as they are. The tree's own <code>aprotoc</code> and the
+CarrierSettings schema from
+<code>lineage/scripts/carriersettings-extractor</code> encode it:</p>
+<pre class="bash"><code>P=lineage/scripts/carriersettings-extractor
+printf &#39;configs { config { key: &quot;carrier_volte_available_bool&quot; bool_value: true } }&#39; \
+  | out/host/linux-x86/bin/aprotoc -I$P --encode=com.google.carrier.CarrierSettings \
+    $P/carrier_settings.proto &gt;&gt; fi_us.pb</code></pre>
+<p>Bind-mounted over <code>/product/etc/CarrierSettings/fi_us.pb</code>,
+with the cached answers in
+<code>/data/user_de/0/com.android.phone/files/carrierconfig-*</code>
+deleted and the phone process restarted:</p>
+<pre class="text"><code>carrier_volte_available_bool                                           BOOLEAN         true
+fi_us.pb with VoLTE (bind-mounted), modem restart: data in service 17/18 samples, longest run 85s, timeline [.#################], ping: 0% packet loss</code></pre>
+<p>🔎 <strong>Tip: find out which app answers.</strong>
+<code>dumpsys carrier_config | grep 'Fetch config'</code> names it. An
+overlay for the AOSP CarrierConfig app's <code>vendor.xml</code> has no
+effect on a device that points
+<code>platform_carrier_config_package</code> at Google's.</p>
+<hr />
+<h4 id="step-6--ipv4-through-464xlat-needs-close_range">Step 6 — IPv4
+Through 464XLAT Needs close_range()</h4>
+<p>Fi's data network is IPv6-only. IPv4 goes through clatd, and on the
+4.9 kernel clatd never starts:</p>
+<pre class="text"><code>D jniClatCoordinator: clatd process 10827 terminated status=32512</code></pre>
+<p>32512 is exit code 127. <code>ClatCoordinator</code> starts clatd
+with
+<code>posix_spawn(POSIX_SPAWN_USEVFORK | POSIX_SPAWN_CLOEXEC_DEFAULT)</code>,
+and bionic handles the second flag in the child:</p>
+<pre class="c"><code>if ((flags &amp; POSIX_SPAWN_CLOEXEC_DEFAULT) != 0) {
+  // mark all open fds except stdin/out/err as close-on-exec
+  if (close_range(3, ~0U, CLOSE_RANGE_CLOEXEC)) _exit(127);
+}</code></pre>
+<p><code>close_range</code> arrived in Linux 5.9 and
+<code>CLOSE_RANGE_CLOEXEC</code> in 5.11. Run by hand, the same clatd
+binary starts and prints its usage line, so the binary, its libraries
+and its SELinux label are all fine.</p>
+<p>Kernel <code>5b86ef09ed48</code> backports <code>close_range()</code>
+as syscall 436, wired like the tree's existing <code>pidfd_open</code>
+backport: <code>fs/file.c</code>,
+<code>include/uapi/linux/close_range.h</code>, the asm-generic and arm64
+compat tables, with <code>__NR_syscalls</code> and
+<code>__NR_compat_syscalls</code> raised to 437. With only the new boot
+image flashed:</p>
+<pre class="text"><code>v4-rmnet_data2   UNKNOWN        192.0.0.4/32
+8.8.8.8 dev v4-rmnet_data2 table 1033 src 192.0.0.4 uid 2000
+ROM + close_range kernel (IPv4 ping): data in service 18/18 samples, timeline [##################], ping: 0% packet loss</code></pre>
+<p>Any caller of <code>POSIX_SPAWN_CLOEXEC_DEFAULT</code> on Android 17
+needs this on a kernel before 5.11.</p>
+<hr />
+<h4 id="step-7--build-from-upstream-and-install-as-an-update">Step 7 —
+Build From Upstream and Install as an Update</h4>
+<p><code>sargo-build</code> syncs upstream LineageOS 24.0, checks every
+fork against upstream, builds and publishes the release. LineageOS's
+manifest of 2026-11-04 moved twelve projects from AOSP to LineageOS
+copies, among them <code>external/aac</code> and
+<code>packages/modules/Profiling</code>; <code>repo sync</code> refuses
+to replace a project's git metadata without <code>--force-sync</code>,
+so each one, checked clean, gets that once:</p>
+<pre class="bash"><code>repo sync -c --force-sync external/aac external/hplip ... vendor/apn vendor/lineage</code></pre>
+<p>The build after that sync re-analyses the whole tree, and it took
+03:10:10 on this machine. <code>update_engine</code> installs it into
+the other slot and keeps <code>/data</code>:</p>
+<pre class="text"><code>[INFO:update_engine_client_android.cc(102)] onPayloadApplicationComplete(ErrorCode::kSuccess (0))
+release 20261104-1751 after OTA: data in service 18/18 samples, timeline [##################], ping: 0% packet loss</code></pre>
+<p>And from a fresh install over a stock-reset modem, Wi-Fi off, nothing
+set by hand:</p>
+<pre class="text"><code>mi_imss_request_set_ims_registration_v02: ims_service_enabled = TRUE
+mi_imss_request_set_ims_srv_status_v02: VoLTE setting : 1
+FINAL build 2, fresh install, no overrides: data in service 18/18 samples, timeline [##################], ping: 0% packet loss
+3 packets transmitted, 3 received, 0% packet loss, time 2012ms
+8.8.8.8 dev v4-rmnet_data3 table 1033 src 192.0.0.4 uid 2000</code></pre>
+<p>Release 20261106-1132 is the same sources built again from an empty
+<code>out/</code>, in 9 h 27 min, with every project pinned to a
+<code>lineage-24.0</code> branch. On a Pixel 3a with the Fi SIM,
+enforcing, its hardware check reports the SIM on Fi's LTE network:</p>
+<pre class="text"><code>modem and SIM: LOADED, network Project Fi LTE
+hw-check-24.sh: 16 pass, 2 fail (Wi-Fi and NFC, switched off), 1 skip</code></pre>
+<p>The phone has run that build for two days since. VTS kernel and CTS
+results for it are in the test results: <a
+href="https://github.com/xbill9/android_kernel_google_msm-4.9/blob/main/backport-tools/lineage-24.0/boot-test/test-results-20261106.md">https://github.com/xbill9/android_kernel_google_msm-4.9/blob/main/backport-tools/lineage-24.0/boot-test/test-results-20261106.md</a></p>
+<hr />
+<h4 id="mag_right-tip-what-the-radio-logs-show-and-hide">🔎 Tip: What
+the Radio Logs Show and Hide</h4>
+<ul>
+<li><strong>qcril's detailed log</strong> turns on with
+<code>setprop persist.vendor.radio.adb_log_on 1</code>, then
+<code>stop vendor.qcrild; start vendor.qcrild</code>. It shows the
+attach profile qcril matches and whether it re-attaches.</li>
+<li><strong>The modem's own messages</strong> stay out of reach on this
+phone. Diag over USB and <code>diag_mdlog</code>, with
+<code>/vendor/etc/mdlog/default.cfg</code>, return Android-side debug
+lines and no LTE signalling packets, so the network's reject causes come
+only from what qcril reports.</li>
+<li><strong>Dumping the carrier config</strong> with
+<code>cmd phone cc get-value -s 0 &lt;key&gt;</code> reads the value
+Android applies, including any <code>-p</code> override.</li>
+</ul>
+<hr />
+<h4 id="compare-and-contrast">Compare and Contrast</h4>
+<p><img src="https://raw.githubusercontent.com/xbill9/android_kernel_google_msm-4.9/main/backport-tools/lineage-24.0/article-mobile-data/medium/img/devto-article-table-1.png"
+alt="Table: Stock Android 12, LineageOS 24.0, port build, LineageOS 24.0, this build" /></p>
+<hr />
+<h4 id="so-which-one">So, Which One?</h4>
+<p>For a Pixel 3a with a Fi data-only SIM, this build is the one: data
+from a fresh install, IPv4 and IPv6, and the same update path that keeps
+your data. Re-extracting the vendor blobs from a stock image reverts
+<code>fi_us.pb</code>, so keep the fork's copy.</p>
+<hr />
+<h4 id="summary">Summary</h4>
+<p>The goal of this project was mobile data from a Google Fi data-only
+SIM on the Pixel 3a's LineageOS 24.0 port. The key to the solution was a
+stock flash before every test, which resets the modem, and the first
+boot's radio log, which shows each change the ROM makes to the modem.
+The results were:</p>
+<ul>
+<li>🟢 Data in service for 18 of 18 samples from a fresh install, Wi-Fi
+off, nothing set by hand.</li>
+<li>🟢 IPv4 through clatd after a <code>close_range()</code> backport;
+<code>ping</code> to <code>google.com</code> answers 3 of 3.</li>
+<li>🟢 Calls over LTE marked available for Fi in <code>fi_us.pb</code>,
+so Android leaves IMS on in the modem.</li>
+<li>🟢 A Google Fi <code>h2g2</code> APN for 310260, and mobile data on
+by default.</li>
+<li>⚠️ Re-extracting the vendor blobs from stock reverts the
+<code>fi_us.pb</code> change.</li>
+<li>⚠️ Calls, SMS, roaming and SIMs from other carriers are
+untested.</li>
+</ul>
+<p>Scope: one Pixel 3a (sargo) with one Google Fi data-only SIM in one
+location, modem build <code>MPSS.AT.4.0.2.c4.1-00145</code>, LineageOS
+24.0 built 2026-11-04 and 2026-11-06 from the trees in the references.
+Each data figure is one 90 second check of eighteen samples. Parts of
+the analysis and writing were done with AI assistance (Claude); every
+log line comes from the phone or the build machine.</p>
+<p>The strategy for getting mobile data on Android 17 and a 4.9 kernel
+was validated with an incremental step by step approach.</p>
+<hr />
+<h4 id="references">References</h4>
+<ul>
+<li>Release: <a
+href="https://github.com/xbill9/android_kernel_google_msm-4.9/releases/tag/lineage-24.0-sargo-20261106-1132">https://github.com/xbill9/android_kernel_google_msm-4.9/releases/tag/lineage-24.0-sargo-20261106-1132</a></li>
+<li>Test results for 20261106-1132: <a
+href="https://github.com/xbill9/android_kernel_google_msm-4.9/blob/main/backport-tools/lineage-24.0/boot-test/test-results-20261106.md">https://github.com/xbill9/android_kernel_google_msm-4.9/blob/main/backport-tools/lineage-24.0/boot-test/test-results-20261106.md</a></li>
+<li>Release the step-by-step figures come from: <a
+href="https://github.com/xbill9/android_kernel_google_msm-4.9/releases/tag/lineage-24.0-sargo-20261104-1751">https://github.com/xbill9/android_kernel_google_msm-4.9/releases/tag/lineage-24.0-sargo-20261104-1751</a></li>
+<li>Porting notes for mobile data: <a
+href="https://github.com/xbill9/android_kernel_google_msm-4.9/blob/main/backport-tools/lineage-24.0/PORTING-NOTES-mobile-data.md">https://github.com/xbill9/android_kernel_google_msm-4.9/blob/main/backport-tools/lineage-24.0/PORTING-NOTES-mobile-data.md</a></li>
+<li>Kernel <code>close_range()</code> backport: <a
+href="https://github.com/xbill9/android_kernel_google_msm-4.9/commit/5b86ef09ed48">https://github.com/xbill9/android_kernel_google_msm-4.9/commit/5b86ef09ed48</a></li>
+<li>Fork, vendor/apn: <a
+href="https://github.com/xbill9/android_vendor_apn">https://github.com/xbill9/android_vendor_apn</a></li>
+<li>Fork, vendor/lineage: <a
+href="https://github.com/xbill9/android_vendor_lineage">https://github.com/xbill9/android_vendor_lineage</a></li>
+<li>Vendor blobs with <code>fi_us.pb</code>: <a
+href="https://github.com/xbill9/proprietary_vendor_google_sargo/tree/lineage-24.0">https://github.com/xbill9/proprietary_vendor_google_sargo/tree/lineage-24.0</a></li>
+<li>Device tree: <a
+href="https://github.com/xbill9/android_device_google_bonito/tree/lineage-24.0">https://github.com/xbill9/android_device_google_bonito/tree/lineage-24.0</a></li>
+<li>How to commit to the tree and its forks: <a
+href="https://github.com/xbill9/android_kernel_google_msm-4.9/blob/main/GIT-WORKFLOW.md">https://github.com/xbill9/android_kernel_google_msm-4.9/blob/main/GIT-WORKFLOW.md</a></li>
+<li>The 24.0 port: <a
+href="https://dev.to/gde/android-17-on-a-49-kernel-lineageos-240-on-the-pixel-3a-1mok">https://dev.to/gde/android-17-on-a-49-kernel-lineageos-240-on-the-pixel-3a-1mok</a></li>
+<li>The 23.2 port: <a
+href="https://dev.to/gde/android-16-on-a-49-kernel-lineageos-232-on-the-pixel-3a-5e79">https://dev.to/gde/android-16-on-a-49-kernel-lineageos-232-on-the-pixel-3a-5e79</a></li>
+<li>Google Fi APN settings: <a
+href="https://support.google.com/fi/answer/6330195">https://support.google.com/fi/answer/6330195</a></li>
+</ul>
+</body>
+</html>
