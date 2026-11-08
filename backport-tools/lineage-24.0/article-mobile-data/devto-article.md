@@ -16,7 +16,9 @@ https://github.com/xbill9/android_kernel_google_msm-4.9/releases/tag/lineage-24.
 
 #### What is this project trying to Do?
 
-The Pixel 3a (codename sargo) runs LineageOS 24.0 on its 4.9 kernel; the previous article in this series covers the boot. That build was tested with no SIM fitted.
+The Pixel 3a (codename sargo) runs LineageOS 24.0 on its 4.9 kernel, and that build was tested with no SIM fitted. The previous article in this series covers the boot:
+
+https://dev.to/gde/android-17-on-a-49-kernel-lineageos-240-on-the-pixel-3a-1mok
 
 The goal here: mobile data from a Google Fi data-only SIM, the same SIM that gets data in an iPhone and on the phone's stock Android 12. The phone's modem build is `MPSS.AT.4.0.2.c4.1-00145`, from 2022.
 
@@ -30,7 +32,7 @@ The goal here: mobile data from a Google Fi data-only SIM, the same SIM that get
 - `adb` and `fastboot`, with rooted debugging on in Developer options
 - A clone: `git clone https://github.com/xbill9/android_kernel_google_msm-4.9`
 
-The port itself: https://dev.to/gde/android-16-on-a-49-kernel-lineageos-232-on-the-pixel-3a-5e79 for 23.2, and the 24.0 article in this series for the boot.
+The port itself: https://dev.to/gde/android-17-on-a-49-kernel-lineageos-240-on-the-pixel-3a-1mok for 24.0, and https://dev.to/gde/android-16-on-a-49-kernel-lineageos-232-on-the-pixel-3a-5e79 for 23.2.
 
 ---
 
@@ -256,5 +258,6 @@ The strategy for getting mobile data on Android 17 and a 4.9 kernel was validate
 - Vendor blobs with `fi_us.pb`: https://github.com/xbill9/proprietary_vendor_google_sargo/tree/lineage-24.0
 - Device tree: https://github.com/xbill9/android_device_google_bonito/tree/lineage-24.0
 - How to commit to the tree and its forks: https://github.com/xbill9/android_kernel_google_msm-4.9/blob/main/GIT-WORKFLOW.md
+- The 24.0 port: https://dev.to/gde/android-17-on-a-49-kernel-lineageos-240-on-the-pixel-3a-1mok
 - The 23.2 port: https://dev.to/gde/android-16-on-a-49-kernel-lineageos-232-on-the-pixel-3a-5e79
 - Google Fi APN settings: https://support.google.com/fi/answer/6330195
