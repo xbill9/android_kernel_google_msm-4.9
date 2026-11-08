@@ -8,7 +8,7 @@ cover_image: https://raw.githubusercontent.com/xbill9/android_kernel_google_msm-
 
 This article provides a step by step guide to getting mobile data working on LineageOS 24.0, which is Android 17, on a Google Pixel 3a and its original 4.9 Linux kernel, with a Google Fi data-only SIM. It continues the LineageOS 24.0 port on the same phone. Every patch, script and build is published.
 
-https://github.com/xbill9/android_kernel_google_msm-4.9/releases/tag/lineage-24.0-sargo-20261104-1751
+https://github.com/xbill9/android_kernel_google_msm-4.9/releases/tag/lineage-24.0-sargo-20261106-1132
 
 **A Fi data-only SIM gets IPv4 and IPv6 data on the Pixel 3a's LineageOS 24.0 build from a fresh install, with nothing set by hand. Four changes do it: mobile data on by default, a Google Fi APN for 310260, the VoLTE key in Google's carrier settings for Fi, and a `close_range()` backport that lets Android 17 start clatd on a 4.9 kernel. Before them the phone registered on T-Mobile LTE at boot and lost it seconds later.**
 
@@ -203,6 +203,15 @@ FINAL build 2, fresh install, no overrides: data in service 18/18 samples, timel
 8.8.8.8 dev v4-rmnet_data3 table 1033 src 192.0.0.4 uid 2000
 ```
 
+Release 20261106-1132 is the same sources built again from an empty `out/`, in 9 h 27 min, with every project pinned to a `lineage-24.0` branch. On a Pixel 3a with the Fi SIM, enforcing, its hardware check reports the SIM on Fi's LTE network:
+
+```text
+modem and SIM: LOADED, network Project Fi LTE
+hw-check-24.sh: 16 pass, 2 fail (Wi-Fi and NFC, switched off), 1 skip
+```
+
+The phone has run that build for two days since. VTS kernel and CTS results for it are in the test results: https://github.com/xbill9/android_kernel_google_msm-4.9/blob/main/backport-tools/lineage-24.0/boot-test/test-results-20261106.md
+
 ---
 
 #### 🔎 Tip: What the Radio Logs Show and Hide
@@ -242,7 +251,7 @@ The goal of this project was mobile data from a Google Fi data-only SIM on the P
 - ⚠️ Re-extracting the vendor blobs from stock reverts the `fi_us.pb` change.
 - ⚠️ Calls, SMS, roaming and SIMs from other carriers are untested.
 
-Scope: one Pixel 3a (sargo) with one Google Fi data-only SIM in one location, modem build `MPSS.AT.4.0.2.c4.1-00145`, LineageOS 24.0 built 2026-11-04 from the trees in the references. Each data figure is one 90 second check of eighteen samples. Parts of the analysis and writing were done with AI assistance (Claude); every log line comes from the phone or the build machine.
+Scope: one Pixel 3a (sargo) with one Google Fi data-only SIM in one location, modem build `MPSS.AT.4.0.2.c4.1-00145`, LineageOS 24.0 built 2026-11-04 and 2026-11-06 from the trees in the references. Each data figure is one 90 second check of eighteen samples. Parts of the analysis and writing were done with AI assistance (Claude); every log line comes from the phone or the build machine.
 
 The strategy for getting mobile data on Android 17 and a 4.9 kernel was validated with an incremental step by step approach.
 
@@ -250,7 +259,9 @@ The strategy for getting mobile data on Android 17 and a 4.9 kernel was validate
 
 #### References
 
-- Release: https://github.com/xbill9/android_kernel_google_msm-4.9/releases/tag/lineage-24.0-sargo-20261104-1751
+- Release: https://github.com/xbill9/android_kernel_google_msm-4.9/releases/tag/lineage-24.0-sargo-20261106-1132
+- Test results for 20261106-1132: https://github.com/xbill9/android_kernel_google_msm-4.9/blob/main/backport-tools/lineage-24.0/boot-test/test-results-20261106.md
+- Release the step-by-step figures come from: https://github.com/xbill9/android_kernel_google_msm-4.9/releases/tag/lineage-24.0-sargo-20261104-1751
 - Porting notes for mobile data: https://github.com/xbill9/android_kernel_google_msm-4.9/blob/main/backport-tools/lineage-24.0/PORTING-NOTES-mobile-data.md
 - Kernel `close_range()` backport: https://github.com/xbill9/android_kernel_google_msm-4.9/commit/5b86ef09ed48
 - Fork, vendor/apn: https://github.com/xbill9/android_vendor_apn
