@@ -1,3 +1,4 @@
 devto = https://dev.to/gde/mobile-data-on-android-17-and-a-49-kernel-google-fi-on-the-pixel-3a-4cdc
 medium = https://medium.com/@xbill999/mobile-data-on-android-17-and-a-4-9-kernel-google-fi-on-the-pixel-3a-68ad2eb2cd33
 substack = https://xbill9.substack.com/p/mobile-data-on-android-17-and-a-49
+linkedin = https://www.linkedin.com/feed/update/urn:li:activity:7525286664353738753/

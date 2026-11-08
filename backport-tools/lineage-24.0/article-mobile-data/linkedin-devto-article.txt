@@ -1,0 +1,14 @@
+More of keeping an old Pixel 3a out of a landfill, with Claude working through the radio logs beside me.
+
+My Pixel 3a runs Android 17, LineageOS 24.0, on its original 4.9 kernel. Now it gets mobile data from a Google Fi data-only SIM, IPv4 and IPv6, from a fresh install with nothing set by hand.
+
+What it took:
+
+- 🟢 Mobile data on by default. With it off, the phone dropped off LTE seconds after attaching.
+- 🟢 A Google Fi APN for 310260.
+- 🟢 VoLTE marked available for Fi in Google's carrier settings, so Android leaves IMS on in the modem. On a stock phone that answer comes from the Google Fi app.
+- 🟢 A close_range() backport to the 4.9 kernel, so Android 17 can start clatd for IPv4.
+
+dev.to: https://dev.to/gde/mobile-data-on-android-17-and-a-49-kernel-google-fi-on-the-pixel-3a-4cdc
+Medium: https://medium.com/@xbill999/mobile-data-on-android-17-and-a-4-9-kernel-google-fi-on-the-pixel-3a-68ad2eb2cd33
+Substack: https://xbill9.substack.com/p/mobile-data-on-android-17-and-a-49
