@@ -428,6 +428,105 @@ static ssize_t bpf_dummy_write(struct file *filp, const char __user *buf,
 	return -EINVAL;
 }
 
+static void bpf_map_write_active_inc(struct bpf_map *map)
+{
+	atomic64_inc(&map->writecnt);
+}
+
+static void bpf_map_write_active_dec(struct bpf_map *map)
+{
+	atomic64_dec(&map->writecnt);
+}
+
+bool bpf_map_write_active(const struct bpf_map *map)
+{
+	return atomic64_read(&map->writecnt) != 0;
+}
+
+/* called for any extra memory-mapped regions (except initial) */
+static void bpf_map_mmap_open(struct vm_area_struct *vma)
+{
+	struct bpf_map *map = vma->vm_file->private_data;
+
+	if (vma->vm_flags & VM_MAYWRITE)
+		bpf_map_write_active_inc(map);
+}
+
+/* called for all unmapped memory region (including initial) */
+static void bpf_map_mmap_close(struct vm_area_struct *vma)
+{
+	struct bpf_map *map = vma->vm_file->private_data;
+
+	if (vma->vm_flags & VM_MAYWRITE)
+		bpf_map_write_active_dec(map);
+}
+
+static const struct vm_operations_struct bpf_map_default_vmops = {
+	.open		= bpf_map_mmap_open,
+	.close		= bpf_map_mmap_close,
+};
+
+static int bpf_map_mmap(struct file *filp, struct vm_area_struct *vma)
+{
+	struct bpf_map *map = filp->private_data;
+	int err = 0;
+
+	if (!map->ops->map_mmap || map_value_has_spin_lock(map))
+		return -ENOTSUPP;
+
+	if (!(vma->vm_flags & VM_SHARED))
+		return -EINVAL;
+
+	mutex_lock(&map->freeze_mutex);
+
+	if (vma->vm_flags & VM_WRITE) {
+		if (map->frozen) {
+			err = -EPERM;
+			goto out;
+		}
+		/* map is meant to be read-only, so do not allow mapping as
+		 * writable, because it's possible to leak a writable page
+		 * reference and allows user-space to still modify it after
+		 * freezing, while verifier will assume contents do not change
+		 */
+		if (map->map_flags & BPF_F_RDONLY_PROG) {
+			err = -EACCES;
+			goto out;
+		}
+		bpf_map_write_active_inc(map);
+	}
+out:
+	mutex_unlock(&map->freeze_mutex);
+	if (err)
+		return err;
+
+	/* set default open/close callbacks */
+	vma->vm_ops = &bpf_map_default_vmops;
+	vma->vm_private_data = map;
+	vma->vm_flags &= ~VM_MAYEXEC;
+	if (!(vma->vm_flags & VM_WRITE))
+		/* disallow re-mapping with PROT_WRITE */
+		vma->vm_flags &= ~VM_MAYWRITE;
+
+	err = map->ops->map_mmap(map, vma);
+	if (err) {
+		if (vma->vm_flags & VM_WRITE)
+			bpf_map_write_active_dec(map);
+	}
+
+	return err;
+}
+
+static unsigned int bpf_map_poll(struct file *filp, struct poll_table_struct *pts)
+{
+	struct bpf_map *map = filp->private_data;
+
+	if (map->ops->map_poll)
+		return map->ops->map_poll(map, filp, pts);
+
+	return POLLERR;
+}
+
 const struct file_operations bpf_map_fops = {
 #ifdef CONFIG_PROC_FS
 	.show_fdinfo	= bpf_map_show_fdinfo,
@@ -435,6 +534,8 @@ const struct file_operations bpf_map_fops = {
 	.release	= bpf_map_release,
 	.read		= bpf_dummy_read,
 	.write		= bpf_dummy_write,
+	.mmap		= bpf_map_mmap,
+	.poll		= bpf_map_poll,
 };
 
 int bpf_map_new_fd(struct bpf_map *map, int flags)
@@ -580,6 +681,7 @@ static int map_create(union bpf_attr *attr)
 
 	atomic_set(&map->refcnt, 1);
 	atomic_set(&map->usercnt, 1);
+	mutex_init(&map->freeze_mutex);
 
 	if (attr->btf_key_type_id || attr->btf_value_type_id) {
 		struct btf *btf;
@@ -868,21 +970,6 @@ static void maybe_wait_bpf_programs(struct bpf_map *map)
 	if (map->map_type == BPF_MAP_TYPE_HASH_OF_MAPS ||
 	    map->map_type == BPF_MAP_TYPE_ARRAY_OF_MAPS)
 		synchronize_rcu();
-}
-
-static void bpf_map_write_active_inc(struct bpf_map *map)
-{
-	atomic64_inc(&map->writecnt);
-}
-
-static void bpf_map_write_active_dec(struct bpf_map *map)
-{
-	atomic64_dec(&map->writecnt);
-}
-
-bool bpf_map_write_active(const struct bpf_map *map)
-{
-	return atomic64_read(&map->writecnt) != 0;
 }
 
 #define BPF_MAP_UPDATE_ELEM_LAST_FIELD flags
@@ -1200,6 +1287,8 @@ static int map_freeze(const union bpf_attr *attr)
 	map = __bpf_map_get(f);
 	if (IS_ERR(map))
 		return PTR_ERR(map);
+
+	mutex_lock(&map->freeze_mutex);
 	if (bpf_map_write_active(map)) {
 		err = -EBUSY;
 		goto err_put;
@@ -1215,6 +1304,7 @@ static int map_freeze(const union bpf_attr *attr)
 
 	WRITE_ONCE(map->frozen, true);
 err_put:
+	mutex_unlock(&map->freeze_mutex);
 	fdput(f);
 	return err;
 }
