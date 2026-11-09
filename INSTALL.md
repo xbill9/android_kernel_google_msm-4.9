@@ -6,13 +6,11 @@ apps. Build machines use [BUILD-ROM.md](BUILD-ROM.md) instead.
 
 ## Once per laptop (Debian or Ubuntu)
 
-    sudo apt install adb git unzip curl python3 erofs-utils
-    git clone --depth 1 --filter=blob:none --sparse https://github.com/xbill9/android_kernel_google_msm-4.9.git ~/sargo
-    git -C ~/sargo sparse-checkout set backport-tools/lineage-24.0
-    mkdir -p ~/bin && ln -sf ~/sargo/backport-tools/lineage-24.0/phone-install-24.sh ~/bin/sargo-install
+    curl -fsSL https://raw.githubusercontent.com/xbill9/android_kernel_google_msm-4.9/main/backport-tools/lineage-24.0/sargo-setup.sh | bash
 
-The clone fetches only the install scripts, not the kernel source. `~/bin` is on the PATH after
-the next login; until then, run `~/bin/sargo-install`.
+It installs the tools (asks for the sudo password if any are missing), fetches only the install
+scripts into `~/sargo` (not the kernel source), links `~/bin/sargo-install` and installs on the
+plugged-in phone. After that, run `sargo-install` (or `~/bin/sargo-install` until the next login).
 
 ## Every time
 
