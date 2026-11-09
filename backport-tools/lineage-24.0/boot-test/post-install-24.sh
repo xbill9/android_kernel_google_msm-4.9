@@ -33,6 +33,10 @@ log "before: verify=$(count verify) speed-profile=$(count speed-profile)"
 adb shell pm bg-dexopt-job | tail -1
 log "after: verify=$(count verify) speed-profile=$(count speed-profile)"
 
+# Google Location Accuracy lives in Play Services, so no ROM setting turns it on; report it
+nlp=$(adb shell 'dumpsys location' | grep -A8 -E '^ *network provider:' | grep -m1 -oE 'enabled=(true|false)')
+[ "$nlp" = enabled=true ] && log "location: network location on" || log "location: Google Location Accuracy is off (Settings, Location, Location services); without it there is no network location fix"
+
 # Mobile data: with a SIM in, it must be in service, and a Fi SIM must get VoLTE from fi_us.pb
 if [ "$(adb shell getprop gsm.sim.state | tr -d '\r')" != LOADED ]; then
   log "mobile data: no SIM loaded, not checked"; exit 0; fi
