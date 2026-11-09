@@ -16,8 +16,22 @@ images under `~/sargo-bpf-test/kmsglog/`, the tree in `~/android/lineage-24.0`.
 | `sensorread.c`, `sensorread` | Reads one sensor from the adb shell: `sensorread <type> [timeout_s]` prints the first event or exits 1. The smoke test uses it for the barometer (type 6), which nothing else keeps open. `build-sensorread.sh` rebuilds the arm64 binary with the tree's clang and NDK sysroot. |
 | `cts-24.sh` | Runs CTS modules with atest, one at a time, in the report format of `vts-kernel-24.sh`. `core` is 16 modules: kernel config, SELinux, bionic, security, permissions, OS, networking, graphics, media, sensors, hardware, camera, Bluetooth, location and libcore. Each module stops after an hour (libcore three). Telephony is left out: stopped at the limit it left the phone without cellular service. Needs `verifier_verify_adb_installs` set to 0. Results go to `~/sargo-logs/<serial>-cts-<set>-<time>/`. |
 | `clone3test.c`, `clone3test`, `clone3test32` | Checks the kernel's `clone3` and capabilities 38-40 from the adb shell, as arm64 and as 32-bit arm: `cap_last_cap`, `PR_CAPBSET_READ`, the size, flag, signal and stack checks, `CLONE_PIDFD` with `CLONE_PARENT_SETTID`, the child's stack pointer and TLS, `CLONE_VM`. PASS or FAIL per case, exit 1 on any failure. `build-clone3test.sh` rebuilds both binaries. |
+| `ringbuftest.c`, `ringbuftest` | Checks the kernel's BPF ring buffer as root: map creation rules, `mmap` protections, `epoll` wakeup, records written by a socket filter run with `BPF_PROG_TEST_RUN` and read back through `mmap` (one straddling the end of the ring), a full ring, `bpf_ringbuf_query`, and eight programs the verifier must reject. `build-ringbuftest.sh` rebuilds it. |
+| `erofstest.sh`, `erofstest-device.sh` | Checks the kernel's EROFS: builds uncompressed, lz4, lz4hc and SELinux-labelled images with the tree's `mkfs.erofs`, mounts each on a loop device and compares every file, symlink, hard link and label; big-pcluster and ztailpacking images must be refused. `GAPPS_ZIP=<MindTheGapps zip>` adds its Play Services APEX payload. |
 
 ## Status, 2026-11-09
+
+- **Kernel with EROFS and BPF ring buffers** (`0fb294ce07ce`, RAM-booted on
+  92FAY00ZMV over `24.0-20261109`, SELinux enforcing): boots in 48 s.
+  `erofstest.sh` 17 of 17 pass, including the MindTheGapps 17 Play
+  Services payload (its 217,107,692-byte APK matches). `ringbuftest` 36
+  of 36 pass. linux-5.4.302 `test_verifier` 1610 passed, 3 skipped, 0
+  failed in 20 of 20 runs, as before. bpfloader errors at boot go from 8 to
+  5 (`bpfRingbufProg`, `bpfMemEvents`, `bpfMemEventsTest` now load).
+  `clone3test` 0 failed. Smoke test 19 pass, 0 fail. zram (lz4, the
+  updated decompressor) swapped 110 MB with no errors. `struct bpf_map`
+  grew, so the installed `wlan.ko` is refused (`disagrees about version
+  of symbol`); the `wlan.ko` from this build loads and scans 26 networks.
 
 - **Kernel with `clone3` and capabilities 38-40** (`a9f3fef7db74`, RAM-booted
   on 92FAY00ZMV over `24.0-20261109`, slot a, SELinux enforcing): boots in
