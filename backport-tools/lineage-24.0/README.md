@@ -26,9 +26,7 @@ Clean build on a new machine, and moving to another machine: `BUILD.md`.
 | `kernel/google/msm-4.9` | this repository | `main` |
 | `system/core` | `xbill9/android_system_core` | `lineage-24.0` |
 | `system/vold` | `xbill9/android_system_vold` | `lineage-24.0` |
-| `system/bpf` | `xbill9/android_system_bpf` | `lineage-24.0` |
 | `packages/modules/Connectivity` | `xbill9/android_packages_modules_Connectivity` | `lineage-24.0` |
-| `system/zygote` | `xbill9/android_system_zygote` | `lineage-24.0` |
 
 Every project in the local manifest is on a `lineage-24.0` branch, the kernel
 on `main`. LineageOS has no `lineage-24.0` branch for the sargo device tree,
@@ -51,15 +49,15 @@ tip); a conflict leaves the checkout at the fork tip and exits 1. `sargo-build`
 stops when a fork is behind, and rerunning it after `--apply` picks up the rebased forks.
 
 The `system`/`packages` forks carry the Android 17 changes for a 4.9
-kernel: the legacy fscrypt session keyring (core, vold), a bpfloader that
-does not fail the boot on the ring buffer test program, and NetBpfLoad,
-netd and ConnectivityService changes for a kernel below 5.10. The
-`system/zygote` fork stops `zygote_next` from aborting on capabilities 38-40
-(PERFMON, BPF, CHECKPOINT_RESTORE), which the 4.9 kernel does not know.
-Without it every native app zygote dies at start: Chrome 156 runs its
-renderers in one, exits with `Timed out waiting for GPU channel`, and
-system_server's process-start thread retries the dead socket for minutes,
-which blocks every app launch.
+kernel: the legacy fscrypt session keyring (core, vold), and NetBpfLoad,
+netd and ConnectivityService changes for a kernel below 5.10.
+
+`system/bpf` and `system/zygote` are LineageOS and AOSP again from the
+build after 2026-11-09: the kernel now has BPF ring buffers (bpfloader
+creates its `test_ringbuf` map) and capabilities 38-40 (PERFMON, BPF,
+CHECKPOINT_RESTORE), which `zygote_next` drops from every app's bounding
+set. Switching back needs, once, with clean checkouts:
+`repo sync -c --force-sync system/bpf system/zygote`.
 
 `manifest-pinned-20261026.xml` pins every project of the tree to the commit
 that built `lineage-24.0-20261026-UNOFFICIAL-sargo`, the first build that
@@ -161,6 +159,12 @@ of about 233,000 steps in 7 h 49 min.
   build in tmux.
 
 ## Google apps
+
+The kernel has EROFS from 2026-11-09 (`0efd82d0b976`): the Play Services
+payload of the unmodified MindTheGapps 17 zip mounts on a loop device and
+its APK reads back intact (`boot-test/erofstest.sh`). Installing the
+unmodified zip on a build with that kernel is not tested yet; until it is,
+`repack-gapps.sh` below is the tested route.
 
 MindTheGapps 17.0.0 ships Play Services as an APEX (`com.google.android.gmssystem`)
 whose payload is EROFS, which the 4.9 kernel cannot mount (`apexd: Mounting failed ...
