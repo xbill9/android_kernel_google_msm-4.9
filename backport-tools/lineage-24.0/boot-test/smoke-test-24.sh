@@ -99,11 +99,17 @@ if sh pm path com.google.android.gms >/dev/null; then
   ng=$(sh "dumpsys package com.google.android.gms" | grep -cE '^ +android.permission\.[A-Z_]+: granted=false')
   sh pidof com.google.android.gms >/dev/null && res PASS "play services" "running, $ng runtime permissions ungranted" || res FAIL "play services" "not running"
 else res CHECK "play services" "not installed (sideload GApps)"; fi
+# Chrome stops at its first-run screen until someone completes it, and loads no page; on this
+# userdebug build it reads /data/local/tmp/chrome-command-line, so skip that screen for the test only
+CL=/data/local/tmp/chrome-command-line
+sh "[ -e $CL ] && mv $CL $CL.smoke-saved; echo '_ --disable-fre --no-default-browser-check --no-first-run' > $CL; chmod 644 $CL"
 sh am force-stop com.android.chrome; sh "logcat -c"
 sh am start -a android.intent.action.VIEW -d https://example.com com.android.chrome >/dev/null; sleep 20
 nr=$(sh "ps -A -o USER,NAME" | grep -cE '^u0_i[0-9]+ +com.android.chrome:sandboxed')
-[ "$nr" -gt 0 ] && res PASS chrome "$nr sandboxed renderer(s)" || res FAIL chrome "no renderer"
-sh input keyevent KEYCODE_HOME
+ca=$(sh "dumpsys activity activities" | grep -m1 topResumedActivity | grep -oE 'com.android.chrome/[^ ]+')
+[ "$nr" -gt 0 ] && res PASS chrome "$nr sandboxed renderer(s)" || res FAIL chrome "no renderer (${ca:-Chrome not in front})"
+sh input keyevent KEYCODE_HOME; sh am force-stop com.android.chrome
+sh "rm -f $CL; [ -e $CL.smoke-saved ] && mv $CL.smoke-saved $CL"
 nv=$(sh "pm art dump" | grep -cE 'arm64: \[status=verify\]'); np=$(sh "pm art dump" | grep -cE 'arm64: \[status=speed-profile\]')
 [ "$np" -gt 20 ] && res PASS "apps compiled" "$np speed-profile, $nv verify" || res CHECK "apps compiled" "$np speed-profile; run post-install-24.sh"
 
