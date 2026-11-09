@@ -15,6 +15,19 @@ images under `~/sargo-bpf-test/kmsglog/`, the tree in `~/android/lineage-24.0`.
 | `hw-check-24.sh` | Checks the hardware of a booted phone over adb in about 2 minutes: Wi-Fi traffic, Bluetooth off and on, NFC, modem and SIM, GNSS HAL, sensors, rear and front camera photos (Aperture), speaker output, vibrator, fingerprint HAL, screen off and on, battery, storage speed, crashes and SELinux denials. Prints PASS, FAIL or SKIP with the evidence and counts them; results and logs go to `~/sargo-logs/<serial>-hwcheck-<time>/`. Not covered: microphone, GPS fix, calls, fingerprint enrolment. Apps the user disabled are enabled for their test only. |
 | `sensorread.c`, `sensorread` | Reads one sensor from the adb shell: `sensorread <type> [timeout_s]` prints the first event or exits 1. The smoke test uses it for the barometer (type 6), which nothing else keeps open. `build-sensorread.sh` rebuilds the arm64 binary with the tree's clang and NDK sysroot. |
 | `cts-24.sh` | Runs CTS modules with atest, one at a time, in the report format of `vts-kernel-24.sh`. `core` is 16 modules: kernel config, SELinux, bionic, security, permissions, OS, networking, graphics, media, sensors, hardware, camera, Bluetooth, location and libcore. Each module stops after an hour (libcore three). Telephony is left out: stopped at the limit it left the phone without cellular service. Needs `verifier_verify_adb_installs` set to 0. Results go to `~/sargo-logs/<serial>-cts-<set>-<time>/`. |
+| `clone3test.c`, `clone3test`, `clone3test32` | Checks the kernel's `clone3` and capabilities 38-40 from the adb shell, as arm64 and as 32-bit arm: `cap_last_cap`, `PR_CAPBSET_READ`, the size, flag, signal and stack checks, `CLONE_PIDFD` with `CLONE_PARENT_SETTID`, the child's stack pointer and TLS, `CLONE_VM`. PASS or FAIL per case, exit 1 on any failure. `build-clone3test.sh` rebuilds both binaries. |
+
+## Status, 2026-11-09
+
+- **Kernel with `clone3` and capabilities 38-40** (`a9f3fef7db74`, RAM-booted
+  on 92FAY00ZMV over `24.0-20261109`, slot a, SELinux enforcing): boots in
+  49 s. `clone3test` 27 of 27 pass as arm64 and 23 of 23 as 32-bit arm; the
+  previous kernel fails 24 of the 27. `CtsBionicTestCases` 3,285 pass and
+  0 fail (11-06: 3,281 pass, 4 fail, all `sched.clone3*`). Smoke test 18
+  pass, 0 fail, Chrome's sandboxed renderer up. Hardware check 17 pass and
+  1 fail: Wi-Fi has no saved network, and the driver scans 21. No
+  `capability2` denials. `Module.symvers` is unchanged from the previous
+  build, so the installed `wlan.ko` loads.
 
 ## Status, 2026-11-07
 
