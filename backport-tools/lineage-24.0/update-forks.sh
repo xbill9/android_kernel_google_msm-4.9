@@ -18,7 +18,13 @@ t = sys.argv[1]
 base = ET.parse(f"{t}/.repo/manifests/default.xml").getroot()
 remotes = {r.get("name"): r for r in base.iter("remote")}
 default_rev = base.find("default").get("revision").removeprefix("refs/heads/")
-up_path = {p.get("name"): p.get("path", p.get("name")) for p in base.iter("project")}
+# Projects come from default.xml and the files it includes (vendor/lineage, vendor/apn are in
+# snippets/lineage.xml).
+projects = list(base.iter("project"))
+for inc in base.iter("include"):
+    projects += ET.parse(f"{t}/.repo/manifests/{inc.get('name')}").getroot().iter("project")
+up_path = {p.get("name"): p.get("path", p.get("name")) for p in projects}
+up_rev = {p.get("name"): p.get("revision") for p in projects}
 local = ET.parse(f"{t}/.repo/local_manifests/sargo.xml").getroot()
 by_path = {p.get("path"): p for p in local.iter("project")}
 for e in local.iter("remove-project"):
@@ -28,7 +34,7 @@ for e in local.iter("remove-project"):
     if fork is None:
         continue
     if up.startswith("LineageOS/"):
-        up_url, up_ref = f"https://github.com/{up}", default_rev
+        up_url, up_ref = f"https://github.com/{up}", (up_rev.get(up) or default_rev).removeprefix("refs/heads/")
     else:
         aosp = remotes["aosp"]
         up_url, up_ref = f"{aosp.get('fetch')}/{up}", aosp.get("revision")
