@@ -145,6 +145,6 @@ sleep 20
 wait_boot || die "the phone did not boot after GApps; tap 'Reboot system now', then run: bash $B/boot-test/post-install-24.sh"
 
 log "permissions and app compile (about 3 minutes)"
-bash "$B/boot-test/post-install-24.sh"
+bash "$B/boot-test/post-install-24.sh" || die "post-install check failed (see above)"
 
 log "DONE: $(prop ro.lineage.version) on slot $(prop ro.boot.slot_suffix)"
