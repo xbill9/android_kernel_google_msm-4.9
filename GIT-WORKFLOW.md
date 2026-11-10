@@ -27,11 +27,13 @@ The xbill9 forks, listed as `<project name="xbill9/...">` lines in
 | `prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9` | `xbill9/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9` | `lineage-24.0` |
 | `system/core` | `xbill9/android_system_core` | `lineage-24.0` |
 | `system/vold` | `xbill9/android_system_vold` | `lineage-24.0` |
-| `system/bpf` | `xbill9/android_system_bpf` | `lineage-24.0` |
-| `system/zygote` | `xbill9/android_system_zygote` | `lineage-24.0` |
 | `packages/modules/Connectivity` | `xbill9/android_packages_modules_Connectivity` | `lineage-24.0` |
 | `vendor/apn` | `xbill9/android_vendor_apn` | `main` |
 | `vendor/lineage` | `xbill9/android_vendor_lineage` | `lineage-24.0` |
+
+`xbill9/android_system_bpf` and `xbill9/android_system_zygote` are archived:
+the build after 2026-11-09 uses LineageOS `system/bpf` and AOSP `system/zygote`
+again (the kernel has BPF ring buffers and capabilities 38-40).
 
 Every other folder belongs to LineageOS or AOSP. Edits there are lost at the
 next `repo sync`; to change one, fork it first (see below).

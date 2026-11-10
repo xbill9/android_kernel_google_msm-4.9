@@ -181,20 +181,14 @@ and send the unmodified zip. `sargo-install` installs the unmodified zip and
 does this first when it finds `PrebuiltGmsCoreVic`, which takes one more trip
 to recovery.
 
-Builds before 2026-11-09 need `repack-gapps.sh`. MindTheGapps 17.0.0 ships Play
-Services as an APEX (`com.google.android.gmssystem`) whose payload is EROFS, which
-those kernels cannot mount (`apexd: Mounting failed ... No such device`). Play Services then never installs and Play Store crashes looking for
-the `com.google.android.gsf.gservices` provider. `repack-gapps.sh` makes a zip that
-installs the same APK as `/product/priv-app/PrebuiltGmsCoreVic` with the APEX's
-permission files, and removes an earlier install before the installer's space check:
+Builds before 2026-11-09 cannot mount that EROFS APEX (`apexd: Mounting failed ...
+No such device`), so Play Services never installs. For those, `repack-gapps.sh` makes
+a zip that installs the same APK as `/product/priv-app/PrebuiltGmsCoreVic`:
 
     bash repack-gapps.sh MindTheGapps-17.0.0-arm64-20261022_132445.zip
     adb reboot sideload && adb sideload MindTheGapps-17.0.0-arm64-20261022_132445-sargo.zip
 
-The zip is unsigned, so recovery asks to install anyway. On sargo the installer drops
-VelvetTitan (tablets only) and needs 682 MiB of the 900 MiB `/product` reserve.
-Play Services installed by hand into `/data` crashes at start (`SingletonComponentRouterProvider
-requests FLAG_SINGLE_USER`), so uninstall any such copy first. An OTA installed from a
+Both zips are unsigned, so recovery asks to install anyway. An OTA installed from a
 system without GApps removes them; sideload again afterwards.
 
 Flashed onto a phone that is already set up, the default permission grants for Google
