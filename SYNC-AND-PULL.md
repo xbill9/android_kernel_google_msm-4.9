@@ -6,11 +6,11 @@ machine, see [INSTALL.md](INSTALL.md).
 
 | Machine | Address | Tree |
 |---|---|---|
-| `gpu` | `192.168.0.156` | `/android/lineage-24.0` (`~/android` links to `/android`) |
+| `gpu` | `192.168.50.216` | `/android/lineage-24.0` (`~/android` links to `/android`) |
 | `build` | `192.168.50.45` | `/home/xbill/android/lineage-24.0` |
 
-**Run every command here on `gpu`.** It can reach `build` over SSH, and `build` cannot reach
-`gpu` (port 22 times out). That holds for both directions of a sync.
+**Run every command here on `gpu`.** Both machines can reach each other over SSH, but the
+`SRC`/`DST` paths below are written from `gpu`. That holds for both directions of a sync.
 
 ## Sync the tree
 
