@@ -52,8 +52,9 @@ The `system`/`packages` forks carry the Android 17 changes for a 4.9
 kernel: the legacy fscrypt session keyring (core, vold), and NetBpfLoad,
 netd and ConnectivityService changes for a kernel below 5.10.
 
-`system/bpf` and `system/zygote` are LineageOS and AOSP again from the
-build after 2026-11-09: the kernel now has BPF ring buffers (bpfloader
+`system/bpf` and `system/zygote` are LineageOS and AOSP again from
+`24.0-20261109` (tested 2026-11-10: bpfloader exits 0, `zygote_next` starts
+apps, smoke test 19 pass, 0 fail): the kernel now has BPF ring buffers (bpfloader
 creates its `test_ringbuf` map) and capabilities 38-40 (PERFMON, BPF,
 CHECKPOINT_RESTORE), which `zygote_next` drops from every app's bounding
 set. Switching back needs, once, with clean checkouts:
@@ -160,15 +161,27 @@ of about 233,000 steps in 7 h 49 min.
 
 ## Google apps
 
-The kernel has EROFS from 2026-11-09 (`0efd82d0b976`): the Play Services
-payload of the unmodified MindTheGapps 17 zip mounts on a loop device and
-its APK reads back intact (`boot-test/erofstest.sh`). Installing the
-unmodified zip on a build with that kernel is not tested yet; until it is,
-`repack-gapps.sh` below is the tested route.
+From `24.0-20261109` (kernel `438ddb90f272`, with EROFS) the unmodified
+MindTheGapps 17 zip installs as it is:
 
-MindTheGapps 17.0.0 ships Play Services as an APEX (`com.google.android.gmssystem`)
-whose payload is EROFS, which the 4.9 kernel cannot mount (`apexd: Mounting failed ...
-No such device`). Play Services then never installs and Play Store crashes looking for
+    adb reboot sideload && adb sideload MindTheGapps-17.0.0-arm64-20261022_132445.zip
+
+Tested 2026-11-10 on 92FAY00ZMV: apexd mounts the Play Services APEX as
+EROFS on a loop device (`/apex/com.google.android.gmssystem@13`), Play
+Services 26.43.30 runs with `apexModuleName=com.google.android.gmssystem`,
+the `gservices` provider answers, Play Store starts, and the smoke test gives
+19 pass, 0 fail.
+
+A phone with the repacked zip below installed needs it removed first: the
+unmodified installer leaves `PrebuiltGmsCoreVic` in place, and its space
+check counts only files at its own paths. `remove-repacked-gapps.sh` makes a
+recovery zip that removes the repacked install and its `addon.d` script from
+the current slot; sideload it, choose Apply from ADB again, then sideload the
+unmodified zip. `sargo-install` still installs the repacked zip.
+
+Builds before 2026-11-09 need `repack-gapps.sh`. MindTheGapps 17.0.0 ships Play
+Services as an APEX (`com.google.android.gmssystem`) whose payload is EROFS, which
+those kernels cannot mount (`apexd: Mounting failed ... No such device`). Play Services then never installs and Play Store crashes looking for
 the `com.google.android.gsf.gservices` provider. `repack-gapps.sh` makes a zip that
 installs the same APK as `/product/priv-app/PrebuiltGmsCoreVic` with the APEX's
 permission files, and removes an earlier install before the installer's space check:

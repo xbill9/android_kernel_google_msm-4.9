@@ -19,6 +19,18 @@ images under `~/sargo-bpf-test/kmsglog/`, the tree in `~/android/lineage-24.0`.
 | `ringbuftest.c`, `ringbuftest` | Checks the kernel's BPF ring buffer as root: map creation rules, `mmap` protections, `epoll` wakeup, records written by a socket filter run with `BPF_PROG_TEST_RUN` and read back through `mmap` (one straddling the end of the ring), a full ring, `bpf_ringbuf_query`, and eight programs the verifier must reject. `build-ringbuftest.sh` rebuilds it. |
 | `erofstest.sh`, `erofstest-device.sh` | Checks the kernel's EROFS: builds uncompressed, lz4, lz4hc and SELinux-labelled images with the tree's `mkfs.erofs`, mounts each on a loop device and compares every file, symlink, hard link and label; big-pcluster and ztailpacking images must be refused. `GAPPS_ZIP=<MindTheGapps zip>` adds its Play Services APEX payload. |
 
+## Status, 2026-11-10
+
+- **24.0-20261109 on 92FAY00ZMV** (slot b, clean build, kernel
+  `4.9.337-g438ddb90f272`, AOSP `system/zygote` and LineageOS `system/bpf`,
+  SELinux enforcing): bpfloader exits 0 with the same 5 errors as the test
+  kernel, and `test_ringbuf` is created. Smoke test 19 pass, 0 fail, no
+  crashes or native zygote aborts. Hardware check 17 pass, 1 fail (Wi-Fi has
+  no saved network). `wlan.ko` from this build loads. The unmodified
+  MindTheGapps 17 zip, sideloaded after `remove-repacked-gapps.sh`, mounts
+  its Play Services APEX as EROFS (`loop40`); Play Services and Play Store
+  run, and the smoke test after it gives 19 pass, 0 fail.
+
 ## Status, 2026-11-09
 
 - **Kernel with EROFS and BPF ring buffers** (`0fb294ce07ce`, RAM-booted on
