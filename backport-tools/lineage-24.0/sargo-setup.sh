@@ -5,8 +5,8 @@
 set -eu
 REPO=https://github.com/xbill9/android_kernel_google_msm-4.9.git
 need=""
-for c in adb git unzip curl python3 fsck.erofs; do command -v $c >/dev/null || need=1; done
-[ -z "$need" ] || sudo apt-get install -y adb git unzip curl python3 erofs-utils
+for c in adb git unzip zip curl python3 fsck.erofs; do command -v $c >/dev/null || need=1; done
+[ -z "$need" ] || sudo apt-get install -y adb git unzip zip curl python3 erofs-utils
 if [ ! -d ~/sargo/.git ]; then
   git clone --depth 1 --filter=blob:none --sparse "$REPO" ~/sargo
   git -C ~/sargo sparse-checkout set backport-tools/lineage-24.0
