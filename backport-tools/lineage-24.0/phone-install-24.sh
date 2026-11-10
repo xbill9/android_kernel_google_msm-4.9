@@ -4,7 +4,10 @@
 #   sargo-install                 the newest build from GitHub releases (downloaded once, checked)
 #   sargo-install tested          the newest build marked Latest (tested on a phone)
 #   sargo-install rom.zip [gapps.zip]
-# It updates these scripts first, and downloads MindTheGapps if no copy is found.
+# It updates these scripts first, and downloads MindTheGapps if no copy is found. The unmodified
+# MindTheGapps zip needs a build from 24.0-20261109 on (kernel with EROFS); for an older rom.zip
+# pass a repack-gapps.sh zip (*-sargo.zip). An earlier repacked install is removed first, which
+# takes one more trip to recovery.
 # The phone must be booted into one of these 24.0 userdebug builds (adb root works). The OTA goes
 # into its inactive slot with update_engine, so each run flips the slot.
 # The only manual step is on the phone, in recovery: "Install anyway", then "Reboot system now".
@@ -93,8 +96,7 @@ timeout 20 adb root >/dev/null 2>&1; sleep 3; timeout 60 adb wait-for-device
 G=${2:-}
 if [ -z "$G" ]; then
   GD="$HOME/sargo-bpf-test/gapps $CACHE $(dirname "$Z")"
-  G=$(for d in $GD; do ls "$d"/MindTheGapps-17*-sargo.zip; done 2>/dev/null | tail -1)
-  [ -n "$G" ] || G=$(for d in $GD; do ls "$d"/MindTheGapps-17*-arm64-*.zip; done 2>/dev/null | grep -v -- -sargo | tail -1)
+  G=$(for d in $GD; do ls "$d"/MindTheGapps-17*-arm64-*.zip; done 2>/dev/null | grep -v -- -sargo | tail -1)
   if [ -z "$G" ]; then
     log "downloading MindTheGapps"
     mkdir -p "$CACHE"
@@ -104,11 +106,6 @@ if [ -z "$G" ]; then
 fi
 [ -f "$G" ] || die "$G not found"
 G=$(realpath "$G")
-if [[ "$G" != *-sargo.zip ]]; then
-  log "repacking $G for this phone"
-  bash "$B/repack-gapps.sh" "$G" || die "repack-gapps.sh failed"
-  G=${G%.zip}-sargo.zip
-fi
 echo "rom:   $Z"
 echo "gapps: $G"
 
@@ -133,16 +130,31 @@ NEW=$(prop ro.boot.slot_suffix)
 echo "phone: slot $NEW, $(prop ro.lineage.version), $(timeout 5 adb shell getenforce | tr -d '\r')"
 [ "$NEW" != "$OLD" ] || die "still on slot $OLD; the new slot did not boot"
 
+# One trip to recovery: sideload $1, then wait for the phone to boot again.
+sideload() {
+  timeout 20 adb reboot sideload
+  for i in $(seq 1 90); do adb devices | grep -q 'sideload$' && break; sleep 2; done
+  adb devices | grep -q 'sideload$' || die "the phone did not reach sideload mode"
+  echo
+  echo ">>> ON THE PHONE: when it says 'Signature verification failed', tap YES (install anyway)."
+  echo ">>> When it finishes, tap 'Reboot system now'. This script waits for that."
+  adb sideload "$1" >/dev/null 2>&1   # ends at about 47%; that is normal
+  sleep 20
+  wait_boot || die "the phone did not boot after $(basename "$1"); tap 'Reboot system now', then $2"
+  timeout 20 adb root >/dev/null 2>&1; sleep 3; timeout 60 adb wait-for-device
+}
+
+if [[ "$G" != *-sargo.zip ]] && timeout 5 adb shell test -e /product/priv-app/PrebuiltGmsCoreVic; then
+  log "removing the repacked GApps first: the phone goes to recovery now"
+  C=$(mktemp -d)/remove-repacked-gapps.zip
+  bash "$B/remove-repacked-gapps.sh" "$G" "$C" || die "remove-repacked-gapps.sh failed"
+  sideload "$C" "run: adb reboot sideload && adb sideload $G, and boot-test/post-install-24.sh"
+  ! timeout 5 adb shell test -e /product/priv-app/PrebuiltGmsCoreVic || die "the repacked GApps are still installed"
+  rm -rf "$(dirname "$C")"
+fi
+
 log "GApps: the phone goes to recovery now"
-timeout 20 adb reboot sideload
-for i in $(seq 1 90); do adb devices | grep -q 'sideload$' && break; sleep 2; done
-adb devices | grep -q 'sideload$' || die "the phone did not reach sideload mode"
-echo
-echo ">>> ON THE PHONE: when it says 'Signature verification failed', tap YES (install anyway)."
-echo ">>> When it finishes, tap 'Reboot system now'. This script waits for that."
-adb sideload "$G" >/dev/null 2>&1   # ends at about 47%; that is normal
-sleep 20
-wait_boot || die "the phone did not boot after GApps; tap 'Reboot system now', then run: bash $B/boot-test/post-install-24.sh"
+sideload "$G" "run: bash $B/boot-test/post-install-24.sh"
 
 log "permissions and app compile (about 3 minutes)"
 bash "$B/boot-test/post-install-24.sh" || die "post-install check failed (see above)"

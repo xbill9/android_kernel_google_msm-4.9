@@ -19,8 +19,10 @@ Plug in the phone, unlocked and booted, and run:
     sargo-install
 
 It updates the scripts, downloads the newest build to `~/sargo-rom` (once; about 1.2 GB) and
-checks it, downloads and repacks MindTheGapps the first time, and installs. Leave the phone
-alone except for this: when the script prints `>>> ON THE PHONE`, the phone is in recovery.
+checks it, downloads MindTheGapps the first time, and installs. A phone that still has the
+repacked GApps from builds before 24.0-20261109 goes to recovery twice: once to remove them,
+once for the unmodified MindTheGapps zip. Leave the phone alone except for this: when the
+script prints `>>> ON THE PHONE`, the phone is in recovery.
 
 - It says **Signature verification failed**: tap **Yes** (install anyway).
 - When it finishes: tap **Reboot system now**.

@@ -176,8 +176,10 @@ A phone with the repacked zip below installed needs it removed first: the
 unmodified installer leaves `PrebuiltGmsCoreVic` in place, and its space
 check counts only files at its own paths. `remove-repacked-gapps.sh` makes a
 recovery zip that removes the repacked install and its `addon.d` script from
-the current slot; sideload it, choose Apply from ADB again, then sideload the
-unmodified zip. `sargo-install` still installs the repacked zip.
+the current slot. Sideload it, tap Reboot system now, then go back to sideload
+and send the unmodified zip. `sargo-install` installs the unmodified zip and
+does this first when it finds `PrebuiltGmsCoreVic`, which takes one more trip
+to recovery.
 
 Builds before 2026-11-09 need `repack-gapps.sh`. MindTheGapps 17.0.0 ships Play
 Services as an APEX (`com.google.android.gmssystem`) whose payload is EROFS, which

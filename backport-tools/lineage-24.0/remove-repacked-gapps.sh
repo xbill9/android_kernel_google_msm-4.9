@@ -2,16 +2,22 @@
 # Make a recovery zip that removes a repack-gapps.sh install (its files and addon.d/30-gapps.sh)
 # from the current slot, so the unmodified MindTheGapps 17 zip can be sideloaded after it: the
 # unmodified installer leaves PrebuiltGmsCoreVic in place and its space check fails.
-# Usage: remove-repacked-gapps.sh MindTheGapps-17.0.0-arm64-<date>-sargo.zip [out.zip]
-#   adb reboot sideload && adb sideload remove-repacked-gapps.zip
-#   then Apply update > Apply from ADB again, and adb sideload the unmodified zip.
+# Usage: remove-repacked-gapps.sh MindTheGapps-17.0.0-arm64-<date>[-sargo].zip [out.zip]
+#   (the unmodified or the repacked zip; both give the same list)
+#   adb reboot sideload && adb sideload remove-repacked-gapps.zip, Reboot system now,
+#   then adb reboot sideload && adb sideload the unmodified zip.
 set -eu
 IN=$(realpath "$1")
 OUT=$(realpath -m "${2:-$(dirname "$IN")/remove-repacked-gapps.zip}")
 W=$(mktemp -d); trap 'rm -rf "${W:?}"' EXIT
 mkdir -p "$W/META-INF/com/google/android"
-unzip -Z1 "$IN" | grep -E '^system/(product|system_ext)/.+[^/]$' | sed 's|^system/||' > "$W/files.txt"
-grep -q PrebuiltGmsCoreVic "$W/files.txt" || { echo "$IN is not a repack-gapps.sh zip"; exit 1; }
+# The installer's own paths, plus the three that only repack-gapps.sh adds (from the APEX).
+{ unzip -Z1 "$IN" | grep -E '^system/(product|system_ext)/.+[^/]$' | sed 's|^system/||'
+  printf '%s\n' product/priv-app/PrebuiltGmsCoreVic/PrebuiltGmsCoreVic.apk \
+    product/etc/permissions/privapp_allowlist_com.google.android.gmssystem.xml \
+    product/etc/sysconfig/preinstalled_packages_com.google.android.gmssystem.xml
+} | grep -v -e '/apex/' -e allowed_apex_ | sort -u > "$W/files.txt"
+grep -q '^product/priv-app/Phonesky/' "$W/files.txt" || { echo "$IN is not a MindTheGapps zip"; exit 1; }
 cat > "$W/META-INF/com/google/android/update-binary" <<'EOF'
 #!/sbin/sh
 OUTFD="/proc/self/fd/$2"; ZIP=$3
