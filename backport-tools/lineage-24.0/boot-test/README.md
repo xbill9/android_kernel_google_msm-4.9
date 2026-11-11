@@ -18,6 +18,25 @@ images under `~/sargo-bpf-test/kmsglog/`, the tree in `~/android/lineage-24.0`.
 | `clone3test.c`, `clone3test`, `clone3test32` | Checks the kernel's `clone3` and capabilities 38-40 from the adb shell, as arm64 and as 32-bit arm: `cap_last_cap`, `PR_CAPBSET_READ`, the size, flag, signal and stack checks, `CLONE_PIDFD` with `CLONE_PARENT_SETTID`, the child's stack pointer and TLS, `CLONE_VM`. PASS or FAIL per case, exit 1 on any failure. `build-clone3test.sh` rebuilds both binaries. |
 | `ringbuftest.c`, `ringbuftest` | Checks the kernel's BPF ring buffer as root: map creation rules, `mmap` protections, `epoll` wakeup, records written by a socket filter run with `BPF_PROG_TEST_RUN` and read back through `mmap` (one straddling the end of the ring), a full ring, `bpf_ringbuf_query`, and eight programs the verifier must reject. `build-ringbuftest.sh` rebuilds it. |
 | `erofstest.sh`, `erofstest-device.sh` | Checks the kernel's EROFS: builds uncompressed, lz4, lz4hc and SELinux-labelled images with the tree's `mkfs.erofs`, mounts each on a loop device and compares every file, symlink, hard link and label; big-pcluster and ztailpacking images must be refused. `GAPPS_ZIP=<MindTheGapps zip>` adds its Play Services APEX payload. |
+| `atomictest.c`, `atomictest`, `atomictest-cases.inc` | Checks the kernel's BPF atomic instructions as root: linux v6.1's `verifier/atomic_*.c` cases (in `atomictest-cases.inc`), each loaded as root and as an unprivileged uid and, when accepted, run with `BPF_PROG_TEST_RUN`; precision tracking through `atomic64_fetch_add`; and 10,000-op loops of each operation checked against C, which must be JIT-compiled. `atomictest interp` runs it all with `bpf_jit_enable` 0 and restores it after. The verifier log's `'inv'` (up to 5.17) counts as v6.1's `'scalar'`. `build-atomictest.sh` rebuilds it. |
+| `rawtptest.c`, `rawtptest` | Checks BPF raw tracepoints as root: counter programs attached to `sched_switch`, `sys_enter` and `sched_process_fork` count while attached and stop after detach; an unknown name gives ENOENT; reading past a tracepoint's arguments is refused at attach. `build-rawtptest.sh` rebuilds it. |
+
+## Status, 2026-11-10, BTF, BPF atomics and raw tracepoints
+
+- **Kernel `086b78249b7b`** (RAM-booted on 92FAY00ZMV over `24.0-20261110-1808`,
+  SELinux enforcing): `/sys/kernel/btf/vmlinux` is 5,902,870 bytes and
+  1126 tracepoints are registered for raw tracepoint programs. bpfloader
+  errors at boot go from 5 to 3: `timeInState` loads (its per-UID map held
+  94 UIDs) and `kernelWakelockDurationTest` loads; `kernelWakelockDuration`
+  attaches but cannot pin the attachment (needs `bpf_link`, 5.7); `fuseMedia`
+  and `dmabufIter` still fail. `atomictest` 162 pass, 0 fail, 1 skip, with
+  the JIT and with the interpreter (before: 2 pass, 64 fail). `rawtptest`
+  6 of 6 pass. linux-5.4.302 `test_verifier` 1606 pass, 3 skip, 4 fail: the
+  four XADD message tests, whose wording upstream changed in the same
+  commit. `ringbuftest`, `clone3test` and `clone3test32` 0 failed. Smoke
+  test 19 pass, 0 fail; hardware check 21 pass, 0 fail, 1 skip; no BPF
+  SELinux denials. `Module.symvers` is unchanged, so the installed `wlan.ko`
+  loads.
 
 ## Status, 2026-11-10
 
