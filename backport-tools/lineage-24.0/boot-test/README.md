@@ -21,6 +21,16 @@ images under `~/sargo-bpf-test/kmsglog/`, the tree in `~/android/lineage-24.0`.
 | `atomictest.c`, `atomictest`, `atomictest-cases.inc` | Checks the kernel's BPF atomic instructions as root: linux v6.1's `verifier/atomic_*.c` cases (in `atomictest-cases.inc`), each loaded as root and as an unprivileged uid and, when accepted, run with `BPF_PROG_TEST_RUN`; precision tracking through `atomic64_fetch_add`; and 10,000-op loops of each operation checked against C, which must be JIT-compiled. `atomictest interp` runs it all with `bpf_jit_enable` 0 and restores it after. The verifier log's `'inv'` (up to 5.17) counts as v6.1's `'scalar'`. `build-atomictest.sh` rebuilds it. |
 | `rawtptest.c`, `rawtptest` | Checks BPF raw tracepoints as root: counter programs attached to `sched_switch`, `sys_enter` and `sched_process_fork` count while attached and stop after detach; an unknown name gives ENOENT; reading past a tracepoint's arguments is refused at attach; the attachment is a `bpf_link` that stays attached while pinned in `/sys/fs/bpf` and detaches when the pin is removed. `build-rawtptest.sh` rebuilds it. |
 
+## Status, 2026-11-11, build 24.0-20261111-1328
+
+- **Build `24.0-20261111-1328`, kernel `7788342348e0`** (the VTS fixes below):
+  incremental `sargo-build` on `gpu`, 13:28 to 14:13, published as the
+  prerelease `lineage-24.0-sargo-20261111-1328`. Installed on 92FAY00ZMV with
+  `sargo-install` (slot `_b`, MindTheGapps, post-install), SELinux enforcing.
+  The rebuilt `wlan.ko` loads: Wi-Fi at 866 Mbps, ping 3/3.
+  `vm.unprivileged_userfaultfd` is 0 and `accept_ra_min_lft` is present.
+  `hw-check-24.sh` 21 pass, 0 fail, 1 skip (microphone).
+
 ## Status, 2026-11-11, VTS fixes
 
 - **Kernel `f4dd4e61563b`** (RAM-booted on 92FAY00ZMV over
