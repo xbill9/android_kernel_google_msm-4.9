@@ -27,6 +27,12 @@
 #include <linux/ioctl.h>
 #include <linux/security.h>
 
+/*
+ * 0 here, where upstream (cefdca0a86be) defaults to 1: Android's app seccomp
+ * policy allows userfaultfd, and this kernel has no UFFD_USER_MODE_ONLY.
+ */
+int sysctl_unprivileged_userfaultfd __read_mostly;
+
 static struct kmem_cache *userfaultfd_ctx_cachep __read_mostly;
 
 enum userfaultfd_state {
@@ -1380,6 +1386,9 @@ SYSCALL_DEFINE1(userfaultfd, int, flags)
 {
 	int fd, error;
 	struct file *file;
+
+	if (!sysctl_unprivileged_userfaultfd && !capable(CAP_SYS_PTRACE))
+		return -EPERM;
 
 	error = get_unused_fd_flags(flags & UFFD_SHARED_FCNTL_FLAGS);
 	if (error < 0)
