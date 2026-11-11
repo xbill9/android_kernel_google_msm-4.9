@@ -3,7 +3,9 @@
 // is attached with BPF_RAW_TRACEPOINT_OPEN; the count must grow while the test makes the
 // tracepoint fire, and stop growing once the attach fd is closed. Also: an unknown tracepoint
 // name gives ENOENT, and a program that reads past the tracepoint's arguments is refused at
-// attach with EINVAL. PASS/FAIL per case, exit 1 on any failure.
+// attach with EINVAL. The attachment is a bpf_link: pinned in /sys/fs/bpf it keeps counting after
+// every fd is closed, BPF_OBJ_GET on the pin gives a link fd back, its fdinfo names it, and
+// removing the pin (with no fd left) detaches it. PASS/FAIL per case, exit 1 on any failure.
 #include <errno.h>
 #include <fcntl.h>
 #include <linux/bpf.h>
@@ -131,12 +133,81 @@ static void attach_case(const char* tp) {
   close(map);
 }
 
+#define PIN "/sys/fs/bpf/rawtptest_link"
+
+static int obj_pin(int fd, const char* path) {
+  union bpf_attr a;
+  memset(&a, 0, sizeof(a));
+  a.bpf_fd = fd;
+  a.pathname = (uintptr_t)path;
+  return sys_bpf(BPF_OBJ_PIN, &a);
+}
+
+static int obj_get(const char* path) {
+  union bpf_attr a;
+  memset(&a, 0, sizeof(a));
+  a.pathname = (uintptr_t)path;
+  return sys_bpf(BPF_OBJ_GET, &a);
+}
+
+static void fdinfo(int fd, char* out, size_t len) {
+  char path[64], buf[512];
+  snprintf(path, sizeof(path), "/proc/self/fdinfo/%d", fd);
+  int f = open(path, O_RDONLY);
+  ssize_t n = f < 0 ? -1 : read(f, buf, sizeof(buf) - 1);
+  if (f >= 0) close(f);
+  buf[n > 0 ? n : 0] = 0;
+  const char* t = strstr(buf, "link_type:");
+  snprintf(out, len, "%.*s", t ? (int)strcspn(t, "\n") : 4, t ? t : "none");
+}
+
+static void pin_case(void) {
+  char ev[400], info[64];
+  unlink(PIN);
+  int map = map_create();
+  int prog = load_counter(map, -1);
+  int fd = tp_open("sched_switch", prog);
+  if (fd < 0) {
+    snprintf(ev, sizeof(ev), "attach: %s", strerror(errno));
+    check(0, "pinned link", ev);
+    return;
+  }
+  fdinfo(fd, info, sizeof(info));
+  check(strstr(info, "raw_tracepoint") != NULL, "attach fd is a bpf_link", info);
+  int pr = obj_pin(fd, PIN);
+  snprintf(ev, sizeof(ev), "%s", pr ? strerror(errno) : "pinned at " PIN);
+  check(pr == 0, "pin the link", ev);
+  close(fd);
+  close(prog);
+  uint64_t c0 = map_read(map);
+  fire("sched_switch");
+  uint64_t c1 = map_read(map);
+  snprintf(ev, sizeof(ev), "count %llu -> %llu with only the pin left", (unsigned long long)c0,
+           (unsigned long long)c1);
+  check(pr == 0 && c1 > c0, "pinned link stays attached", ev);
+  int g = obj_get(PIN);
+  info[0] = 0;
+  if (g >= 0) fdinfo(g, info, sizeof(info));
+  snprintf(ev, sizeof(ev), "%s%s", g < 0 ? strerror(errno) : "fd, ", g < 0 ? "" : info);
+  check(g >= 0 && strstr(info, "raw_tracepoint") != NULL, "BPF_OBJ_GET on the pin", ev);
+  if (g >= 0) close(g);
+  int u = unlink(PIN);
+  usleep(100000);  // the last put frees the link from a work item
+  uint64_t c2 = map_read(map);
+  fire("sched_switch");
+  uint64_t c3 = map_read(map);
+  snprintf(ev, sizeof(ev), "unlink %s; count %llu -> %llu after", u ? strerror(errno) : "ok",
+           (unsigned long long)c2, (unsigned long long)c3);
+  check(u == 0 && c3 == c2, "removing the pin detaches", ev);
+  close(map);
+}
 
 int main(void) {
   setvbuf(stdout, NULL, _IOLBF, 0);
   attach_case("sched_switch");
   attach_case("sys_enter");
   attach_case("sched_process_fork");
+  pin_case();
 
   char ev[256];
   int map = map_create();
