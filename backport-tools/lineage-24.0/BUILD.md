@@ -124,6 +124,13 @@ no copy is in `~/sargo-bpf-test/gapps`), and compiles apps. The one manual step
 is on the phone, in recovery: "Install anyway", then "Reboot system now". A
 first install from another ROM: `article/evidence/INSTALL.md`.
 
+When a build passes `boot-test/hw-check-24.sh` on the phone, mark it tested so
+`sargo-install tested` picks it up:
+
+```
+gh release edit lineage-24.0-sargo-<date> -R xbill9/android_kernel_google_msm-4.9 --prerelease=false --latest
+```
+
 ---
 
 #### Switching machines
