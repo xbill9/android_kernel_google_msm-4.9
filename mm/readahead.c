@@ -590,15 +590,23 @@ SYSCALL_DEFINE3(readahead, int, fd, loff_t, offset, size_t, count)
 
 	ret = -EBADF;
 	f = fdget(fd);
-	if (f.file) {
-		if (f.file->f_mode & FMODE_READ) {
-			struct address_space *mapping = f.file->f_mapping;
-			pgoff_t start = offset >> PAGE_SHIFT;
-			pgoff_t end = (offset + count - 1) >> PAGE_SHIFT;
-			unsigned long len = end - start + 1;
-			ret = do_readahead(mapping, f.file, start, len);
-		}
-		fdput(f);
-	}
+	if (!f.file || !(f.file->f_mode & FMODE_READ))
+		goto out;
+
+	/*
+	 * The readahead() syscall is intended to run only on files
+	 * that can execute readahead. If readahead is not possible
+	 * on this file, then we must return -EINVAL.
+	 */
+	ret = -EINVAL;
+	if (!S_ISREG(file_inode(f.file)->i_mode) &&
+	    !S_ISBLK(file_inode(f.file)->i_mode))
+		goto out;
+
+	ret = do_readahead(f.file->f_mapping, f.file, offset >> PAGE_SHIFT,
+			   ((offset + count - 1) >> PAGE_SHIFT) -
+			   (offset >> PAGE_SHIFT) + 1);
+out:
+	fdput(f);
 	return ret;
 }
