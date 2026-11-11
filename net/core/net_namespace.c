@@ -275,6 +275,9 @@ struct net *get_net_ns_by_id(struct net *net, int id)
 /*
  * setup_net runs the initializers for the network namespace object.
  */
+/* Source of net->net_cookie: unique per namespace, never 0. */
+static atomic64_t net_cookie_gen;
+
 static __net_init int setup_net(struct net *net, struct user_namespace *user_ns)
 {
 	/* Must be called with net_mutex held */
@@ -285,6 +288,7 @@ static __net_init int setup_net(struct net *net, struct user_namespace *user_ns)
 	atomic_set(&net->count, 1);
 	atomic_set(&net->passive, 1);
 	get_random_bytes(&net->hash_mix, sizeof(u32));
+	net->net_cookie = atomic64_inc_return(&net_cookie_gen);
 	net->dev_base_seq = 1;
 	net->user_ns = user_ns;
 	idr_init(&net->netns_ids);

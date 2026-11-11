@@ -57,6 +57,7 @@ struct net {
 
 	u32			hash_mix;
 	atomic64_t		cookie_gen;
+	u64			net_cookie; /* written once */
 
 	struct list_head	list;		/* list of network namespaces */
 	struct list_head	cleanup_list;	/* namespaces on death row */

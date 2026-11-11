@@ -94,4 +94,6 @@
 
 #define SO_COOKIE		57
 
+#define SO_NETNS_COOKIE		71
+
 #endif /* __ASM_GENERIC_SOCKET_H */
