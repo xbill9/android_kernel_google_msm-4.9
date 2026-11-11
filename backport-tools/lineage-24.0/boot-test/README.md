@@ -21,6 +21,24 @@ images under `~/sargo-bpf-test/kmsglog/`, the tree in `~/android/lineage-24.0`.
 | `atomictest.c`, `atomictest`, `atomictest-cases.inc` | Checks the kernel's BPF atomic instructions as root: linux v6.1's `verifier/atomic_*.c` cases (in `atomictest-cases.inc`), each loaded as root and as an unprivileged uid and, when accepted, run with `BPF_PROG_TEST_RUN`; precision tracking through `atomic64_fetch_add`; and 10,000-op loops of each operation checked against C, which must be JIT-compiled. `atomictest interp` runs it all with `bpf_jit_enable` 0 and restores it after. The verifier log's `'inv'` (up to 5.17) counts as v6.1's `'scalar'`. `build-atomictest.sh` rebuilds it. |
 | `rawtptest.c`, `rawtptest` | Checks BPF raw tracepoints as root: counter programs attached to `sched_switch`, `sys_enter` and `sched_process_fork` count while attached and stop after detach; an unknown name gives ENOENT; reading past a tracepoint's arguments is refused at attach; the attachment is a `bpf_link` that stays attached while pinned in `/sys/fs/bpf` and detaches when the pin is removed. `build-rawtptest.sh` rebuilds it. |
 
+## Status, 2026-11-11, VTS fixes
+
+- **Kernel `f4dd4e61563b`** (RAM-booted on 92FAY00ZMV over
+  `24.0-20261111-0042`, SELinux enforcing, kernel and uptime checked around
+  each module): ten backports for VTS failures (`accept_ra_min_lft`,
+  `SO_NETNS_COOKIE`, TPACKET_V3 TX ring, `userfaultfd` with
+  `vm.unprivileged_userfaultfd=0`, `readahead` type check, `statx`, xfrm
+  migrate `if_id`, per-netns congestion control sysctls, TFO blackhole
+  detection off by default, RA route protocol).
+  `vts_kernel_net_tests` 644 pass, 3 fail (was 577 pass, 70 fail); the 3
+  left are IPv6 ESP-in-UDP receive (2, needs v5.8) and
+  `testRemovedAndroidParanoidNetwork`. LTP 1131 pass, 8 fail (was 12 fail):
+  `readahead01`, `statx10`, `statx12` and `userfaultfd04` no longer fail
+  (`statx10`/`statx12` report the optional DIOALIGN and MOUNT_ROOT fields
+  missing); no test newly fails. kselftest 25 pass, 0 fail on `7a3460d4ab1d`.
+  The struct changes alter the module ABI, so the installed `wlan.ko` is
+  refused on a RAM boot; a ROM build rebuilds it.
+
 ## Status, 2026-11-11, build 24.0-20261111-0042
 
 - **Its `boot.img`, kernel `19e82fc90b2a`** (RAM-booted on 92FAY00ZMV over
