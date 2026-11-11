@@ -179,6 +179,22 @@ static int proc_tcp_congestion_control(struct ctl_table *ctl, int write,
 	return ret;
 }
 
+static int proc_tfo_blackhole_detect_timeout(struct ctl_table *table,
+					     int write,
+					     void __user *buffer,
+					     size_t *lenp, loff_t *ppos)
+{
+	struct net *net = container_of(table->data, struct net,
+	    ipv4.sysctl_tcp_fastopen_blackhole_timeout);
+	int ret;
+
+	ret = proc_dointvec_minmax(table, write, buffer, lenp, ppos);
+	if (write && ret == 0)
+		atomic_set(&net->ipv4.tfo_active_disable_times, 0);
+
+	return ret;
+}
+
 static int proc_tcp_available_congestion_control(struct ctl_table *ctl,
 						 int write,
 						 void __user *buffer, size_t *lenp,
@@ -932,6 +948,14 @@ static struct ctl_table ipv4_net_table[] = {
 		.extra1		= &one
 	},
 #endif
+	{
+		.procname	= "tcp_fastopen_blackhole_timeout_sec",
+		.data		= &init_net.ipv4.sysctl_tcp_fastopen_blackhole_timeout,
+		.maxlen		= sizeof(int),
+		.mode		= 0644,
+		.proc_handler	= proc_tfo_blackhole_detect_timeout,
+		.extra1		= &zero,
+	},
 	{
 		.procname	= "tcp_congestion_control",
 		.data		= &init_net.ipv4.tcp_congestion_control,

@@ -57,6 +57,9 @@ struct netns_ipv4 {
 	struct inet_peer_base	*peers;
 	struct sock  * __percpu	*tcp_sk;
 	const struct tcp_congestion_ops __rcu  *tcp_congestion_control;
+	unsigned int sysctl_tcp_fastopen_blackhole_timeout;
+	atomic_t tfo_active_disable_times;
+	unsigned long tfo_active_disable_stamp;
 	struct netns_frags	frags;
 #ifdef CONFIG_NETFILTER
 	struct xt_table		*iptable_filter;

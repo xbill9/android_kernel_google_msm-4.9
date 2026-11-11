@@ -1570,6 +1570,9 @@ void tcp_fastopen_init_key_once(bool publish);
 bool tcp_fastopen_cookie_check(struct sock *sk, u16 *mss,
 			     struct tcp_fastopen_cookie *cookie);
 bool tcp_fastopen_defer_connect(struct sock *sk, int *err);
+void tcp_fastopen_active_disable(struct sock *sk);
+bool tcp_fastopen_active_should_disable(struct sock *sk);
+void tcp_fastopen_active_disable_ofo_check(struct sock *sk);
 #define TCP_FASTOPEN_KEY_LENGTH 16
 
 static inline void tcp_init_send_head(struct sock *sk)

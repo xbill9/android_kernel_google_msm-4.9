@@ -1912,6 +1912,9 @@ void tcp_v4_destroy_sock(struct sock *sk)
 	/* Cleanup up the write buffer. */
 	tcp_write_queue_purge(sk);
 
+	/* Check if we want to disable active TFO */
+	tcp_fastopen_active_disable_ofo_check(sk);
+
 	/* Cleans up our, hopefully empty, out_of_order_queue. */
 	skb_rbtree_purge(&tp->out_of_order_queue);
 
@@ -2522,6 +2525,9 @@ static int __net_init tcp_sk_init(struct net *net)
 	net->ipv4.sysctl_tcp_orphan_retries = 0;
 	net->ipv4.sysctl_tcp_fin_timeout = TCP_FIN_TIMEOUT;
 	net->ipv4.sysctl_tcp_notsent_lowat = UINT_MAX;
+
+	net->ipv4.sysctl_tcp_fastopen_blackhole_timeout = 0;
+	atomic_set(&net->ipv4.tfo_active_disable_times, 0);
 
 	/* Reno is always built in */
 	if (!net_eq(net, &init_net) &&
