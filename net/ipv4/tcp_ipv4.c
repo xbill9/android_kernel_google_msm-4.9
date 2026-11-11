@@ -2468,6 +2468,9 @@ static void __net_exit tcp_sk_exit(struct net *net)
 {
 	int cpu;
 
+	if (net->ipv4.tcp_congestion_control)
+		module_put(net->ipv4.tcp_congestion_control->owner);
+
 	for_each_possible_cpu(cpu)
 		inet_ctl_sock_destroy(*per_cpu_ptr(net->ipv4.tcp_sk, cpu));
 	free_percpu(net->ipv4.tcp_sk);
@@ -2519,6 +2522,13 @@ static int __net_init tcp_sk_init(struct net *net)
 	net->ipv4.sysctl_tcp_orphan_retries = 0;
 	net->ipv4.sysctl_tcp_fin_timeout = TCP_FIN_TIMEOUT;
 	net->ipv4.sysctl_tcp_notsent_lowat = UINT_MAX;
+
+	/* Reno is always built in */
+	if (!net_eq(net, &init_net) &&
+	    try_module_get(init_net.ipv4.tcp_congestion_control->owner))
+		net->ipv4.tcp_congestion_control = init_net.ipv4.tcp_congestion_control;
+	else
+		net->ipv4.tcp_congestion_control = &tcp_reno;
 
 	return 0;
 fail:
