@@ -227,6 +227,7 @@ static struct ipv6_devconf ipv6_devconf __read_mostly = {
 #endif
 #endif
 	.accept_ra_rt_table	= 0,
+	.accept_ra_min_lft	= 0,
 	.proxy_ndp		= 0,
 	.accept_source_route	= 0,	/* we do not accept RH0 by default. */
 	.disable_ipv6		= 0,
@@ -277,6 +278,7 @@ static struct ipv6_devconf ipv6_devconf_dflt __read_mostly = {
 #endif
 #endif
 	.accept_ra_rt_table	= 0,
+	.accept_ra_min_lft	= 0,
 	.proxy_ndp		= 0,
 	.accept_source_route	= 0,	/* we do not accept RH0 by default. */
 	.disable_ipv6		= 0,
@@ -2554,6 +2556,9 @@ void addrconf_prefix_rcv(struct net_device *dev, u8 *opt, int len, bool sllao)
 				    dev->name);
 		return;
 	}
+
+	if (valid_lft != 0 && valid_lft < in6_dev->cnf.accept_ra_min_lft)
+		goto put;
 
 	/*
 	 *	Two things going on here:
@@ -6063,6 +6068,13 @@ static const struct ctl_table addrconf_sysctl[] = {
 	{
 		.procname	= "accept_ra_rt_table",
 		.data		= &ipv6_devconf.accept_ra_rt_table,
+		.maxlen		= sizeof(int),
+		.mode		= 0644,
+		.proc_handler	= proc_dointvec,
+	},
+	{
+		.procname	= "accept_ra_min_lft",
+		.data		= &ipv6_devconf.accept_ra_min_lft,
 		.maxlen		= sizeof(int),
 		.mode		= 0644,
 		.proc_handler	= proc_dointvec,
