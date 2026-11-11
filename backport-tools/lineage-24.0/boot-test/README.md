@@ -30,6 +30,9 @@ images under `~/sargo-bpf-test/kmsglog/`, the tree in `~/android/lineage-24.0`.
   The rebuilt `wlan.ko` loads: Wi-Fi at 866 Mbps, ping 3/3.
   `vm.unprivileged_userfaultfd` is 0 and `accept_ra_min_lft` is present.
   `hw-check-24.sh` 21 pass, 0 fail, 1 skip (microphone).
+  `vts_kernel_net_tests` 644 pass, 3 fail, 6 ignored (490 s), the same 3
+  failures as on the RAM boot: `testIPv6UDPEncapRecvTransport`,
+  `testIPv6UDPEncapRecvTunnel` and `testRemovedAndroidParanoidNetwork`.
 
 ## Status, 2026-11-11, VTS fixes
 
