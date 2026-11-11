@@ -765,6 +765,7 @@ static struct pernet_operations xfrmi_net_ops = {
 
 static struct xfrm6_protocol xfrmi_esp6_protocol __read_mostly = {
 	.handler	=	xfrm6_rcv,
+	.input_handler	=	xfrm_input,
 	.cb_handler	=	xfrmi_rcv_cb,
 	.err_handler	=	xfrmi6_err,
 	.priority	=	10,
@@ -772,6 +773,7 @@ static struct xfrm6_protocol xfrmi_esp6_protocol __read_mostly = {
 
 static struct xfrm6_protocol xfrmi_ah6_protocol __read_mostly = {
 	.handler	=	xfrm6_rcv,
+	.input_handler	=	xfrm_input,
 	.cb_handler	=	xfrmi_rcv_cb,
 	.err_handler	=	xfrmi6_err,
 	.priority	=	10,
@@ -779,6 +781,7 @@ static struct xfrm6_protocol xfrmi_ah6_protocol __read_mostly = {
 
 static struct xfrm6_protocol xfrmi_ipcomp6_protocol __read_mostly = {
 	.handler	=	xfrm6_rcv,
+	.input_handler	=	xfrm_input,
 	.cb_handler	=	xfrmi_rcv_cb,
 	.err_handler	=	xfrmi6_err,
 	.priority	=	10,

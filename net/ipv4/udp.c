@@ -2096,11 +2096,21 @@ int udp_lib_setsockopt(struct sock *sk, int level, int optname,
 		case 0:
 		case UDP_ENCAP_ESPINUDP:
 		case UDP_ENCAP_ESPINUDP_NON_IKE:
-			up->encap_rcv = xfrm4_udp_encap_rcv;
+#if IS_ENABLED(CONFIG_IPV6)
+			if (sk->sk_family == AF_INET6)
+				up->encap_rcv = ipv6_stub->xfrm6_udp_encap_rcv;
+			else
+#endif
+				up->encap_rcv = xfrm4_udp_encap_rcv;
 			/* FALLTHROUGH */
 		case UDP_ENCAP_L2TPINUDP:
 			up->encap_type = val;
-			udp_encap_enable();
+#if IS_ENABLED(CONFIG_IPV6)
+			if (sk->sk_family == AF_INET6)
+				ipv6_stub->udpv6_encap_enable();
+			else
+#endif
+				udp_encap_enable();
 			break;
 		default:
 			err = -ENOPROTOOPT;
