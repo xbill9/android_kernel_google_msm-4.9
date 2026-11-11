@@ -131,14 +131,26 @@ echo "phone: slot $NEW, $(prop ro.lineage.version), $(timeout 5 adb shell getenf
 [ "$NEW" != "$OLD" ] || die "still on slot $OLD; the new slot did not boot"
 
 # One trip to recovery: sideload $1, then wait for the phone to boot again.
+# Recovery shows up as "sideload" in adb devices before it accepts a package; adb sideload then
+# fails at once with "failed to read command" (seen 2026-11-10 and 11-11), so try again.
 sideload() {
   timeout 20 adb reboot sideload
-  for i in $(seq 1 90); do adb devices | grep -q 'sideload$' && break; sleep 2; done
-  adb devices | grep -q 'sideload$' || die "the phone did not reach sideload mode"
   echo
   echo ">>> ON THE PHONE: when it says 'Signature verification failed', tap YES (install anyway)."
   echo ">>> When it finishes, tap 'Reboot system now'. This script waits for that."
-  adb sideload "$1" >/dev/null 2>&1   # ends at about 47%; that is normal
+  local slog ok=""
+  slog=$(mktemp)
+  for try in $(seq 1 10); do
+    for i in $(seq 1 90); do adb devices | grep -q 'sideload$' && break; sleep 2; done
+    adb devices | grep -q 'sideload$' || die "the phone did not reach sideload mode"
+    # It ends at about 47% with "Total xfer"; that is normal.
+    if adb sideload "$1" >"$slog" 2>&1; then ok=1; break; fi
+    echo "sideload attempt $try: $(tr '\r' '\n' < "$slog" | grep -v '^serving' | grep . | tail -1)"
+    sleep 10
+  done
+  rm -f "$slog"
+  [ -n "$ok" ] || die "adb sideload failed 10 times; on the phone pick 'Apply update' > 'Apply from ADB', then: adb sideload $1"
+  echo "sent $(basename "$1")"
   sleep 20
   wait_boot || die "the phone did not boot after $(basename "$1"); tap 'Reboot system now', then $2"
   timeout 20 adb root >/dev/null 2>&1; sleep 3; timeout 60 adb wait-for-device
