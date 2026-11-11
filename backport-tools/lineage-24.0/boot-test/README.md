@@ -21,6 +21,24 @@ images under `~/sargo-bpf-test/kmsglog/`, the tree in `~/android/lineage-24.0`.
 | `atomictest.c`, `atomictest`, `atomictest-cases.inc` | Checks the kernel's BPF atomic instructions as root: linux v6.1's `verifier/atomic_*.c` cases (in `atomictest-cases.inc`), each loaded as root and as an unprivileged uid and, when accepted, run with `BPF_PROG_TEST_RUN`; precision tracking through `atomic64_fetch_add`; and 10,000-op loops of each operation checked against C, which must be JIT-compiled. `atomictest interp` runs it all with `bpf_jit_enable` 0 and restores it after. The verifier log's `'inv'` (up to 5.17) counts as v6.1's `'scalar'`. `build-atomictest.sh` rebuilds it. |
 | `rawtptest.c`, `rawtptest` | Checks BPF raw tracepoints as root: counter programs attached to `sched_switch`, `sys_enter` and `sched_process_fork` count while attached and stop after detach; an unknown name gives ENOENT; reading past a tracepoint's arguments is refused at attach; the attachment is a `bpf_link` that stays attached while pinned in `/sys/fs/bpf` and detaches when the pin is removed. `build-rawtptest.sh` rebuilds it. |
 
+## Status, 2026-11-11, build 24.0-20261111-0042
+
+- **Its `boot.img`, kernel `19e82fc90b2a`** (RAM-booted on 92FAY00ZMV over
+  `24.0-20261110-1808`, SELinux enforcing): bpfloader errors at boot are the
+  same 2 (`fuseMedia`, `dmabufIter`). `rawtptest` 0 failed, `atomictest`
+  162 pass, 0 fail, 1 skip (JIT and interpreter), ringbuftest and
+  clone3test 0 failed, linux-5.4.302 `test_verifier` 1606 pass, 3 skip, 4 fail
+  (the `BPF_XADD` to `BPF_ATOMIC` message rename). Smoke test 19 pass,
+  0 fail; hardware check 21 pass, 0 fail, 1 skip.
+- **VTS kernel, `all` without `vts_kernel_checkpoint_test`**: that test
+  reboots the phone (boot reason `reboot,shell`), which ends a RAM boot, so
+  the modules after it were run again on a fresh RAM boot, with the kernel
+  and uptime checked around each one. 9 modules pass, 5 fail, 3 skip; 1789
+  tests pass, 88 fail. Against 11-06 on the same phone (1787 pass, 90 fail
+  without the checkpoint test) no test newly fails; `drop_caches_test` and
+  LTP `unshare03` now pass. `vts_kernel_net_tests` is unchanged at 577 pass,
+  70 fail.
+
 ## Status, 2026-11-10, bpf_link
 
 - **Kernel with `bpf_link`** (RAM-booted on 92FAY00ZMV over
