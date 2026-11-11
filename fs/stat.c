@@ -301,6 +301,73 @@ SYSCALL_DEFINE4(newfstatat, int, dfd, const char __user *, filename,
 }
 #endif
 
+/*
+ * statx() from upstream a528d35e8bfc, on top of vfs_fstatat(): this kernel's
+ * ->getattr() fills struct kstat only, so the result is STATX_BASIC_STATS,
+ * without btime or attributes, whatever the mask asks for.
+ */
+static noinline_for_stack int
+cp_statx(const struct kstat *stat, struct statx __user *buffer)
+{
+	struct statx tmp;
+
+	memset(&tmp, 0, sizeof(tmp));
+
+	tmp.stx_mask = STATX_BASIC_STATS;
+	tmp.stx_blksize = stat->blksize;
+	tmp.stx_nlink = stat->nlink;
+	tmp.stx_uid = from_kuid_munged(current_user_ns(), stat->uid);
+	tmp.stx_gid = from_kgid_munged(current_user_ns(), stat->gid);
+	tmp.stx_mode = stat->mode;
+	tmp.stx_ino = stat->ino;
+	tmp.stx_size = stat->size;
+	tmp.stx_blocks = stat->blocks;
+	tmp.stx_atime.tv_sec = stat->atime.tv_sec;
+	tmp.stx_atime.tv_nsec = stat->atime.tv_nsec;
+	tmp.stx_ctime.tv_sec = stat->ctime.tv_sec;
+	tmp.stx_ctime.tv_nsec = stat->ctime.tv_nsec;
+	tmp.stx_mtime.tv_sec = stat->mtime.tv_sec;
+	tmp.stx_mtime.tv_nsec = stat->mtime.tv_nsec;
+	tmp.stx_rdev_major = MAJOR(stat->rdev);
+	tmp.stx_rdev_minor = MINOR(stat->rdev);
+	tmp.stx_dev_major = MAJOR(stat->dev);
+	tmp.stx_dev_minor = MINOR(stat->dev);
+
+	return copy_to_user(buffer, &tmp, sizeof(tmp)) ? -EFAULT : 0;
+}
+
+/**
+ * sys_statx - System call to get enhanced stats
+ * @dfd: Base directory to pathwalk from *or* fd to stat.
+ * @filename: File to stat or "" with AT_EMPTY_PATH
+ * @flags: AT_* flags to control pathwalk.
+ * @mask: Parts of statx struct actually required.
+ * @buffer: Result buffer.
+ *
+ * Note that fstat() can be emulated by setting dfd to the fd of interest,
+ * supplying "" as the filename and setting AT_EMPTY_PATH in the flags.
+ */
+SYSCALL_DEFINE5(statx,
+		int, dfd, const char __user *, filename, unsigned, flags,
+		unsigned int, mask,
+		struct statx __user *, buffer)
+{
+	struct kstat stat;
+	int error;
+
+	if (mask & STATX__RESERVED)
+		return -EINVAL;
+	if ((flags & AT_STATX_SYNC_TYPE) == AT_STATX_SYNC_TYPE)
+		return -EINVAL;
+
+	/* vfs_fstatat() refuses any other flag with -EINVAL, as upstream */
+	error = vfs_fstatat(dfd, filename, &stat, flags & ~AT_STATX_SYNC_TYPE);
+	if (error)
+		return error;
+
+	return cp_statx(&stat, buffer);
+}
+
 SYSCALL_DEFINE2(newfstat, unsigned int, fd, struct stat __user *, statbuf)
 {
 	struct kstat stat;
