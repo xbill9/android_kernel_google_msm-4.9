@@ -49,6 +49,10 @@ config DEBUG_SET_MODULE_RONX
 
 	  If in doubt, say Y.
 
+# The v4.11 name of DEBUG_SET_MODULE_RONX (upstream 0f5bf6d0afe4).
+config STRICT_MODULE_RWX
+	def_bool DEBUG_SET_MODULE_RONX
+
 config DEBUG_ALIGN_RODATA
 	depends on DEBUG_RODATA
 	bool "Align linker sections up to SECTION_SIZE"

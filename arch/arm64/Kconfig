@@ -133,6 +133,11 @@ config MMU
 config DEBUG_RODATA
 	def_bool y
 
+# The v4.11 name of DEBUG_RODATA (upstream 0f5bf6d0afe4), which CTS
+# KernelConfigTest#testConfigROData looks for in /proc/config.gz.
+config STRICT_KERNEL_RWX
+	def_bool DEBUG_RODATA
+
 config ARM64_PAGE_SHIFT
 	int
 	default 16 if ARM64_64K_PAGES
