@@ -40,7 +40,15 @@ for m in $MODS; do
   timeout $lim atest "$m" > "$log" 2>&1; rc=$?
   # timeout stops atest but not the test run under it, which keeps the phone's UI automation
   # connection and breaks the next module: stop what is left.
-  [ $rc = 124 ] && { pkill -9 -f atest_tradefed; pkill -9 -f "tradefed.*HeapDumpOnOutOfMemoryError"; sleep 3; }
+  # The test app on the phone keeps running too (on 2026-11-12 the sensor and camera apps did, and
+  # every later camera test failed in setup): force-stop every CTS test package that is running.
+  if [ $rc = 124 ]; then
+    pkill -9 -f atest_tradefed; pkill -9 -f "tradefed.*HeapDumpOnOutOfMemoryError"
+    for p in $(adb shell ps -A -o NAME | tr -d '\r' | grep -E '^android\..*\.cts' | sed 's/:.*//' | sort -u); do
+      adb shell am force-stop "$p"
+    done
+    sleep 3
+  fi
   secs=$(( $(date +%s) - t ))
   sed -i 's/\x1b\[[0-9;]*m//g' "$log"
   # atest prints one line per ABI: "arm64-v8a <module>: Passed: 1, Failed: 0, Ignored: 0, Assumption Failed: 0"

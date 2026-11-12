@@ -20,6 +20,30 @@ images under `~/sargo-bpf-test/kmsglog/`, the tree in `~/android/lineage-24.0`.
 | `atomictest.c`, `atomictest`, `atomictest-cases.inc` | Checks the kernel's BPF atomic instructions as root: linux v6.1's `verifier/atomic_*.c` cases (in `atomictest-cases.inc`), each loaded as root and as an unprivileged uid and, when accepted, run with `BPF_PROG_TEST_RUN`; precision tracking through `atomic64_fetch_add`; and 10,000-op loops of each operation checked against C, which must be JIT-compiled. `atomictest interp` runs it all with `bpf_jit_enable` 0 and restores it after. The verifier log's `'inv'` (up to 5.17) counts as v6.1's `'scalar'`. `build-atomictest.sh` rebuilds it. |
 | `rawtptest.c`, `rawtptest` | Checks BPF raw tracepoints as root: counter programs attached to `sched_switch`, `sys_enter` and `sched_process_fork` count while attached and stop after detach; an unknown name gives ENOENT; reading past a tracepoint's arguments is refused at attach; the attachment is a `bpf_link` that stays attached while pinned in `/sys/fs/bpf` and detaches when the pin is removed. `build-rawtptest.sh` rebuilds it. |
 
+## Status, 2026-11-12, CTS core on 24.0-20261112, [::] sendmsg fix
+
+- **CTS core on the installed `24.0-20261111-2106` build** (kernel
+  `be43b3a8c692`, slot a): 6 modules pass, 9 fail, 1 skip; 44,895 tests
+  pass, 391 fail. Against 11-07: OS 862/4 (was 859/7), location 99/0
+  (was 98/1), libcore 32,248/3 (was 32,137/6); bionic, graphics,
+  Bluetooth, hardware and permission unchanged. Security host ran for the
+  first time: 3,346 pass, 151 fail, 147 of them SELinux neverallow checks
+  on this userdebug build. Sensors and camera hit the 1 h limit; the
+  camera app kept running on the phone afterwards, and the camera tests
+  with `adoptShellPerm=true` all failed in setup, though one rerun alone
+  passes both variants. `cts-24.sh` now force-stops the CTS apps on the
+  phone after a time-out. `CtsSecurityTestCases` was abandoned when the
+  test started a second user and USB reconnected; `CtsNetTestCases` setup
+  saw no IPv6 default route on Wi-Fi. VTS net tests 647 pass, 0 fail.
+- **Kernel `1d22ab9779a0`** (RAM-booted over that build): UDP to `[::]`
+  reaches loopback again (upstream `e8e36984080b`; the cgroup-BPF sendmsg
+  hook had undone the rewrite), and `STRICT_KERNEL_RWX` /
+  `STRICT_MODULE_RWX` follow the 4.9 options. `udp0test` 7 of 7; libcore
+  `test_recvfrom_EmptyPacket`, `test_recvfromNoThrow_EmptyPacket`,
+  `test_recvmsgNoThrow_EmptyPacket` and `KernelConfigTest#testConfigROData`
+  pass. VTS net tests 647 pass, 0 fail; hardware check 21 pass, 0 fail,
+  1 skip. The installed `wlan.ko` loads.
+
 ## Status, 2026-11-11, IPv6 ESP-in-UDP and net_raw
 
 - **Kernel `3dc6c69adab8`** (RAM-booted on 92FAY00ZMV over
