@@ -20,6 +20,16 @@ images under `~/sargo-bpf-test/kmsglog/`, the tree in `~/android/lineage-24.0`.
 | `atomictest.c`, `atomictest`, `atomictest-cases.inc` | Checks the kernel's BPF atomic instructions as root: linux v6.1's `verifier/atomic_*.c` cases (in `atomictest-cases.inc`), each loaded as root and as an unprivileged uid and, when accepted, run with `BPF_PROG_TEST_RUN`; precision tracking through `atomic64_fetch_add`; and 10,000-op loops of each operation checked against C, which must be JIT-compiled. `atomictest interp` runs it all with `bpf_jit_enable` 0 and restores it after. The verifier log's `'inv'` (up to 5.17) counts as v6.1's `'scalar'`. `build-atomictest.sh` rebuilds it. |
 | `rawtptest.c`, `rawtptest` | Checks BPF raw tracepoints as root: counter programs attached to `sched_switch`, `sys_enter` and `sched_process_fork` count while attached and stop after detach; an unknown name gives ENOENT; reading past a tracepoint's arguments is refused at attach; the attachment is a `bpf_link` that stays attached while pinned in `/sys/fs/bpf` and detaches when the pin is removed. `build-rawtptest.sh` rebuilds it. |
 
+## Status, 2026-11-11, IPv6 ESP-in-UDP and net_raw
+
+- **Kernel `3dc6c69adab8`** (RAM-booted on 92FAY00ZMV over
+  `24.0-20261111-1328`, SELinux enforcing): ESP-in-UDP over IPv6 (v5.8)
+  and no `CAP_NET_RAW` from the `net_raw` group. `vts_kernel_net_tests`
+  647 pass, 0 fail, 6 ignored (was 644 pass, 3 fail). Hardware check
+  21 pass, 0 fail, 1 skip. No process was granted `CAP_NET_RAW` by group;
+  `IpClient.wlan0` and `lowi-server` are still granted `CAP_NET_ADMIN` by
+  `net_admin`. The installed `wlan.ko` loads (426 symbol CRCs unchanged).
+
 ## Status, 2026-11-11, build 24.0-20261111-1328
 
 - **Build `24.0-20261111-1328`, kernel `7788342348e0`** (the VTS fixes below):
