@@ -20,6 +20,26 @@ images under `~/sargo-bpf-test/kmsglog/`, the tree in `~/android/lineage-24.0`.
 | `atomictest.c`, `atomictest`, `atomictest-cases.inc` | Checks the kernel's BPF atomic instructions as root: linux v6.1's `verifier/atomic_*.c` cases (in `atomictest-cases.inc`), each loaded as root and as an unprivileged uid and, when accepted, run with `BPF_PROG_TEST_RUN`; precision tracking through `atomic64_fetch_add`; and 10,000-op loops of each operation checked against C, which must be JIT-compiled. `atomictest interp` runs it all with `bpf_jit_enable` 0 and restores it after. The verifier log's `'inv'` (up to 5.17) counts as v6.1's `'scalar'`. `build-atomictest.sh` rebuilds it. |
 | `rawtptest.c`, `rawtptest` | Checks BPF raw tracepoints as root: counter programs attached to `sched_switch`, `sys_enter` and `sched_process_fork` count while attached and stop after detach; an unknown name gives ENOENT; reading past a tracepoint's arguments is refused at attach; the attachment is a `bpf_link` that stays attached while pinned in `/sys/fs/bpf` and detaches when the pin is removed. `build-rawtptest.sh` rebuilds it. |
 
+## Status, 2026-11-13, upstream fixes from check-upstream.sh
+
+- LineageOS `lineage-22.2` (2026-08-15) has nothing new; there is no 23 or
+  24 branch. `check-upstream.sh` against mainline `2800868f6322`: 71 new
+  rows, 26 in built backport code. Taken: `1166a530a847` (IPv4 ESP on a
+  dual-stack UDPv6 encap socket went to the IPv6 handler after the
+  UDPv6 encap port), `fb2b27d214c3`, `25fc94b2f02d`, `ee36c9aa44ef`,
+  `6d8118937ba4`, `fbdc020ee1b8`. Already in: `17175d1a27c6`,
+  `d5dba1376e2b`, `bc0fcb9823cd` (in the UDPv6 port), `e8e36984080b`.
+  Not built: the seg6 and lwt BPF fixes (`CONFIG_LWTUNNEL` is off).
+  Not applicable: `a08ba2ab79df` (4.9 asks perf for at most max_depth
+  frames). Left for a port of its own: `f19f2b308beb` with
+  `ea4d4b5dddb5` (tc BPF `queue_mapping` past the tx queues; root only).
+  The TCP receive-window rows change tuning, not bugs.
+- **Kernel `092b9889c451`** (RAM-booted over `24.0-20261113-1000`,
+  SELinux enforcing): VTS net tests 647 pass, 0 fail; hardware check
+  21 pass, 0 fail, 1 skip; `ringbuftest`, `rawtptest`, `clone3test`
+  0 failed; `atomictest` 162 pass, 1 skip; `udp0test` 7 of 7; bpfloader
+  errors the same 2. The installed `wlan.ko` loads.
+
 ## Status, 2026-11-13, CtsHardwareTestCases alone
 
 - **`CtsHardwareTestCases` on its own** (RAM boot of `7cc23b600958`):
