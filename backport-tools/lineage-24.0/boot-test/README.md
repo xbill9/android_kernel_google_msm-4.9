@@ -20,6 +20,17 @@ images under `~/sargo-bpf-test/kmsglog/`, the tree in `~/android/lineage-24.0`.
 | `atomictest.c`, `atomictest`, `atomictest-cases.inc` | Checks the kernel's BPF atomic instructions as root: linux v6.1's `verifier/atomic_*.c` cases (in `atomictest-cases.inc`), each loaded as root and as an unprivileged uid and, when accepted, run with `BPF_PROG_TEST_RUN`; precision tracking through `atomic64_fetch_add`; and 10,000-op loops of each operation checked against C, which must be JIT-compiled. `atomictest interp` runs it all with `bpf_jit_enable` 0 and restores it after. The verifier log's `'inv'` (up to 5.17) counts as v6.1's `'scalar'`. `build-atomictest.sh` rebuilds it. |
 | `rawtptest.c`, `rawtptest` | Checks BPF raw tracepoints as root: counter programs attached to `sched_switch`, `sys_enter` and `sched_process_fork` count while attached and stop after detach; an unknown name gives ENOENT; reading past a tracepoint's arguments is refused at attach; the attachment is a `bpf_link` that stays attached while pinned in `/sys/fs/bpf` and detaches when the pin is removed. `build-rawtptest.sh` rebuilds it. |
 
+## Status, 2026-11-13, CtsHardwareTestCases alone
+
+- **`CtsHardwareTestCases` on its own** (RAM boot of `7cc23b600958`):
+  360 pass, 5 fail. In the 11-07 and 11-12 core runs it gave 174 pass,
+  230 fail, every failure `IllegalStateException: Not connected!` from
+  `adoptShellPermissionIdentity`: it ran right after
+  `CtsSensorTestCases` timed out, whose app still held the phone's one
+  UiAutomation connection. The virtual input device tests all pass. The
+  5 left are `SonyDualSenseEdge{Bluetooth,Usb}Test`, which need the
+  `hid-playstation` driver's DualSense Edge support (v6.2).
+
 ## Status, 2026-11-13, /dev/userfaultfd
 
 - **Kernel `7cc23b600958`** (RAM-booted over `24.0-20261112-2043`, SELinux
