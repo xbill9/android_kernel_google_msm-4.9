@@ -20,6 +20,22 @@ images under `~/sargo-bpf-test/kmsglog/`, the tree in `~/android/lineage-24.0`.
 | `atomictest.c`, `atomictest`, `atomictest-cases.inc` | Checks the kernel's BPF atomic instructions as root: linux v6.1's `verifier/atomic_*.c` cases (in `atomictest-cases.inc`), each loaded as root and as an unprivileged uid and, when accepted, run with `BPF_PROG_TEST_RUN`; precision tracking through `atomic64_fetch_add`; and 10,000-op loops of each operation checked against C, which must be JIT-compiled. `atomictest interp` runs it all with `bpf_jit_enable` 0 and restores it after. The verifier log's `'inv'` (up to 5.17) counts as v6.1's `'scalar'`. `build-atomictest.sh` rebuilds it. |
 | `rawtptest.c`, `rawtptest` | Checks BPF raw tracepoints as root: counter programs attached to `sched_switch`, `sys_enter` and `sched_process_fork` count while attached and stop after detach; an unknown name gives ENOENT; reading past a tracepoint's arguments is refused at attach; the attachment is a `bpf_link` that stays attached while pinned in `/sys/fs/bpf` and detaches when the pin is removed. `build-rawtptest.sh` rebuilds it. |
 
+## Status, 2026-11-13, /dev/userfaultfd
+
+- **Kernel `7cc23b600958`** (RAM-booted over `24.0-20261112-2043`, SELinux
+  enforcing): `/dev/userfaultfd` (v6.1), mode 0600 root, label `device`
+  (Android 17 has no ueventd or file_contexts entry for it). LTP
+  `userfaultfd03` passes (was TCONF, counted as a failure by VTS);
+  `userfaultfd01`-`05` otherwise unchanged. Hardware check 21 pass,
+  0 fail, 1 skip. The installed `wlan.ko` loads.
+- **Left out** of the 8 LTP failures: `ioctl_ns07` and `munmap04` need
+  `uname` 4.11 / 4.17 (`.min_kver`), which no backport changes;
+  `getitimer01` and `setitimer01` see 4.9's tick rounding of CPU timers
+  (gone with v4.11's nanosecond cputime series); `inotify07` and
+  `inotify08` need the v4.16 overlayfs inode hashing, built on the
+  v4.13-4.15 overlayfs rework; `pty09` ran past its 1 min limit without a
+  failure. `f2fs_test` needs F2FS compression (v5.6).
+
 ## Status, 2026-11-13, build 24.0-20261112-2043
 
 - **Build `24.0-20261112-2043`, kernel `6388b71ff417`**, installed on
