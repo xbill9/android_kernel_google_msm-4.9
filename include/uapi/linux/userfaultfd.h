@@ -11,6 +11,10 @@
 
 #include <linux/types.h>
 
+/* ioctls for /dev/userfaultfd */
+#define USERFAULTFD_IOC 0xAA
+#define USERFAULTFD_IOC_NEW _IO(USERFAULTFD_IOC, 0x00)
+
 #define UFFD_API ((__u64)0xAA)
 /*
  * After implementing the respective features it will become:
