@@ -20,6 +20,20 @@ images under `~/sargo-bpf-test/kmsglog/`, the tree in `~/android/lineage-24.0`.
 | `atomictest.c`, `atomictest`, `atomictest-cases.inc` | Checks the kernel's BPF atomic instructions as root: linux v6.1's `verifier/atomic_*.c` cases (in `atomictest-cases.inc`), each loaded as root and as an unprivileged uid and, when accepted, run with `BPF_PROG_TEST_RUN`; precision tracking through `atomic64_fetch_add`; and 10,000-op loops of each operation checked against C, which must be JIT-compiled. `atomictest interp` runs it all with `bpf_jit_enable` 0 and restores it after. The verifier log's `'inv'` (up to 5.17) counts as v6.1's `'scalar'`. `build-atomictest.sh` rebuilds it. |
 | `rawtptest.c`, `rawtptest` | Checks BPF raw tracepoints as root: counter programs attached to `sched_switch`, `sys_enter` and `sched_process_fork` count while attached and stop after detach; an unknown name gives ENOENT; reading past a tracepoint's arguments is refused at attach; the attachment is a `bpf_link` that stays attached while pinned in `/sys/fs/bpf` and detaches when the pin is removed. `build-rawtptest.sh` rebuilds it. |
 
+## Status, 2026-11-13, build 24.0-20261112-2043
+
+- **Build `24.0-20261112-2043`, kernel `6388b71ff417`**, installed on
+  92FAY00ZMV (slot b, SELinux enforcing): `udp0test` 7 of 7,
+  `STRICT_KERNEL_RWX` and `STRICT_MODULE_RWX` set, `wlan.ko` loads.
+  Hardware check 21 pass, 0 fail, 1 skip; a first run right after the
+  post-install app compile had the front camera take no photo.
+- **Reruns on `1d22ab9779a0`** (RAM boot): the four sensor tests that
+  failed in the 11-12 CTS run each passed in 2 or 3 of 3 runs on their
+  own (timing). `CtsNetTestCases` setup again found no IPv4 and global
+  IPv6 default route on Wi-Fi within 30 s, though Wi-Fi had both before
+  and after. `CtsSecurityTestCases` ended in a runner error after
+  `couldn't remove user id 10` from its multi-user test.
+
 ## Status, 2026-11-12, CTS core on 24.0-20261112, [::] sendmsg fix
 
 - **CTS core on the installed `24.0-20261111-2106` build** (kernel
