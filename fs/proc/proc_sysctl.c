@@ -577,6 +577,8 @@ static ssize_t proc_sys_call_handler(struct file *filp, void __user *buf,
 	struct inode *inode = file_inode(filp);
 	struct ctl_table_header *head = grab_header(inode);
 	struct ctl_table *table = PROC_I(inode)->sysctl_entry;
+	/* a write must never report more than the caller passed */
+	size_t orig_count = count;
 	void *new_buf = NULL;
 	ssize_t error;
 
@@ -615,8 +617,9 @@ static ssize_t proc_sys_call_handler(struct file *filp, void __user *buf,
 		error = table->proc_handler(table, write, buf, &count, ppos);
 	}
 
+	/* the write path consumed at most the original length */
 	if (!error)
-		error = count;
+		error = write ? min(count, orig_count) : count;
 out:
 	sysctl_head_finish(head);
 
