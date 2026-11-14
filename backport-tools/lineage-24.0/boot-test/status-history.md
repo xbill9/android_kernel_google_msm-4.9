@@ -3,6 +3,19 @@
 Dated status notes, newest first, moved from `README.md` on 2026-11-14. The current
 state is in `README.md`.
 
+## Status, 2026-11-14, kernel d1d88b8bf32a (RAM boot)
+
+- **39 upstream base fixes** (mainline fixes to 4.9 code dated after 4.9.337, tried one at a
+  time: 52 of 235 applied and built, 39 kept after review) **and the DualSense Edge ID**
+  (BACKPORT of v6.2 `b8a968efab30`). LTO/CFI build, RAM boot on 92FAY00ZMV, no flashing.
+- `wlan.ko` loads; bpfloader errors the same 2; `qmaptest` PASS, `ringbuftest`, `rawtptest`,
+  `clone3test`(32) 0 failed, `atomictest` 162/1 skip, `udp0test` 7 of 7. Hardware check
+  21/0/1, smoke 18 pass, 1 fail (light sensor, dark room). VTS net 647/0. CTS hardware 365/0
+  (the 5 `SonyDualSenseEdge*` failures now pass), Bluetooth 473/0, net: the same setup check.
+- One `NETDEV WATCHDOG` warning (`dev_watchdog`, sch_generic.c:352) at 586 s uptime, during
+  VTS net; the device name line was not captured. A second RAM boot running VTS net with the
+  full kernel log saved (647/0) had none. None of the 40 commits touches a transmit path.
+
 ## Status, 2026-11-13, build 24.0-20261113-1707
 
 - **Build `24.0-20261113-1707`, kernel `1d24d73d79e7`** (the upstream fixes

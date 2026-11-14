@@ -27,20 +27,21 @@ images under `~/sargo-bpf-test/kmsglog/`, the tree in `~/android/lineage-24.0`.
 ## Current state, 2026-11-14
 
 Installed on 92FAY00ZMV (slot b, SELinux enforcing): build `24.0-20261113-1707`, kernel
-`1d24d73d79e7`. Kernel `main` is ahead of it by the qdisc `queue_mapping` cap and 27 upstream
-fixes (`12d8ae72200b`), tested by RAM boot; the next ROM build picks them up.
+`1d24d73d79e7`. Kernel `main` is ahead of it by the qdisc `queue_mapping` cap, 27 upstream
+fixes (`12d8ae72200b`), 39 more upstream base fixes and the DualSense Edge device ID
+(`d1d88b8bf32a`), tested by RAM boot; the next ROM build picks them up.
 Dated notes, newest first: `status-history.md`.
 
-| Check | Installed build | `12d8ae72200b` (RAM boot) |
-|---|---|---|
-| Hardware check | 21 pass, 0 fail, 1 skip | 21 pass, 0 fail, 1 skip |
-| Smoke test | | 18 pass, 1 fail (light sensor: no change at 0 lux), 8 check |
-| VTS net | 647 pass, 0 fail (`092b9889c451`) | 647 pass, 0 fail |
-| `ringbuftest`, `rawtptest`, `clone3test`(32) | 0 failed | 0 failed |
-| `atomictest`, `udp0test` | 162 pass, 1 skip; 7 of 7 | 162 pass, 1 skip; 7 of 7 |
-| `qmaptest` | (do not run: no fix) | PASS, 64 packets capped from queue 7 |
-| bpfloader errors | `fuseMedia`, `dmabufIter` | the same 2 |
-| CTS core | 12 of 16 modules with a result, below | |
+| Check | Installed build | `12d8ae72200b` (RAM boot) | `d1d88b8bf32a` (RAM boot) |
+|---|---|---|---|
+| Hardware check | 21 pass, 0 fail, 1 skip | 21 pass, 0 fail, 1 skip | 21 pass, 0 fail, 1 skip |
+| Smoke test | | 18 pass, 1 fail (light sensor: no change at 0 lux), 8 check | 18 pass, 1 fail (light sensor), 8 check |
+| VTS net | 647 pass, 0 fail (`092b9889c451`) | 647 pass, 0 fail | 647 pass, 0 fail (twice) |
+| `ringbuftest`, `rawtptest`, `clone3test`(32) | 0 failed | 0 failed | 0 failed |
+| `atomictest`, `udp0test` | 162 pass, 1 skip; 7 of 7 | 162 pass, 1 skip; 7 of 7 | 162 pass, 1 skip; 7 of 7 |
+| `qmaptest` | (do not run: no fix) | PASS, 64 packets capped from queue 7 | PASS |
+| bpfloader errors | `fuseMedia`, `dmabufIter` | the same 2 | the same 2 |
+| CTS core | 12 of 16 modules with a result, below | | hardware 365/0, Bluetooth 473/0 |
 
 CTS core on the installed build (2026-11-13 and 11-14): kernel config 5/0, SELinux 10/0,
 bionic 3,286/0, graphics 3,774/0, permission 388/1, security host 3,347/150 (147 are neverallow
@@ -53,12 +54,13 @@ Known failures and why:
   reachable global IPv6 on Wi-Fi, though the network has global addresses and an RA default
   route in the `LinkProperties` it logs. The kernel sends `RTM_NEWADDR` on every RA lifetime
   refresh (watched 2026-11-14: RAs every 2 min, lifetimes 600 s), so userspace does not see
-  stale deprecated addresses; the cause is above the kernel. Same on `12d8ae72200b`.
+  stale deprecated addresses; the cause is above the kernel. Same on `12d8ae72200b` and
+  `d1d88b8bf32a`.
 - **`CtsSensorTestCases`, `CtsCameraTestCases`**: stop at the 1 h limit; sensor tests pass
   alone (timing).
 - **`CtsSecurityTestCases`**: runner error after its multi-user test, which leaves a test user.
-- **Hardware, 5**: `SonyDualSenseEdge*`: the tree's `hid-playstation` (Android backport, built
-  in) has no DualSense Edge device ID (v6.2).
+- **Hardware, 5** (installed build only): `SonyDualSenseEdge*`: its `hid-playstation` has no
+  DualSense Edge device ID (v6.2). `d1d88b8bf32a` adds it: hardware 365/0.
 - **OS, 5**: one new on 11-13, `StrictModeTest#testUnsafeIntentLaunch_UnsafeDataCopy_ThrowsViolation`.
 - **Location, 1**: `GeofencingTest#testAddProximityAlert`, timed out after 5 min.
 - **LTP, 8**: kernel version checks, 4.9 CPU timer rounding, overlayfs inode hashing (see
