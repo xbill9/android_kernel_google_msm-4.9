@@ -1,7 +1,8 @@
 /* Checks that a qdisc caps an out-of-range skb->queue_mapping set by tc BPF (backport of f19f2b308beb).
  *
  * As root: creates dummy device qmt0 with 4 tx queues and a prio root qdisc, attaches a cls_bpf
- * direct-action program that stores queue_mapping = 7, sends 64 UDP datagrams through it, and
+ * direct-action program that stores queue_mapping = 7, sends 64 Ethernet frames on qmt0 through an
+ * AF_PACKET socket (Android's policy routing would not route UDP to a dummy device), and
  * checks the kernel log for "qmt0 selects TX queue 7", which dequeue_skb() logs when it caps the
  * mapping. Without the fix the qdisc indexes dev->_tx[7] of a 4-entry array: do not run it on a
  * kernel without the fix. Removes qmt0 at the end. Exit 0 on PASS.
@@ -11,6 +12,7 @@
 #include <errno.h>
 #include <linux/bpf.h>
 #include <linux/if_ether.h>
+#include <linux/if_packet.h>
 #include <linux/netlink.h>
 #include <linux/pkt_cls.h>
 #include <linux/rtnetlink.h>
@@ -107,14 +109,16 @@ int main(void) {
   printf("PASS  attached to the prio root of %s (4 tx queues)\n", DEV);
 
   sh("dmesg -c > /dev/null");
-  int u = socket(AF_INET, SOCK_DGRAM, 0);
-  struct sockaddr_in dst = { .sin_family = AF_INET, .sin_port = htons(9) };
-  inet_pton(AF_INET, "10.213.0.2", &dst.sin_addr);
+  int u = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_IP));
+  struct sockaddr_ll ll = { .sll_family = AF_PACKET, .sll_protocol = htons(ETH_P_IP),
+                            .sll_ifindex = (int)if_nametoindex(DEV), .sll_halen = ETH_ALEN };
+  unsigned char frame[64] = { 0x02, 0, 0, 0, 0, 2,  0x02, 0, 0, 0, 0, 1,  0x08, 0x00 };
   int sent = 0;
-  for (int i = 0; i < 64; i++) sent += sendto(u, "x", 1, 0, (void *)&dst, sizeof(dst)) == 1;
+  for (int i = 0; i < 64; i++) sent += sendto(u, frame, sizeof(frame), 0, (void *)&ll, sizeof(ll)) == sizeof(frame);
+  if (sent < 64) perror("AF_PACKET sendto");
   close(u);
   usleep(200000);
-  printf("%s  %d of 64 datagrams sent\n", sent == 64 ? "PASS" : "FAIL", sent);
+  printf("%s  %d of 64 frames sent\n", sent == 64 ? "PASS" : "FAIL", sent);
 
   FILE *k = popen("dmesg | grep -c '" DEV " selects TX queue 7, but real number of TX queues is 4'", "r");
   int hits = 0;
@@ -125,7 +129,10 @@ int main(void) {
   char line[128] = "";
   if (st) { if (!fgets(line, sizeof(line), st)) line[0] = 0; pclose(st); }
   printf("      prio root: %s", line[0] ? line : "no stats\n");
-  ok = sent == 64 && hits > 0;
+  int pkts = 0;
+  if (line[0]) sscanf(line, "Sent %*d bytes %d pkt", &pkts);
+  printf("%s  %d packets went through the prio root\n", pkts >= 64 ? "PASS" : "FAIL", pkts);
+  ok = sent == 64 && pkts >= 64 && hits > 0;
 out:
   system("ip link del " DEV " 2>/dev/null");
   printf("%s\n", ok ? "PASS" : "FAIL");

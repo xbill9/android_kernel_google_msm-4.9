@@ -23,3 +23,43 @@ images under `~/sargo-bpf-test/kmsglog/`, the tree in `~/android/lineage-24.0`.
 | `qmaptest.c`, `qmaptest` | Checks that a qdisc caps an out-of-range `queue_mapping` stored by tc BPF, as root: a cls_bpf direct-action program on the prio root of a 4-queue dummy device stores 7, 64 UDP datagrams go through it, and the kernel must log `qmt0 selects TX queue 7`. Only for a kernel with the fix: without it the qdisc indexes past the device's tx queues. `build-test.sh qmaptest` rebuilds it. |
 | `build-test.sh` | Builds the test programs above (all, or the names given) with the tree's clang and NDK sysroot, after a full build. `LINEAGE_TREE=` picks another tree. |
 
+
+## Current state, 2026-11-14
+
+Installed on 92FAY00ZMV (slot b, SELinux enforcing): build `24.0-20261113-1707`, kernel
+`1d24d73d79e7`. Kernel `main` is ahead of it by the qdisc `queue_mapping` cap and 27 upstream
+fixes (`12d8ae72200b`), tested by RAM boot; the next ROM build picks them up.
+Dated notes, newest first: `status-history.md`.
+
+| Check | Installed build | `12d8ae72200b` (RAM boot) |
+|---|---|---|
+| Hardware check | 21 pass, 0 fail, 1 skip | 21 pass, 0 fail, 1 skip |
+| Smoke test | | 18 pass, 1 fail (light sensor: no change at 0 lux), 8 check |
+| VTS net | 647 pass, 0 fail (`092b9889c451`) | 647 pass, 0 fail |
+| `ringbuftest`, `rawtptest`, `clone3test`(32) | 0 failed | 0 failed |
+| `atomictest`, `udp0test` | 162 pass, 1 skip; 7 of 7 | 162 pass, 1 skip; 7 of 7 |
+| `qmaptest` | (do not run: no fix) | PASS, 64 packets capped from queue 7 |
+| bpfloader errors | `fuseMedia`, `dmabufIter` | the same 2 |
+| CTS core | 12 of 16 modules with a result, below | |
+
+CTS core on the installed build (2026-11-13 and 11-14): kernel config 5/0, SELinux 10/0,
+bionic 3,286/0, graphics 3,774/0, permission 388/1, security host 3,347/150 (147 are neverallow
+checks on a userdebug build), OS 861/5, hardware 360/5, Bluetooth 473/0, location 98/1,
+libcore 32,251/0.
+
+Known failures and why:
+
+- **`CtsNetTestCases`**: its setup check (`ConnectivityCheckTest#testCheckWifiSetup`) finds no
+  reachable global IPv6 on Wi-Fi, though the network has global addresses and an RA default
+  route in the `LinkProperties` it logs. The kernel sends `RTM_NEWADDR` on every RA lifetime
+  refresh (watched 2026-11-14: RAs every 2 min, lifetimes 600 s), so userspace does not see
+  stale deprecated addresses; the cause is above the kernel. Same on `12d8ae72200b`.
+- **`CtsSensorTestCases`, `CtsCameraTestCases`**: stop at the 1 h limit; sensor tests pass
+  alone (timing).
+- **`CtsSecurityTestCases`**: runner error after its multi-user test, which leaves a test user.
+- **Hardware, 5**: `SonyDualSenseEdge*` need `hid-playstation` (v5.12; DualSense Edge v6.2),
+  which 4.9 lacks.
+- **OS, 5**: one new on 11-13, `StrictModeTest#testUnsafeIntentLaunch_UnsafeDataCopy_ThrowsViolation`.
+- **Location, 1**: `GeofencingTest#testAddProximityAlert`, timed out after 5 min.
+- **LTP, 8**: kernel version checks, 4.9 CPU timer rounding, overlayfs inode hashing (see
+  `status-history.md`, 2026-11-13).
