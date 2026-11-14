@@ -3,14 +3,14 @@
 # Usage: build-test.sh [name ...]   (default: all; names are the .c files here, e.g. ringbuftest)
 #   LINEAGE_TREE=<tree> overrides ~/android/lineage-24.0.
 # Output: <name> next to this script, arm64; clone3test also as 32-bit arm (clone3test32).
-# kmsglog.c is a freestanding /init and is built by add-logger.sh instead.
+# Not kmsglog.c: it is a freestanding /init, and add-logger.sh takes its binary from ~/sargo-bpf-test/kmsglog.
 set -eu
 T=${LINEAGE_TREE:-$HOME/android/lineage-24.0}
 B=$(dirname "$(readlink -f "$0")")
 CC=$(ls -d $T/prebuilts/clang/host/linux-x86/clang-r*/bin/clang | sort -V | tail -1)
 S=$T/out/soong/ndk/sysroot
 I=$T/out/soong/.intermediates/bionic/libc
-ALL="atomictest clone3test rawtptest ringbuftest sensorread udp0test"
+ALL="atomictest clone3test qmaptest rawtptest ringbuftest sensorread udp0test"
 
 build() {  # name output target libdir crtvariant [extra libs]
   local n=$1 o=$2 t=$3 l=$4 v=$5; shift 5
