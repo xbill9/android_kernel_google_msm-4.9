@@ -57,8 +57,8 @@ Known failures and why:
 - **`CtsSensorTestCases`, `CtsCameraTestCases`**: stop at the 1 h limit; sensor tests pass
   alone (timing).
 - **`CtsSecurityTestCases`**: runner error after its multi-user test, which leaves a test user.
-- **Hardware, 5**: `SonyDualSenseEdge*` need `hid-playstation` (v5.12; DualSense Edge v6.2),
-  which 4.9 lacks.
+- **Hardware, 5**: `SonyDualSenseEdge*`: the tree's `hid-playstation` (Android backport, built
+  in) has no DualSense Edge device ID (v6.2).
 - **OS, 5**: one new on 11-13, `StrictModeTest#testUnsafeIntentLaunch_UnsafeDataCopy_ThrowsViolation`.
 - **Location, 1**: `GeofencingTest#testAddProximityAlert`, timed out after 5 min.
 - **LTP, 8**: kernel version checks, 4.9 CPU timer rounding, overlayfs inode hashing (see
