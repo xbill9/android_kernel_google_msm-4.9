@@ -20,6 +20,27 @@ images under `~/sargo-bpf-test/kmsglog/`, the tree in `~/android/lineage-24.0`.
 | `atomictest.c`, `atomictest`, `atomictest-cases.inc` | Checks the kernel's BPF atomic instructions as root: linux v6.1's `verifier/atomic_*.c` cases (in `atomictest-cases.inc`), each loaded as root and as an unprivileged uid and, when accepted, run with `BPF_PROG_TEST_RUN`; precision tracking through `atomic64_fetch_add`; and 10,000-op loops of each operation checked against C, which must be JIT-compiled. `atomictest interp` runs it all with `bpf_jit_enable` 0 and restores it after. The verifier log's `'inv'` (up to 5.17) counts as v6.1's `'scalar'`. `build-atomictest.sh` rebuilds it. |
 | `rawtptest.c`, `rawtptest` | Checks BPF raw tracepoints as root: counter programs attached to `sched_switch`, `sys_enter` and `sched_process_fork` count while attached and stop after detach; an unknown name gives ENOENT; reading past a tracepoint's arguments is refused at attach; the attachment is a `bpf_link` that stays attached while pinned in `/sys/fs/bpf` and detaches when the pin is removed. `build-rawtptest.sh` rebuilds it. |
 
+## Status, 2026-11-13, build 24.0-20261113-1707
+
+- **Build `24.0-20261113-1707`, kernel `1d24d73d79e7`** (the upstream fixes
+  below; `vendor/apn` rebased onto LineageOS `2842825` first): installed on
+  92FAY00ZMV, slot b, SELinux enforcing. After the GApps sideload the phone
+  asked again to allow USB debugging. `udp0test` 7 of 7, `/dev/userfaultfd`
+  present, `wlan.ko` loads, bpfloader errors the same 2. Hardware check
+  21 pass, 0 fail, 1 skip on the third run; the first two, right after the
+  post-install app compile, had Aperture open the rear camera only after
+  the check gave up.
+- **CTS core, first 10 modules:** kernel config 5/0, SELinux 10/0, bionic
+  3,286/0, graphics 3,774/0, permission 388/1 (as before). Security host
+  3,347/150 (was 3,346/151; `testConfigROData` passes). OS 861/5: one new,
+  `StrictModeTest#testUnsafeIntentLaunch_UnsafeDataCopy_ThrowsViolation`,
+  no violation report within 5 s (passed on 11-07 and 11-12).
+  `CtsSecurityTestCases` again ended in a runner error after its multi-user
+  test, which left `testUser` (11) running; removed with `pm remove-user`.
+  `CtsNetTestCases` setup again found no IPv6 default route on Wi-Fi.
+  `CtsMediaMiscTestCases`: the test app crashed in `testReclaimResource` on
+  the 4K AVC encoder after 512 passes.
+
 ## Status, 2026-11-13, upstream fixes from check-upstream.sh
 
 - LineageOS `lineage-22.2` (2026-08-15) has nothing new; there is no 23 or
