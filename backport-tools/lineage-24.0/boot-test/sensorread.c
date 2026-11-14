@@ -3,7 +3,7 @@
  * an app having used it. Opens the default sensor of the given type, samples it
  * every 100 ms and prints the first event's values, or exits 1 on timeout.
  * Usage: sensorread <type> [timeout_s]   e.g. sensorread 6 (pressure, hPa)
- * Build: build-sensorread.sh (arm64, against the tree's NDK sysroot).
+ * Build: build-test.sh sensorread.
  */
 #include <android/looper.h>
 #include <android/sensor.h>
