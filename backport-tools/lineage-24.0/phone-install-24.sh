@@ -171,4 +171,17 @@ sideload "$G" "run: bash $B/boot-test/post-install-24.sh"
 log "permissions and app compile (about 3 minutes)"
 bash "$B/boot-test/post-install-24.sh" || die "post-install check failed (see above)"
 
+# A build from GitHub that passes the hardware check becomes the release marked Latest
+# (what "sargo-install tested" installs). Needs gh logged in to the repository.
+if [ -n "${TAG:-}" ] && [ "${KIND:-}" = prerelease ]; then
+  log "hardware check (about 2 minutes)"
+  h=$(bash "$B/boot-test/hw-check-24.sh" 2>&1 | grep -E 'PASS +[0-9]+ +FAIL' | tail -1); echo "hw-check: $h"
+  if echo "$h" | grep -qE ' 0 FAIL'; then
+    gh release edit "$TAG" -R "$REPO" --prerelease=false --latest >/dev/null 2>&1 \
+      && echo "$TAG marked tested (Latest)" || echo "not marked tested: gh release edit failed (gh auth login?)"
+  else
+    echo "not marked tested: hw-check has failures"
+  fi
+fi
+
 log "DONE: $(prop ro.lineage.version) on slot $(prop ro.boot.slot_suffix)"

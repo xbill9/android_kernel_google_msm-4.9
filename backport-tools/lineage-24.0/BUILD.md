@@ -56,6 +56,7 @@ ln -s /android/android_kernel_google_msm-4.9 ~/android_kernel_google_msm-4.9
 mkdir -p ~/bin ~/sargo-bpf-test/logs
 ln -s ~/android_kernel_google_msm-4.9/backport-tools/lineage-24.0/sargo-build.sh ~/bin/sargo-build
 ln -s ~/android_kernel_google_msm-4.9/backport-tools/lineage-24.0/phone-install-24.sh ~/bin/sargo-install
+ln -s ~/android_kernel_google_msm-4.9/backport-tools/lineage-24.0/sargo-test.sh ~/bin/sargo-test
 ```
 
 `~/bin` must be on `PATH`. Keep the same user name (`xbill`) and the same
@@ -120,16 +121,11 @@ sargo-install tested     # newest release marked Latest
 
 The phone must already run one of these 24.0 userdebug builds. The script
 installs the OTA into the inactive slot, puts MindTheGapps back (downloaded if
-no copy is in `~/sargo-bpf-test/gapps`), and compiles apps. The one manual step
-is on the phone, in recovery: "Install anyway", then "Reboot system now". A
-first install from another ROM: `article/evidence/INSTALL.md`.
-
-When a build passes `boot-test/hw-check-24.sh` on the phone, mark it tested so
-`sargo-install tested` picks it up:
-
-```
-gh release edit lineage-24.0-sargo-<date> -R xbill9/android_kernel_google_msm-4.9 --prerelease=false --latest
-```
+no copy is in `~/sargo-bpf-test/gapps`), compiles apps, and runs the hardware
+check; a prerelease that passes it is marked Latest, which `sargo-install tested`
+installs. The one manual step is on the phone, in recovery: "Install anyway",
+then "Reboot system now". A first install from another ROM: `INSTALL.md` at the
+top of the repository.
 
 ---
 

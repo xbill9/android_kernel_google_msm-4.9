@@ -1,6 +1,6 @@
 #!/bin/bash
-# Pull upstream, build the sargo ROM, publish it to GitHub as a prerelease.
-# Stops at the first failure. Installed as ~/bin/sargo-build.
+# Pull upstream (LineageOS, and the forks rebased onto it), build the sargo ROM, publish it to
+# GitHub as a prerelease. Stops at the first failure. Installed as ~/bin/sargo-build.
 set -euo pipefail
 HERE=$(dirname "$(readlink -f "$0")")
 T=~/android/lineage-24.0
@@ -16,11 +16,14 @@ git -C "$HERE" pull --ff-only
 cp "$HERE/local_manifest-sargo.xml" "$T/.repo/local_manifests/sargo.xml"
 cd "$T"
 repo sync -c -j8 --no-tags --no-clone-bundle --optimized-fetch
-behind=$(bash "$HERE/update-forks.sh" | grep -v ' 0 behind' || true)
+# Forks behind upstream: rebase their own commits onto it and push (stops on a conflict).
+behind=$(bash "$HERE/update-forks.sh" | grep -v ' 0 behind' | cut -d: -f1 || true)
 if [ -n "$behind" ]; then
-  echo "$behind"
-  echo "== STOPPED: forks are behind upstream. Run update-forks.sh --apply, then sargo-build again."
-  exit 1
+  echo "rebasing forks: $behind"
+  bash "$HERE/update-forks.sh" --apply $behind || {
+    echo "== STOPPED: a fork rebase conflicts (above). Resolve it in that fork, push, run sargo-build again."
+    exit 1; }
+  repo sync -c --force-sync $behind
 fi
 
 echo "== 2/3 build (log: $LOG)"

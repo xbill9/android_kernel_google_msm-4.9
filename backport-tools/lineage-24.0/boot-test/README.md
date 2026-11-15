@@ -1,8 +1,9 @@
 # Boot tests for 24.0 on sargo
 
-Scripts for unattended boot tests and long log captures. They expect the
-layout of the build machine: logs under `~/sargo-bpf-test/logs/`, logger
-images under `~/sargo-bpf-test/kmsglog/`, the tree in `~/android/lineage-24.0`.
+The checks `sargo-test` runs on a RAM-booted kernel, and tools for boot problems and long log
+captures. `sargo-test` (`../sargo-test.sh`) runs them in order and judges the result; each also
+runs alone on a booted phone. They expect the build machine's layout: the tree in
+`~/android/lineage-24.0`, logs under `~/sargo-bpf-test/logs/` and `~/sargo-logs/`.
 
 | File | Does |
 |---|---|

@@ -1,12 +1,44 @@
-# LineageOS 24.0 on the Pixel 3a (sargo): work in progress
+# LineageOS 24.0 on the Pixel 3a (sargo)
 
-Unofficial LineageOS 24.0 (Android 17) for sargo on this 4.9 kernel, started
-2026-10-21 from the LineageOS 23.2 port. The first full build
-completed on 2026-10-23 on EC2 (`lineage-24.0-20261023-UNOFFICIAL-sargo.zip`,
-1,208,903,032 bytes; see `aws/`). Since 2026-10-26 the full build boots with
-SELinux enforcing; boot status is in `boot-test/README.md`.
+Unofficial LineageOS 24.0 (Android 17) for sargo on this repository's 4.9 kernel. Builds are
+published as [GitHub releases](https://github.com/xbill9/android_kernel_google_msm-4.9/releases);
+the one marked Latest has passed the hardware check on a phone. Current test results:
+`boot-test/README.md`.
 
-Clean build on a new machine, and moving to another machine: `BUILD.md`.
+## Four commands
+
+| Command | Does | Time |
+|---|---|---|
+| `sargo-build` | syncs LineageOS, rebases the forks onto upstream (stops only on a conflict), builds the ROM, publishes it as a prerelease | 40 min to 2 h |
+| `sargo-install` | installs the newest release on the plugged-in phone (data kept), puts Google apps back, compiles apps, runs the hardware check and marks the release Latest if it passes; `sargo-install tested` takes the Latest one | 30 min, one tap in recovery |
+| `sargo-test` | builds the kernel at HEAD, RAM-boots it on the phone (nothing flashed), runs the unit tests, smoke test, hardware check, VTS net and CTS net, returns to the installed kernel; last line PASS or FAIL | 35 min |
+| `backport-tools/check-upstream.sh` | lists upstream kernel fixes this tree lacks | |
+
+Kernel change: commit, `sargo-test`, push on PASS, `sargo-build`. Android change: commit to the
+fork, push, `sargo-build`, `sargo-install`.
+
+`~/bin/sargo-{build,install,test}` link to `sargo-build.sh`, `phone-install-24.sh` and
+`sargo-test.sh` here. Run `sargo-build` and `sargo-test` in tmux or with `setsid nohup`: a
+Claude Code background shell is stopped under memory pressure during Soong analysis. Logs:
+`~/sargo-bpf-test/logs/build-24.log`; test reports `~/sargo-logs/<serial>-test-*/summary.txt`.
+
+New build machine: `BUILD.md`. A laptop that only installs, or a first install: `INSTALL.md`
+at the top of the repository.
+
+## Files
+
+| File | Does |
+|---|---|
+| `sargo-build.sh`, `phone-install-24.sh`, `sargo-test.sh` | the commands above |
+| `kbuild.sh` | builds the kernel outside the platform build, with the tree's prebuilts and the ROM's kernel config (used by `sargo-test`) |
+| `update-forks.sh` | reports how far each fork is behind upstream; `--apply` rebases and pushes (used by `sargo-build`) |
+| `local_manifest-sargo.xml` | the local manifest (below) |
+| `setup-24.sh`, `fetch-clang-24.sh` | first-time tree setup on a build machine |
+| `sargo-setup.sh` | first-time setup of a laptop that only installs |
+| `repack-gapps.sh`, `remove-repacked-gapps.sh` | GApps for builds before 2026-11-09 (below) |
+| `boot-test/` | the tests `sargo-test` runs, and the test history |
+| `aws/` | building on EC2 |
+| `PORTING-NOTES-mobile-data.md` | how mobile data was brought up on the Fi SIM |
 
 ## Sources
 
@@ -39,14 +71,10 @@ fork makes `repo sync` refuse the existing checkout ("--force-sync not
 enabled; cannot overwrite a local work tree"). Once, with the checkout clean
 and its commits on the fork: `repo sync -c --force-sync <paths>`.
 
-`repo sync` brings upstream changes to every project except the forks.
-`update-forks.sh` reports, for each `<remove-project>` the local manifest
-replaces with a fork, how many own commits the fork has and how many upstream
-commits it lacks (LineageOS `lineage-24.0`, or the AOSP tag of the `aosp`
-remote). `update-forks.sh --apply [path...]` rebases the fork's commits onto
-the upstream tip and force-pushes the fork branch (with a lease on the old
-tip); a conflict leaves the checkout at the fork tip and exits 1. `sargo-build`
-stops when a fork is behind, and rerunning it after `--apply` picks up the rebased forks.
+`repo sync` brings upstream changes to every project except the forks; `sargo-build` rebases
+the forks' own commits onto their upstream (LineageOS `lineage-24.0`, or the AOSP tag of the
+`aosp` remote) with `update-forks.sh --apply`, which force-pushes each fork with a lease on its
+old tip. A conflict stops the build and leaves the fork as it was.
 
 The `system`/`packages` forks carry the Android 17 changes for a 4.9
 kernel: the legacy fscrypt session keyring (core, vold), and NetBpfLoad,
@@ -59,10 +87,6 @@ creates its `test_ringbuf` map) and capabilities 38-40 (PERFMON, BPF,
 CHECKPOINT_RESTORE), which `zygote_next` drops from every app's bounding
 set. Switching back needs, once, with clean checkouts:
 `repo sync -c --force-sync system/bpf system/zygote`.
-
-`manifest-pinned-20261026.xml` pins every project of the tree to the commit
-that built `lineage-24.0-20261026-UNOFFICIAL-sargo`, the first build that
-boots with SELinux enforcing.
 
 gs-common is not used: thermal comes from `hardware/google/pixel/thermal`.
 
@@ -125,27 +149,17 @@ the HIDL lights HAL.
 
 ### Kernel (this repository)
 
-`777de5b0ec6f`: gold gets `LLVMgold.so` by the full path from clang, so the
-LTO link does not depend on `LD_LIBRARY_PATH`.
-
-`kernel-24-test.sh` builds the kernel outside the platform build with
-LineageOS 24's kernel make flags plus the device's `KERNEL_CROSS_COMPILE`.
-With stub `gcc`/`cc`/`g++`/`c++` first on PATH that fail on use, it built
-`Image.lz4` (21.0 MB), the dtbs and both modules (`wlan.ko`, `lcd.ko`) in
-15 min 54 s, and `headers_install` produced 884 headers.
+`777de5b0ec6f`: gold gets `LLVMgold.so` by the full path from clang, so the LTO link does not
+depend on `LD_LIBRARY_PATH`. `kbuild.sh` builds outside the platform build with the same
+toolchain and stub `gcc`/`cc`/`g++`/`c++` first on PATH, which fail if anything falls back to
+the host compiler.
 
 ## Build
 
-    sargo-build
-
-`sargo-build.sh` runs `lunch lineage_sargo cp2a userdebug` (the dashed form
-fails on 24) and `m bacon -j$(nproc)`.
-
-On the i7-3770 with 31 GB RAM, Soong analysis takes about 1 h 45 min and
-needs swap: `soong_build` held 31 GB resident with 44 GB of swap in use at the
-peak, so the machine has 79 GB of swap (partition plus two swap files).
-Compiling runs all 8 threads at 94-95 % user time. One run finished 130,617
-of about 233,000 steps in 7 h 49 min.
+`sargo-build.sh` runs `lunch lineage_sargo cp2a userdebug` (the dashed form fails on 24) and
+`m bacon -j$(nproc)`. Soong analysis needs a lot of memory: on the i7-3770 with 31 GB RAM,
+`soong_build` held 31 GB resident with 44 GB of swap in use at the peak, so that machine has
+79 GB of swap. An incremental build after a sync took 43 min on 2026-11-15.
 
 ## Gotchas
 
@@ -161,48 +175,14 @@ of about 233,000 steps in 7 h 49 min.
 
 ## Google apps
 
-From `24.0-20261109` (kernel `438ddb90f272`, with EROFS) the unmodified
-MindTheGapps 17 zip installs as it is:
+`sargo-install` handles them: it sideloads the unmodified MindTheGapps 17 zip (it needs a
+build from `24.0-20261109` on, whose kernel has EROFS for the Play Services APEX), then
+`boot-test/post-install-24.sh` grants Play Services its runtime permissions (a phone flashed
+after setup never gets the default grants, and location fails) and runs the background compile
+job (after an OTA every app is left at `verify`).
 
-    adb reboot sideload && adb sideload MindTheGapps-17.0.0-arm64-20261022_132445.zip
-
-Tested 2026-11-10 on 92FAY00ZMV: apexd mounts the Play Services APEX as
-EROFS on a loop device (`/apex/com.google.android.gmssystem@13`), Play
-Services 26.43.30 runs with `apexModuleName=com.google.android.gmssystem`,
-the `gservices` provider answers, Play Store starts, and the smoke test gives
-19 pass, 0 fail.
-
-A phone with the repacked zip below installed needs it removed first: the
-unmodified installer leaves `PrebuiltGmsCoreVic` in place, and its space
-check counts only files at its own paths. `remove-repacked-gapps.sh` makes a
-recovery zip that removes the repacked install and its `addon.d` script from
-the current slot. Sideload it, tap Reboot system now, then go back to sideload
-and send the unmodified zip. `sargo-install` installs the unmodified zip and
-does this first when it finds `PrebuiltGmsCoreVic`, which takes one more trip
-to recovery.
-
-Builds before 2026-11-09 cannot mount that EROFS APEX (`apexd: Mounting failed ...
-No such device`), so Play Services never installs. For those, `repack-gapps.sh` makes
-a zip that installs the same APK as `/product/priv-app/PrebuiltGmsCoreVic`:
-
-    bash repack-gapps.sh MindTheGapps-17.0.0-arm64-20261022_132445.zip
-    adb reboot sideload && adb sideload MindTheGapps-17.0.0-arm64-20261022_132445-sargo.zip
-
-Both zips are unsigned, so recovery asks to install anyway. An OTA installed from a
-system without GApps removes them; sideload again afterwards.
-
-Flashed onto a phone that is already set up, the default permission grants for Google
-apps never run, and Play Services refuses every location request (`FLPShim: failed to
-register flp shim request: uid 10185 does not have any of [ACCESS_FINE_LOCATION, ...]`).
-Grant its runtime permissions once after the first boot:
-
-    adb shell 'dumpsys package com.google.android.gms | grep -E "^ +android.permission\.[A-Z_]+: granted=false" | sed "s/:.*//" | sort -u | while read p; do pm grant com.google.android.gms $p; done'
-
-Network location then reports a fix within two minutes.
-
-`boot-test/post-install-24.sh` does that grant and then runs the background
-compile job (`pm bg-dexopt-job`). After an OTA every app is left at the `verify`
-filter (`pm.dexopt.boot-after-ota=verify`) until the phone has been idle and
-charging. Uncompiled, Gmail on sargo started in 1,372 ms with 3.37% janky frames
-while scrolling; compiled (`speed-profile`), 1,010 ms and 0.09% (one run each).
-Run it after every OTA plus GApps sideload; the job took 2 min 53 s.
+Builds before 2026-11-09 cannot mount the EROFS APEX; for those, `repack-gapps.sh` makes a zip
+that installs the same APK as `/product/priv-app/PrebuiltGmsCoreVic`. A phone with that
+repacked install gets it removed first (`remove-repacked-gapps.sh`, one more trip to recovery);
+`sargo-install` does this when it finds `PrebuiltGmsCoreVic`. Both zips are unsigned, so
+recovery asks to install anyway. An OTA from a system without GApps removes them.
