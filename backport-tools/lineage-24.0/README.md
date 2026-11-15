@@ -12,9 +12,9 @@ the one marked Latest has passed the hardware check on a phone. Current test res
 | `sargo-build` | syncs LineageOS, rebases the forks onto upstream (stops only on a conflict), builds the ROM, publishes it as a prerelease | 40 min to 2 h |
 | `sargo-install` | installs the newest release on the plugged-in phone (data kept), puts Google apps back, compiles apps, runs the hardware check and marks the release Latest if it passes; `sargo-install tested` takes the Latest one | 30 min, one tap in recovery |
 | `sargo-test` | builds the kernel at HEAD, RAM-boots it on the phone (nothing flashed), runs the unit tests, smoke test, hardware check, VTS net and CTS net, returns to the installed kernel; last line PASS or FAIL | 35 min |
-| `backport-tools/check-upstream.sh` | lists upstream kernel fixes this tree lacks | |
+| `backport-tools/check-upstream.sh` | lists new upstream kernel fixes for code the phone builds; `--apply` commits the ones that apply as is | |
 
-Kernel change: commit, `sargo-test`, push on PASS, `sargo-build`. Android change: commit to the
+Kernel change: commit, `sargo-test --push` (on PASS it commits `boot-test/results.tsv` and pushes), `sargo-build`. Android change: commit to the
 fork, push, `sargo-build`, `sargo-install`.
 
 `~/bin/sargo-{build,install,test}` link to `sargo-build.sh`, `phone-install-24.sh` and
@@ -30,6 +30,7 @@ at the top of the repository.
 | File | Does |
 |---|---|
 | `sargo-build.sh`, `phone-install-24.sh`, `sargo-test.sh` | the commands above |
+| `sargo-lock.sh` | lets one of the three commands run at a time (they share the tree and the phone) |
 | `kbuild.sh` | builds the kernel outside the platform build, with the tree's prebuilts and the ROM's kernel config (used by `sargo-test`) |
 | `update-forks.sh` | reports how far each fork is behind upstream; `--apply` rebases and pushes (used by `sargo-build`) |
 | `local_manifest-sargo.xml` | the local manifest (below) |

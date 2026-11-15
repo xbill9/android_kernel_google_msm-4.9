@@ -5,7 +5,7 @@ Four commands, described in
 
     sargo-build        # sync LineageOS, rebase the forks, build, publish a prerelease
     sargo-install      # install the newest release on the phone; marks it Latest if it passes
-    sargo-test         # RAM-boot test of the kernel at HEAD on the phone, nothing flashed
+    sargo-test --push  # RAM-boot test of the kernel at HEAD, nothing flashed; pushes on PASS
     backport-tools/check-upstream.sh    # upstream kernel fixes this tree lacks
 
 Run `sargo-build` and `sargo-test` in tmux (`tmux new -s rom`). When `sargo-install` prints

@@ -23,28 +23,28 @@ runs alone on a booted phone. They expect the build machine's layout: the tree i
 | `udp0test.c`, `udp0test` | Sends UDP datagrams over IPv4 and IPv6 to the wildcard, loopback and v4-mapped addresses, zero-length and one byte, to a socket bound to the wildcard address; prints each one and `N of 7 received`, exit 1 below 7. `build-test.sh udp0test` rebuilds it. |
 | `qmaptest.c`, `qmaptest` | Checks that a qdisc caps an out-of-range `queue_mapping` stored by tc BPF, as root: a cls_bpf direct-action program on the prio root of a 4-queue dummy device stores 7, 64 Ethernet frames sent through AF_PACKET go through it, and the kernel must log `qmt0 selects TX queue 7`. Only for a kernel with the fix: without it the qdisc indexes past the device's tx queues. `build-test.sh qmaptest` rebuilds it. |
 | `xdptest.c`, `xdptest` | Checks that generic XDP re-parses the Ethernet header a program rewrote, as root: on a veth pair, a frame for another host's MAC and a frame with EtherType 0x88b5 are dropped under a pass-only program and must reach a UDP socket once the program rewrites the MAC and the EtherType; controls check that a drop program drops and an unchanged frame arrives. On a kernel without the fixes both rewritten frames are dropped (installed build, 2026-11-14). `build-test.sh xdptest` rebuilds it. |
+| `results.tsv` | one line per `sargo-test` run: date, kernel commit (the last commit that changed kernel source), PASS or FAIL with the failed checks, installed build, report directory. `sargo-build` puts the line for its kernel in the release notes. |
 | `build-test.sh` | Builds the test programs above (all, or the names given) with the tree's clang and NDK sysroot, after a full build. `LINEAGE_TREE=` picks another tree. |
 
 
-## Current state, 2026-11-15
+## Current state
 
 Installed on 92FAY00ZMV (slot a, SELinux enforcing): build `24.0-20261115-1255` (marked Latest),
-kernel `f3ef238ee578`: everything up to the 14 mainline fixes (`bd7fc6cf64f6`), RAM-boot
-results below. On the installed build: hw-check 21 pass, 0 fail, 1 skip; the CTS net setup
-check passes 12 min after Wi-Fi connects, with no reconnect (the LinkProperties fix).
-Dated notes, newest first: `status-history.md`.
+kernel `f3ef238ee578`. Kernel test results, one line per `sargo-test` run: `results.tsv`
+(commit, PASS/FAIL, report directory under `~/sargo-logs`). Dated notes, newest first:
+`status-history.md`.
 
-| Check | Installed build | `12d8ae72200b` (RAM boot) | `d1d88b8bf32a` (RAM boot) |
-|---|---|---|---|
-| Hardware check | 21 pass, 0 fail, 1 skip | 21 pass, 0 fail, 1 skip | 21 pass, 0 fail, 1 skip |
-| Smoke test | | 18 pass, 1 fail (light sensor: no change at 0 lux), 8 check | 18 pass, 1 fail (light sensor), 8 check |
-| VTS net | 647 pass, 0 fail (`092b9889c451`) | 647 pass, 0 fail | 647 pass, 0 fail (twice) |
-| `ringbuftest`, `rawtptest`, `clone3test`(32) | 0 failed | 0 failed | 0 failed |
-| `atomictest`, `udp0test` | 162 pass, 1 skip; 7 of 7 | 162 pass, 1 skip; 7 of 7 | 162 pass, 1 skip; 7 of 7 |
-| `qmaptest` | (do not run: no fix) | PASS, 64 packets capped from queue 7 | PASS |
-| `xdptest` | FAIL: rewritten frames dropped (no fix) | | PASS (`b2c760a3f702`) |
-| bpfloader errors | `fuseMedia`, `dmabufIter` | the same 2 | the same 2 |
-| CTS core | 12 of 16 modules with a result, below | | hardware 365/0, Bluetooth 473/0 |
+What a passing `sargo-test` shows, and the known differences it does not count:
+
+| Check | Result on a good kernel | Not counted |
+|---|---|---|
+| unit tests (`qmaptest` … `udp0test`) | all exit 0; `atomictest` 162 pass, 1 skip; `udp0test` 7 of 7 | |
+| smoke test | 18 pass, 1 fail, 8 check | the light sensor shows no change at 0 lux |
+| hardware check | 21 pass, 0 fail, 1 skip | the microphone (needs a person) |
+| VTS net | 647 pass, 0 fail | |
+| CTS net | 1005 pass, 6 fail | the 6 below |
+| bpfloader | 2 errors: `fuseMedia`, `dmabufIter` | both |
+| kernel log | no oops, BUG or WARNING | the ion cache-sync warning at boot; kswapd allocation failures when the camera starts |
 
 CTS core on the installed build (2026-11-13 and 11-14): kernel config 5/0, SELinux 10/0,
 bionic 3,286/0, graphics 3,774/0, permission 388/1, security host 3,347/150 (147 are neverallow
@@ -58,8 +58,8 @@ Known failures and why:
   (`lineage-24.0`):
   - `LinkProperties.equals` compares addresses only, so Android drops the lifetime refreshes the
     kernel sends on each RA and the address counts as deprecated 10 min after Wi-Fi connects
-    (lifetimes 600 s here). Fix: `89283a3828`, tested on `24.0-20261115-1255`. `cts-24.sh` still
-    reconnects Wi-Fi before Net modules, for older builds.
+    (lifetimes 600 s here). Fix: `89283a3828`, tested on `24.0-20261115-1255`. On older builds,
+    reconnect Wi-Fi (`svc wifi disable; svc wifi enable`) before a Net module.
   - The setup app's QUIC check read a hidden `framework.jar` copy of `NetworkStackConstants`
     (`NoSuchFieldError`). Fix: `3324d2f8c9`, tested.
 

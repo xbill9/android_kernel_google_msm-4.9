@@ -3,6 +3,17 @@
 Dated status notes, newest first, moved from `README.md` on 2026-11-14. The current
 state is in `README.md`.
 
+## Status, 2026-11-15, sargo-test and the simpler tooling
+
+- **Four commands:** `sargo-build`, `sargo-install`, `sargo-test`, `check-upstream.sh`
+  (`lineage-24.0/README.md`). The dated RAM-test scripts outside the repository, `build.sh`,
+  `kernel-24-test.sh` and the series tooling are retired; the article sources are in
+  `xbill9/sargo-articles`.
+- **First `sargo-test` run** (kernel `850b496a4e4c`, `0fcb3f11a93d` bpf seg6 MAC header): unit
+  tests pass, smoke 18/1, hw-check 21/0/1, VTS net 647/0, CTS net 1005/6 (the known 6), 0
+  kernel warnings, back on `f3ef238ee578`. The script printed FAIL from a wrong hw-check count
+  pattern, fixed after the run; `results.tsv` records PASS.
+
 ## Status, 2026-11-15, build 24.0-20261115-1255 installed
 
 - `sargo-install` to slot a: OTA kSuccess, MindTheGapps sideloaded, apps compiled

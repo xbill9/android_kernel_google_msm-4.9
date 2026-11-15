@@ -7,7 +7,7 @@ eBPF and Android support backported onto LineageOS `lineage-22.2`. It runs Linea
 On top of the LineageOS base, in order: two replayed upstream BPF series (441 and 1642
 commits; linux-5.4.y's `test_verifier` passes on it), arm64 uprobes, the kprobe/uprobe event options, the
 arm64 JIT branch-offset fix, the verifier and JIT fixes `missing_fixes.py` finds for that code
-(`verifier-fixes.tsv`), what Android 16 and 17 need (below), and upstream fixes since,
+(`fixes-done.tsv`), what Android 16 and 17 need (below), and upstream fixes since,
 committed one by one. The series scripts and their lists were retired on 2026-11-15; they are
 in git history before that date.
 
@@ -15,17 +15,19 @@ in git history before that date.
 
 | File | Does |
 |---|---|
-| `check-upstream.sh` | fetches mainline, runs `missing_fixes.py`, prints the fixes this tree lacks that are new since `missing-fixes.tsv` (`--write` refreshes the table) |
+| `check-upstream.sh` | fetches mainline, runs `missing_fixes.py`, lists the fixes new since `missing-fixes.tsv` in code the phone builds and not yet decided; `--apply` commits the ones that apply as is, `--write` refreshes the table |
 | `missing_fixes.py` | lists upstream commits whose `Fixes:` tag names a commit in this tree, when the fix is absent; repeats for fixes of fixes |
-| `missing-fixes.tsv` | the last full table |
-| `verifier-fixes.tsv` | each fix of backported BPF code and what was done with it |
+| `missing-fixes.tsv` | the last full table (also the backlog of older fixes to the LineageOS base) |
+| `fixes-done.tsv` | each fix decided on and what was done with it: ported (with the commit), n/a or already in, and why |
 | `lineage-24.0/` | the ROM: build, install, test (`lineage-24.0/README.md`) |
 | `lineage-23.2/` | the 23.2 article's cover image; the 23.2 build is retired |
 
 ## Taking upstream fixes
 
-    backport-tools/check-upstream.sh        # what is new
-    sargo-test                              # after committing fixes: RAM-boot test on the phone
+    backport-tools/check-upstream.sh --apply   # commit the new fixes that apply as is
+    # hand-merge the rest, or record them in fixes-done.tsv as n/a with the reason
+    sargo-test --push                          # RAM-boot test on the phone; pushes on PASS
+    backport-tools/check-upstream.sh --write   # refresh the table, so the next run lists only newer fixes
 
 `check-upstream.sh` needs the mainline clone (once, no file contents):
 
@@ -43,8 +45,8 @@ Columns of its rows:
 
 Commit messages: `UPSTREAM: <subject>` for a cherry-pick, `BACKPORT: <subject>` for a hand merge
 with a `[ Context: what differs on 4.9 ]` line, then `(cherry picked from commit <full hash>)`.
-A fix whose code is not built for sargo, or whose bug cannot happen on 4.9, is not taken; the
-reason goes in `lineage-24.0/boot-test/status-history.md`.
+A fix whose code is not built for sargo, or whose bug cannot happen on 4.9, is not taken; it
+goes in `fixes-done.tsv` as `n/a` with the reason.
 
 ## What Android 16 and 17 need from a 4.9 kernel
 

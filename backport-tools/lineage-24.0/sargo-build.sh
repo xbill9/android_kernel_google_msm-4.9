@@ -11,6 +11,8 @@ DATE=$(date +%Y%m%d-%H%M)   # unique, so a rebuild never replaces a published re
 TAG=lineage-24.0-sargo-$DATE
 DIR=~/sargo-bpf-test/build-24.0-$DATE
 
+. "$HERE/sargo-lock.sh"; sargo_lock sargo-build
+
 echo "== 1/3 pull upstream"
 git -C "$HERE" pull --ff-only
 cp "$HERE/local_manifest-sargo.xml" "$T/.repo/local_manifests/sargo.xml"
@@ -39,7 +41,14 @@ cp .repo/local_manifests/sargo.xml "$DIR/local_manifest-sargo.xml"
 rm -f "$DIR/SHA256SUMS"
 (cd "$DIR" && sha256sum * > SHA256SUMS.tmp && mv SHA256SUMS.tmp SHA256SUMS)
 
+# The notes name the kernel commit and its last sargo-test result (boot-test/results.tsv).
+# The ROM's kernel checkout is shallow: look its commit up in this full clone.
+KH=$(git -C "$T/kernel/google/msm-4.9" rev-parse HEAD)
+K=$(git -C "$HERE" log -1 --format=%h --abbrev=12 "$KH" -- ':(top)' ':(top,exclude)backport-tools' ':(top,exclude,glob)*.md' 2>/dev/null || echo "${KH:0:12}")
+KT=$(awk -F'\t' -v k="$K" '$2 == k {r = $3 " on " $1} END {print r}' "$HERE/boot-test/results.tsv" 2>/dev/null)
+NOTES="Automated build, not yet installed on a phone (sargo-install marks it Latest when its hardware check passes).
+Kernel $K: sargo-test ${KT:-not run on this commit}."
 gh release create "$TAG" "$DIR"/* -R "$REPO" --prerelease \
   --title "LineageOS 24.0 for Pixel 3a (sargo), $DATE" \
-  --notes "Automated build. Not tested on a phone."
+  --notes "$NOTES"
 echo "== done: https://github.com/$REPO/releases/tag/$TAG"

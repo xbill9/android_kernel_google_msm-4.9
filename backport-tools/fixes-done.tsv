@@ -36,3 +36,31 @@
 33	e8b084646b94	bpf: Validate the SRH which End.DT6 uncovers in End.BPF	n/a	-	CONFIG_IPV6_SEG6_BPF has no Kconfig entry here (no seg6_local.c, no seg6_get_srh()); the code never builds
 34	434324c611a9	bpf: Pull the inner header for End.DT6 in End.BPF	n/a	-	as 33
 35	427e751a231a	bpf: Update the SRH state if End.B6 fails late	n/a	-	as 33
+36	ac159f39b252	bpf: Limit the SRH length in bpf_lwt_seg6_adjust_srh()	ported	6d9f64299272	2026-11-15
+37	3be436cbd3d2	drm/drm_crtc: ensure dma_fence_ops remain valid during device unbind	ported	e90630fe2945	2026-11-15
+38	b428f1966821	mm: bdi: reset min_ratio after the sysfs attributes are gone	ported	59a451b34537	2026-11-15
+39	74a7db839308	net: dst_metadata: fix memcmp overread in skb_metadata_dst_cmp	ported	632d22419148	2026-11-15
+40	bc53aab4881a	ipv6: fix device binding after failed datagram connect	ported	325527d81835	2026-11-15
+41	01d0f3d294af	fuse: don't launder folios of a bad inode	ported	06a227d920b5	fuse_launder_page on 4.9
+42	f8f956c7ec8c	f2fs: fix to update superblock crc in sanity_check_area_boundary()	ported	16af82ff29f3	f2fs_crc32 takes sbi
+43	3f9780d62dd1	bpf, cgroup: Keep the skb network offset signed	ported	f8fd41070ffd	the triggering callers are not built
+44	408b129aac48	locking/osq: Fix unlink queue corruption	ported	183da8a90bb3	2026-11-15
+45	93723db43e51	tcp: Clear DEFER_CONNECT before tcp_connect() and in tcp_abort().	ported	24f5c73e5fa5	__inet_stream_connect gains a bool
+46	44809e491779	tcp: Drop any segments if DEFER_CONNECT is set.	ported	f283f8e683cb	with 93723db43e51
+47	4bd3a0e8e53d	signal: skip blocked signals in dequeue_synchronous_signal()	ported	ce2d7fdb0e48	2026-11-15
+48	5636e6732056	udp: do not use a cross-family sk_rx_dst in early demux	ported	00981819c43e	4.9 ipv6_rcv accepts v4-mapped sources
+49	57889a8f6d49	tcp: initialize send sequence numbers before deferring TFO	ported	bd7fc6cf64f6	2026-11-15
+50	0fcb3f11a93d	bpf: Move the MAC header in bpf_lwt_seg6_adjust_srh()	ported	850b496a4e4c	2026-11-15
+51	333ad304d479	ovl: fix mount setup failing when override_creds drops CAP_SYS_ADMIN	n/a	-	4.9 clone_private_mount has no CAP_SYS_ADMIN check
+52	372012202260	zram: fix short reads from block_state	n/a	-	ZRAM_MEMORY_TRACKING off
+53	3f140a60c92a	f2fs: quota: fix stale lock holder on remount failure	n/a	-	no umount_lock_holder in this tree
+54	4faeea625cf7	f2fs: quota: fix unused-label warning	n/a	-	as 3f140a60c92a
+55	f6f8f34480c7	f2fs: quota: fix quota flush failure during filesystem freeze	n/a	-	as 3f140a60c92a
+56	4019af3afd72	ipv4: Call rt_add_uncached_list() if !do_cache in ip_route_input_slow().	n/a	-	NET_L3_MASTER_DEV off: the route device is always loopback
+57	652f15be3c11	mm/madvise: preserve VMA_SOFTDIRTY_BIT when changing anonymous names	n/a	-	no MEM_SOFT_DIRTY on arm64 4.9
+58	a553b499f22b	kprobes: Validate re-registration earlier in register_kretprobe()	n/a	-	KRETPROBES off
+59	b1d68946a083	profiling: fix sampling step on 64-bit big-endian systems	n/a	-	big-endian only
+60	b253c2e96a80	rtc: class: Make the time32 hctosys limit configurable	n/a	-	feature; the clamp is 32-bit only
+61	55655e3d1197	net/packet: fix memory leak in packet_set_ring()	already	-	the change is in the tree (git apply --reverse --check)
+62	57ea884b0dcf	packet: fix panic in __packet_set_timestamp on tpacket_v3 in tx mode	already	-	the change is in the tree (git apply --reverse --check)
+63	7aa867dd8952	mm/mmap.c: don't clobber partially overlapping VMA with MAP_FIXED_NOREPLACE	already	-	the change is in the tree (git apply --reverse --check)

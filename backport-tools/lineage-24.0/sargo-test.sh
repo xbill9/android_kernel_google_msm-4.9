@@ -5,10 +5,13 @@
 # A panic (kernel.panic=5) or a hang reboots the installed kernel; nothing on the phone changes.
 # Installed as ~/bin/sargo-test. Usage:
 #   sargo-test                 build, then test (about 35 minutes)
+#   sargo-test --push          build, test, and on PASS commit results.tsv and push main
 #   sargo-test --no-build      test the last build
 #   CTS_MODS="CtsNetTestCases CtsBluetoothTestCases" sargo-test   CTS modules to run (default: net)
 #   CTS_MODS= sargo-test       no CTS
-# Result: ~/sargo-logs/<serial>-test-<kernel>-<time>/summary.txt, last line PASS or FAIL.
+# Result: ~/sargo-logs/<serial>-test-<kernel>-<time>/summary.txt, last line PASS or FAIL, and one
+# line per run in boot-test/results.tsv (commit it with the change it tested).
+# The kernel source must be committed: the result is recorded against the commit.
 # FAIL means: a unit test failed, hw-check or VTS net has a failure, or the kernel logged an
 # oops/BUG/WARNING. CTS failures are listed, not judged (6 CtsNetTestCases failures are known,
 # see boot-test/README.md).
@@ -24,6 +27,13 @@ wake() { adb shell 'svc power stayon usb; input keyevent KEYCODE_WAKEUP; wm dism
 booted() { for i in $(seq 1 "$1"); do [ "$(timeout 5 adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = 1 ] && return 0; sleep 3; done; return 1; }
 bad=""
 fail() { bad="$bad $1"; }
+# One of sargo-build, sargo-test, sargo-install at a time: they share the tree and the phone.
+. "$L24/sargo-lock.sh"; sargo_lock sargo-test
+SRC=$(cd "$L24/../.." && pwd)
+PUSH=; [ "${1:-}" = --push ] && PUSH=1
+if [ "${1:-}" != --no-build ] && [ -n "$(git -C "$SRC" status --porcelain -- ':(top)' ':(top,exclude)backport-tools' ':(top,exclude,glob)*.md')" ]; then
+  echo "uncommitted kernel changes; commit them first:"; git -C "$SRC" status --short -- . ':!backport-tools' | head; exit 1
+fi
 
 [ "$(adb devices | grep -c 'device$')" = 1 ] || { echo "need exactly one phone (adb devices)"; exit 1; }
 SERIAL=$(adb get-serialno)
@@ -51,10 +61,17 @@ rm -f "$TOP/boot-base.img"
 # A tradefed left running reboots a phone it finds in fastboot.
 for p in $(pgrep -f com.android.tradefed); do kill -9 "$p" 2>/dev/null; done
 
+# From here the phone may be on the test kernel: on an interrupt, put it back.
+back() { say "interrupted: rebooting to the installed kernel"; timeout 20 fastboot reboot >/dev/null 2>&1; timeout 30 adb reboot >/dev/null 2>&1; exit 1; }
+trap back INT TERM HUP
+
 say "== RAM boot"
 timeout 30 adb reboot bootloader
 for i in $(seq 1 90); do lsusb | grep -q 18d1:4ee0 && break; sleep 1; done
-timeout 90 fastboot boot "$TOP/boot-test.img" > "$TOP/fastboot.log" 2>&1
+lsusb | grep -q 18d1:4ee0 || { say "FAIL: phone not in the bootloader after 90 s"; timeout 30 adb reboot >/dev/null 2>&1; exit 1; }
+if ! timeout 90 fastboot boot "$TOP/boot-test.img" > "$TOP/fastboot.log" 2>&1; then
+  say "FAIL: fastboot boot: $(tail -1 "$TOP/fastboot.log")"; timeout 20 fastboot reboot >/dev/null 2>&1; booted 150; exit 1
+fi
 if ! booted 150; then
   say "NOT BOOTED after 450 s"
   timeout 20 fastboot reboot >/dev/null 2>&1
@@ -77,7 +94,8 @@ else
   wake; bash "$BT/smoke-test-24.sh" "$TOP/smoke" > "$TOP/smoke.log" 2>&1; say "smoke: $(tail -1 "$TOP/smoke.log")"
   wake; bash "$BT/hw-check-24.sh" > "$TOP/hwcheck.log" 2>&1
   h=$(grep -E 'PASS +[0-9]+ +FAIL' "$TOP/hwcheck.log" | tail -1); say "hw-check: $h"
-  echo "$h" | grep -qE 'PASS +[0-9]+ +0 FAIL' || fail hw-check
+  # The count line reads "21 PASS  0 FAIL  1 SKIP".
+  echo "$h" | grep -qE '(^| )0 FAIL' || fail hw-check
   if [ "$(kern)" = "$WANT" ]; then
     wake; bash "$BT/vts-kernel-24.sh" vts_kernel_net_tests "$TOP/vts-net" > /dev/null 2>&1
     v=$(grep -E '^(PASS|FAIL|SKIP) ' "$TOP/vts-net/report.txt" | head -1); say "VTS net: $v"
@@ -91,7 +109,7 @@ else
   done
   [ "$(kern)" = "$WANT" ] || { say "kernel changed to $(kern) during the tests (panic?)"; fail panic; }
   adb shell dmesg > "$TOP/dmesg-end.txt"
-    # Known and not counted: the ion cache-sync warning at boot (since 2026-11-09) and kswapd
+  # Known and not counted: the ion cache-sync warning at boot (since 2026-11-09) and kswapd
   # page allocation failures when the camera starts (zram, GFP_NOIO; since 2026-10-28).
   grep -hE 'Oops|BUG:|WARNING:' "$TOP/boot-dmesg.txt" "$TOP/dmesg-end.txt" | sort -u \
     | grep -vE 'ion\.c:1215|page allocation failure' > "$TOP/dmesg-oops.txt"
@@ -100,6 +118,21 @@ fi
 
 say "== back to the installed kernel"
 timeout 30 adb reboot; sleep 20
+trap - INT TERM HUP
 booted 150 && say "booted: $(kern)" || { say "phone not back after reboot"; fail return; }
+[ "$(kern)" = "$INSTALLED" ] || { say "expected $INSTALLED after the reboot"; fail return; }
 wake
-if [ -z "$bad" ]; then say "PASS: $WANT (report: $S)"; else say "FAIL:$bad (report: $S)"; exit 1; fi
+verdict=PASS; [ -z "$bad" ] || verdict="FAIL:$bad"
+# results.tsv: date, kernel commit (the last commit that changed kernel source, so later
+# commits to backport-tools keep the result), verdict, phone build, report directory.
+R=$BT/results.tsv
+[ -f "$R" ] || printf 'date\tcommit\tverdict\tinstalled build\treport\n' > "$R"
+printf '%s\t%s\t%s\t%s\t%s\n' "$(date '+%F %H:%M')" "$(git -C "$SRC" log -1 --format=%h --abbrev=12 -- ':(top)' ':(top,exclude)backport-tools' ':(top,exclude,glob)*.md')" "$verdict" \
+  "$(adb shell getprop ro.lineage.version | tr -d '\r')" "${TOP#$HOME/}" >> "$R"
+say "$verdict: $WANT (report: $S)"
+if [ -n "$PUSH" ] && [ "$verdict" = PASS ]; then
+  git -C "$SRC" add "$R" && git -C "$SRC" commit -q -m "boot-test: sargo-test PASS on $(cut -f2 <<< "$(tail -1 "$R")")" -- "$R" \
+    && git -C "$SRC" push -q origin main && say "pushed: $(git -C "$SRC" log -1 --format='%h %s')" \
+    || say "push failed: commit and push by hand"
+fi
+[ "$verdict" = PASS ]
