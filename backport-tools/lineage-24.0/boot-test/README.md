@@ -53,12 +53,20 @@ libcore 32,251/0.
 
 Known failures and why:
 
-- **`CtsNetTestCases`**: its setup check (`ConnectivityCheckTest#testCheckWifiSetup`) finds no
-  reachable global IPv6 on Wi-Fi, though the network has global addresses and an RA default
-  route in the `LinkProperties` it logs. The kernel sends `RTM_NEWADDR` on every RA lifetime
-  refresh (watched 2026-11-14: RAs every 2 min, lifetimes 600 s), so userspace does not see
-  stale deprecated addresses; the cause is above the kernel. Same on `12d8ae72200b` and
-  `d1d88b8bf32a`.
+- **`CtsNetTestCases`**: 1005 passed, 6 failed (installed build, 2026-11-14). Its setup check
+  used to fail, for two reasons above the kernel, both fixed in the Connectivity fork
+  (`lineage-24.0`):
+  - `LinkProperties.equals` compares addresses only, so Android drops the lifetime refreshes the
+    kernel sends on each RA and the address counts as deprecated 10 min after Wi-Fi connects
+    (lifetimes 600 s here). `cts-24.sh` reconnects Wi-Fi before Net modules. Fix: `89283a3828`,
+    builds, not yet tested on the phone (needs the next ROM).
+  - The setup app's QUIC check read a hidden `framework.jar` copy of `NetworkStackConstants`
+    (`NoSuchFieldError`). Fix: `3324d2f8c9`, tested.
+
+  The 6 failures, not looked into yet: `ApfApiTest#testReadWriteProgram` (Wi-Fi firmware APF
+  memory), `ConnectivityManagerTest#testRestrictedNetworkPermission`,
+  `EthernetManagerTest#testUpdateConfiguration_forAllowedUids`, and three
+  `NetworkNdkTest#testBlockedReason_*` (blocked reason -92, `ENOPROTOOPT`).
 - **`CtsSensorTestCases`, `CtsCameraTestCases`**: stop at the 1 h limit; sensor tests pass
   alone (timing).
 - **`CtsSecurityTestCases`**: runner error after its multi-user test, which leaves a test user.

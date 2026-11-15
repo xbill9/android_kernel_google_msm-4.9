@@ -3,6 +3,15 @@
 Dated status notes, newest first, moved from `README.md` on 2026-11-14. The current
 state is in `README.md`.
 
+## Status, 2026-11-14, CtsNetTestCases on the installed build
+
+- **Result:** 1005 passed, 6 failed, 90 assumption skips. Before this, the module stopped at its
+  setup check every run.
+- **Causes, both in userspace:** stale IPv6 address lifetimes (`LinkProperties.equals` ignores
+  lifetime refreshes) and a `NoSuchFieldError` in the setup app's QUIC check. Fixes in the
+  Connectivity fork: `89283a3828` (untested on the phone) and `3324d2f8c9` (tested).
+  `cts-24.sh` reconnects Wi-Fi before Net modules until the next ROM.
+
 ## Status, 2026-11-14, kernel b2c760a3f702 (RAM boot)
 
 - **Generic XDP:** UPSTREAM 297249569932 (recompute `skb->protocol` when a program rewrites the

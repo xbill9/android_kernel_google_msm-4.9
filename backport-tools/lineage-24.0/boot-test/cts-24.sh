@@ -37,6 +37,14 @@ pass=0 fail=0 skip=0 tp=0 tf=0
 for m in $MODS; do
   log=$D/$m.log; t=$(date +%s)
   lim=$LIMIT; [ "$m" = CtsLibcoreTestCases ] && lim=$((LIMIT*3))
+  # The Net modules' setup check needs a preferred global IPv6 address in the Wi-Fi
+  # LinkProperties. Android keeps the preferred lifetime it saw when the address appeared
+  # (LinkProperties.equals ignores lifetime refreshes), so on a router with short lifetimes
+  # (600 s here) the address counts as deprecated 10 min after Wi-Fi connects. Reconnect first.
+  case $m in *Net*)
+    adb shell svc wifi disable; sleep 5; adb shell svc wifi enable
+    for i in $(seq 1 30); do adb shell dumpsys connectivity 2>/dev/null | grep -q 'WIFI.*VALIDATED' && break; sleep 2; done ;;
+  esac
   timeout $lim atest "$m" > "$log" 2>&1; rc=$?
   # timeout stops atest but not the test run under it, which keeps the phone's UI automation
   # connection and breaks the next module: stop what is left.
