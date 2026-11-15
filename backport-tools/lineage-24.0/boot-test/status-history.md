@@ -3,6 +3,21 @@
 Dated status notes, newest first, moved from `README.md` on 2026-11-14. The current
 state is in `README.md`.
 
+## Status, 2026-11-14, kernel b2c760a3f702 (RAM boot)
+
+- **Generic XDP:** UPSTREAM 297249569932 (recompute `skb->protocol` when a program rewrites the
+  Ethernet header) and BACKPORT 22b6034323fd (also when it rewrites the destination MAC, with
+  `pkt_type`). f8414a8d886b is left out: upstream reverted it (7f9bf6e82461) because
+  `eth_type_trans()` already pulls the header, and with it the rewritten frames were dropped.
+- New `xdptest`: FAIL on the installed kernel (both rewritten frames dropped), PASS on
+  `b2c760a3f702`. Other unit tests, hardware check 21/0/1, smoke 18/1, VTS net 647/0, bpfloader
+  the same 2, `wlan.ko` loads.
+- The hardware check logs `kswapd0: page allocation failure` (zram, GFP_NOIO) when the camera
+  starts; the same warnings are in hardware-check logs on kernels from 2026-10-28, 11-10 and
+  11-11.
+- Not taken: af_packet 581073f626e3 (a speedup that needs follow-ups) and namespace
+  32bf92416614 (a rewrite of submount expiry; on this phone only tracefs automounts reach it).
+
 ## Status, 2026-11-14, kernel d1d88b8bf32a (RAM boot)
 
 - **39 upstream base fixes** (mainline fixes to 4.9 code dated after 4.9.337, tried one at a

@@ -20,7 +20,8 @@ images under `~/sargo-bpf-test/kmsglog/`, the tree in `~/android/lineage-24.0`.
 | `atomictest.c`, `atomictest`, `atomictest-cases.inc` | Checks the kernel's BPF atomic instructions as root: linux v6.1's `verifier/atomic_*.c` cases (in `atomictest-cases.inc`), each loaded as root and as an unprivileged uid and, when accepted, run with `BPF_PROG_TEST_RUN`; precision tracking through `atomic64_fetch_add`; and 10,000-op loops of each operation checked against C, which must be JIT-compiled. `atomictest interp` runs it all with `bpf_jit_enable` 0 and restores it after. The verifier log's `'inv'` (up to 5.17) counts as v6.1's `'scalar'`. `build-test.sh atomictest` rebuilds it. |
 | `rawtptest.c`, `rawtptest` | Checks BPF raw tracepoints as root: counter programs attached to `sched_switch`, `sys_enter` and `sched_process_fork` count while attached and stop after detach; an unknown name gives ENOENT; reading past a tracepoint's arguments is refused at attach; the attachment is a `bpf_link` that stays attached while pinned in `/sys/fs/bpf` and detaches when the pin is removed. `build-test.sh rawtptest` rebuilds it. |
 | `udp0test.c`, `udp0test` | Sends UDP datagrams over IPv4 and IPv6 to the wildcard, loopback and v4-mapped addresses, zero-length and one byte, to a socket bound to the wildcard address; prints each one and `N of 7 received`, exit 1 below 7. `build-test.sh udp0test` rebuilds it. |
-| `qmaptest.c`, `qmaptest` | Checks that a qdisc caps an out-of-range `queue_mapping` stored by tc BPF, as root: a cls_bpf direct-action program on the prio root of a 4-queue dummy device stores 7, 64 UDP datagrams go through it, and the kernel must log `qmt0 selects TX queue 7`. Only for a kernel with the fix: without it the qdisc indexes past the device's tx queues. `build-test.sh qmaptest` rebuilds it. |
+| `qmaptest.c`, `qmaptest` | Checks that a qdisc caps an out-of-range `queue_mapping` stored by tc BPF, as root: a cls_bpf direct-action program on the prio root of a 4-queue dummy device stores 7, 64 Ethernet frames sent through AF_PACKET go through it, and the kernel must log `qmt0 selects TX queue 7`. Only for a kernel with the fix: without it the qdisc indexes past the device's tx queues. `build-test.sh qmaptest` rebuilds it. |
+| `xdptest.c`, `xdptest` | Checks that generic XDP re-parses the Ethernet header a program rewrote, as root: on a veth pair, a frame for another host's MAC and a frame with EtherType 0x88b5 are dropped under a pass-only program and must reach a UDP socket once the program rewrites the MAC and the EtherType; controls check that a drop program drops and an unchanged frame arrives. On a kernel without the fixes both rewritten frames are dropped (installed build, 2026-11-14). `build-test.sh xdptest` rebuilds it. |
 | `build-test.sh` | Builds the test programs above (all, or the names given) with the tree's clang and NDK sysroot, after a full build. `LINEAGE_TREE=` picks another tree. |
 
 
@@ -29,7 +30,8 @@ images under `~/sargo-bpf-test/kmsglog/`, the tree in `~/android/lineage-24.0`.
 Installed on 92FAY00ZMV (slot b, SELinux enforcing): build `24.0-20261113-1707`, kernel
 `1d24d73d79e7`. Kernel `main` is ahead of it by the qdisc `queue_mapping` cap, 27 upstream
 fixes (`12d8ae72200b`), 39 more upstream base fixes and the DualSense Edge device ID
-(`d1d88b8bf32a`), tested by RAM boot; the next ROM build picks them up.
+(`d1d88b8bf32a`) and 2 generic XDP fixes (`b2c760a3f702`), tested by RAM boot; the next ROM
+build picks them up.
 Dated notes, newest first: `status-history.md`.
 
 | Check | Installed build | `12d8ae72200b` (RAM boot) | `d1d88b8bf32a` (RAM boot) |
@@ -40,6 +42,7 @@ Dated notes, newest first: `status-history.md`.
 | `ringbuftest`, `rawtptest`, `clone3test`(32) | 0 failed | 0 failed | 0 failed |
 | `atomictest`, `udp0test` | 162 pass, 1 skip; 7 of 7 | 162 pass, 1 skip; 7 of 7 | 162 pass, 1 skip; 7 of 7 |
 | `qmaptest` | (do not run: no fix) | PASS, 64 packets capped from queue 7 | PASS |
+| `xdptest` | FAIL: rewritten frames dropped (no fix) | | PASS (`b2c760a3f702`) |
 | bpfloader errors | `fuseMedia`, `dmabufIter` | the same 2 | the same 2 |
 | CTS core | 12 of 16 modules with a result, below | | hardware 365/0, Bluetooth 473/0 |
 
