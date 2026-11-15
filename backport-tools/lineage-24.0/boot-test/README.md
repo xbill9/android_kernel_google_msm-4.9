@@ -27,14 +27,10 @@ images under `~/sargo-bpf-test/kmsglog/`, the tree in `~/android/lineage-24.0`.
 
 ## Current state, 2026-11-15
 
-Installed on 92FAY00ZMV (slot b, SELinux enforcing): build `24.0-20261113-1707`, kernel
-`1d24d73d79e7`. Kernel `main` is ahead of it by the qdisc `queue_mapping` cap, 27 upstream
-fixes (`12d8ae72200b`), 39 more upstream base fixes and the DualSense Edge device ID
-(`d1d88b8bf32a`), 2 generic XDP fixes (`b2c760a3f702`) and 14 mainline fixes
-(`bd7fc6cf64f6`), tested by RAM boot. Build `24.0-20261115-1001` (published, not installed)
-has everything up to `b8d6ec4885de`; the 14 mainline fixes go into the next ROM build.
-`bd7fc6cf64f6` gives the same results as `d1d88b8bf32a` below, plus CTS net 1005/6 as on the
-installed build.
+Installed on 92FAY00ZMV (slot a, SELinux enforcing): build `24.0-20261115-1255` (marked Latest),
+kernel `f3ef238ee578`: everything up to the 14 mainline fixes (`bd7fc6cf64f6`), RAM-boot
+results below. On the installed build: hw-check 21 pass, 0 fail, 1 skip; the CTS net setup
+check passes 12 min after Wi-Fi connects, with no reconnect (the LinkProperties fix).
 Dated notes, newest first: `status-history.md`.
 
 | Check | Installed build | `12d8ae72200b` (RAM boot) | `d1d88b8bf32a` (RAM boot) |
@@ -61,8 +57,8 @@ Known failures and why:
   (`lineage-24.0`):
   - `LinkProperties.equals` compares addresses only, so Android drops the lifetime refreshes the
     kernel sends on each RA and the address counts as deprecated 10 min after Wi-Fi connects
-    (lifetimes 600 s here). `cts-24.sh` reconnects Wi-Fi before Net modules. Fix: `89283a3828`,
-    builds, not yet tested on the phone (needs the next ROM).
+    (lifetimes 600 s here). Fix: `89283a3828`, tested on `24.0-20261115-1255`. `cts-24.sh` still
+    reconnects Wi-Fi before Net modules, for older builds.
   - The setup app's QUIC check read a hidden `framework.jar` copy of `NetworkStackConstants`
     (`NoSuchFieldError`). Fix: `3324d2f8c9`, tested.
 

@@ -3,6 +3,16 @@
 Dated status notes, newest first, moved from `README.md` on 2026-11-14. The current
 state is in `README.md`.
 
+## Status, 2026-11-15, build 24.0-20261115-1255 installed
+
+- `sargo-install` to slot a: OTA kSuccess, MindTheGapps sideloaded, apps compiled
+  (speed-profile 52), Fi data in service. Kernel `4.9.337-gf3ef238ee578`.
+- hw-check: 21 pass, 0 fail, 1 skip (microphone). Marked Latest.
+- dmesg: one `ion.c:1215` warning at boot from `vendor.qti.hardware`; it is in boot logs back
+  to 2026-11-09.
+- **LinkProperties fix (`89283a3828`) tested:** `ConnectivityCheckTest#testCheckWifiSetup`
+  passes at 14:24 on a Wi-Fi network up since 14:11:42 (lifetimes 600 s), with no reconnect.
+
 ## Status, 2026-11-15, kernel bd7fc6cf64f6 (RAM boot)
 
 - **14 mainline fixes** from `check-upstream.sh` (mainline `23c62304dde2`): 5 applied as is
