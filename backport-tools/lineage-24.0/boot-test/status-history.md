@@ -3,6 +3,28 @@
 Dated status notes, newest first, moved from `README.md` on 2026-11-14. The current
 state is in `README.md`.
 
+## Status, 2026-11-15, kernel bd7fc6cf64f6 (RAM boot)
+
+- **14 mainline fixes** from `check-upstream.sh` (mainline `23c62304dde2`): 5 applied as is
+  (bpf seg6 SRH length, drm_crtc fence ops, bdi min_ratio, dst_metadata overread, ipv6 device
+  binding after a failed connect), 9 hand-ported (fuse bad inode, f2fs superblock crc, bpf
+  cgroup signed network offset, osq unlink, the tcp DEFER_CONNECT pair, synchronous signals,
+  udp cross-family `sk_rx_dst`, TFO send sequence). The DEFER_CONNECT port adds a `bool`
+  argument to the exported `__inet_stream_connect()`; nothing in the tree calls it elsewhere.
+- **Not applicable (10):** ovl override_creds, zram block_state (`ZRAM_MEMORY_TRACKING` off),
+  three f2fs quota fixes (no `umount_lock_holder`), ipv4 uncached list (`NET_L3_MASTER_DEV`
+  off), madvise soft-dirty, kprobes (`KRETPROBES` off), profiling (big-endian), rtc time32
+  (32-bit only).
+- **Results:** unit tests pass (qmaptest, xdptest, ringbuf, rawtp, clone3, atomic 162/0,
+  udp0 7/7), smoke 18/1 (light sensor), hw-check 21/0/1, VTS net 647/0, CTS net 1005/6 (the
+  same 6 as the installed build), bpfloader the same 2 errors, 0 oops/BUG/WARNING lines.
+- **CTS net side effect:** the module leaves `restricted_networking_mode=1` and per-app
+  firewall entries out of step with the policy service; Play Store and Play services got no
+  DNS until a reboot. `cts-24.sh` now turns the mode off and reboots (`CTS_NOREBOOT=1` leaves
+  the reboot to a RAM-boot caller).
+- **ROM:** `24.0-20261115-1001` built from LineageOS synced 2026-11-15, with the Connectivity
+  fork's LinkProperties fix; published, not installed.
+
 ## Status, 2026-11-14, CtsNetTestCases on the installed build
 
 - **Result:** 1005 passed, 6 failed, 90 assumption skips. Before this, the module stopped at its

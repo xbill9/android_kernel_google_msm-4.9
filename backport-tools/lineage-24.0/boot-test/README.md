@@ -25,13 +25,16 @@ images under `~/sargo-bpf-test/kmsglog/`, the tree in `~/android/lineage-24.0`.
 | `build-test.sh` | Builds the test programs above (all, or the names given) with the tree's clang and NDK sysroot, after a full build. `LINEAGE_TREE=` picks another tree. |
 
 
-## Current state, 2026-11-14
+## Current state, 2026-11-15
 
 Installed on 92FAY00ZMV (slot b, SELinux enforcing): build `24.0-20261113-1707`, kernel
 `1d24d73d79e7`. Kernel `main` is ahead of it by the qdisc `queue_mapping` cap, 27 upstream
 fixes (`12d8ae72200b`), 39 more upstream base fixes and the DualSense Edge device ID
-(`d1d88b8bf32a`) and 2 generic XDP fixes (`b2c760a3f702`), tested by RAM boot; the next ROM
-build picks them up.
+(`d1d88b8bf32a`), 2 generic XDP fixes (`b2c760a3f702`) and 14 mainline fixes
+(`bd7fc6cf64f6`), tested by RAM boot. Build `24.0-20261115-1001` (published, not installed)
+has everything up to `b8d6ec4885de`; the 14 mainline fixes go into the next ROM build.
+`bd7fc6cf64f6` gives the same results as `d1d88b8bf32a` below, plus CTS net 1005/6 as on the
+installed build.
 Dated notes, newest first: `status-history.md`.
 
 | Check | Installed build | `12d8ae72200b` (RAM boot) | `d1d88b8bf32a` (RAM boot) |

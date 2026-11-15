@@ -81,12 +81,14 @@ done
 
 # The Net modules leave restricted networking mode on (a saved setting) and per-app firewall
 # entries that no longer match what the network policy service tracks: on 2026-11-15 Play Store
-# and Play services got no DNS until a reboot. Turn the mode off and reboot.
+# and Play services got no DNS until a reboot. Turn the mode off and reboot (CTS_NOREBOOT=1 skips
+# the reboot, for a caller that reboots the phone itself, e.g. after a RAM boot).
 case " $MODS " in *Net*)
   adb shell settings put global restricted_networking_mode 0
+  [ -n "${CTS_NOREBOOT:-}" ] && { echo "restricted networking mode off; reboot left to the caller" | tee -a "$R"; } || {
   adb reboot; sleep 20; adb wait-for-device
   until [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = 1 ]; do sleep 3; done
-  echo "rebooted after the Net modules (restricted networking mode off)" | tee -a "$R" ;;
+  echo "rebooted after the Net modules (restricted networking mode off)" | tee -a "$R"; } ;;
 esac
 
 echo | tee -a "$R"
