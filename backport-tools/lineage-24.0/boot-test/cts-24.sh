@@ -79,6 +79,16 @@ for m in $MODS; do
   grep -m1 -oE '/tmp/atest_result_[^ ]+/log' "$log" | sed 's/^/        logs: /' >> "$R"
 done
 
+# The Net modules leave restricted networking mode on (a saved setting) and per-app firewall
+# entries that no longer match what the network policy service tracks: on 2026-11-15 Play Store
+# and Play services got no DNS until a reboot. Turn the mode off and reboot.
+case " $MODS " in *Net*)
+  adb shell settings put global restricted_networking_mode 0
+  adb reboot; sleep 20; adb wait-for-device
+  until [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = 1 ]; do sleep 3; done
+  echo "rebooted after the Net modules (restricted networking mode off)" | tee -a "$R" ;;
+esac
+
 echo | tee -a "$R"
 echo "$pass modules pass, $fail fail, $skip skip; $tp tests passed, $tf failed. Report and logs: $D" | tee -a "$R"
 [ $fail = 0 ]
