@@ -949,8 +949,11 @@ static void udp_v6_early_demux(struct sk_buff *skb)
 	skb->destructor = sock_efree;
 	dst = READ_ONCE(sk->sk_rx_dst);
 
-	if (dst)
+	/* A dual-stack socket can cache an IPv4 dst. */
+	if (dst && dst->ops->family == AF_INET6)
 		dst = dst_check(dst, inet6_sk(sk)->rx_dst_cookie);
+	else
+		dst = NULL;
 	if (dst) {
 		/* set noref for now.
 		 * any place which wants to hold dst has to call
