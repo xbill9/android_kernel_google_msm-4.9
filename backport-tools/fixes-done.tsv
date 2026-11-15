@@ -64,3 +64,16 @@
 61	55655e3d1197	net/packet: fix memory leak in packet_set_ring()	already	-	the change is in the tree (git apply --reverse --check)
 62	57ea884b0dcf	packet: fix panic in __packet_set_timestamp on tpacket_v3 in tx mode	already	-	the change is in the tree (git apply --reverse --check)
 63	7aa867dd8952	mm/mmap.c: don't clobber partially overlapping VMA with MAP_FIXED_NOREPLACE	already	-	the change is in the tree (git apply --reverse --check)
+64	25a9c8a4431c	netlink: Add __sock_i_ino() for __netlink_diag_dump().	n/a	-	CONFIG_NETLINK_DIAG is not set; diag.o is not built
+65	d5af729dc207	PCI: Mark NVIDIA T4 GPUs to avoid bus reset	n/a	-	NVIDIA T4 PCI quirk, reverted upstream by 2e1f12ce0da7; no such device
+66	6ac061db9c58	binder: use EPOLLERR from eventpoll.h	n/a	-	cosmetic: EPOLLERR and POLLERR are both 0x8
+67	122a3c1cb0ff	binder: fix trivial typo of binder_free_buf_locked()	n/a	-	comment typo only
+68	e1090371e02b	binder: fix comment on binder_alloc_new_buf() return value	n/a	-	comment only
+69	604a0fe88db0	ALSA: pcm: Drop superfluous NULL check in snd_pcm_format_set_silence()	n/a	-	drops a NULL check that cannot fire
+70	6bc0ebfb1d92	pinctrl: qcom: spmi: fix debugfs drive strength	n/a	-	debugfs text only
+71	212fe1c0df4a	zram: fix potential UAF of zram table	n/a	-	its Fixes target 74363ec674cb is absent; the reset returns early for a device never set up
+72	48145a57d4bb	ndisc: ndisc_send_redirect() must use dev_get_by_index_rcu()	n/a	-	CONFIG_NET_VRF is not set
+73	c6dd1aa2cbb7	icmp: fix icmp_ndo_send address translation for reply direction	n/a	-	icmp_ndo_send callers here are gtp and sunvnet, neither built
+74	0e4d4dcc1a6e	Bluetooth: SMP: make SM/PER/KDU/BI-04-C happy	skipped	-	changes only the SMP error code sent, for Bluetooth qualification
+75	581073f626e3	af_packet: do not call packet_read_pending() from tpacket_destruct_skb()	skipped	-	performance only; needs its own fix c1ba3c0cbdb5 (SO_SNDTIMEO reset); take both together or neither
+76	32bf92416614	namespace: check a submount for references right before unmounting it	skipped	-	core VFS rewrite written against upstream's propagate_umount; 4.9 has the 2017 algorithm; no stable backport to compare
