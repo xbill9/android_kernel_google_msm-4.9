@@ -38,7 +38,7 @@ echo "phone $SERIAL, $(adb shell getprop ro.lineage.version | tr -d '\r'), kerne
 pass=0 fail=0 skip=0 tp=0 tf=0
 for m in $MODS; do
   log=$D/$m.log; t=$(date +%s)
-  timeout $LIMIT atest "$m" > "$log" 2>&1; rc=$?
+  timeout $LIMIT atest ${ATEST_STEPS:-} "$m" > "$log" 2>&1; rc=$?
   secs=$(( $(date +%s) - t ))
   sed -i 's/\x1b\[[0-9;]*m//g' "$log"
   # atest prints one line per ABI: "arm64-v8a <module>: Passed: 1, Failed: 0, Ignored: 0, Assumption Failed: 0"

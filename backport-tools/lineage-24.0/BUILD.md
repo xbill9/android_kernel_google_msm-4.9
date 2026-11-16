@@ -96,10 +96,13 @@ setsid nohup sargo update > ~/sargo-bpf-test/logs/sargo-update-$(date +%Y%m%d-%H
    into the tree's `kernel/google/msm-4.9`.
 2. `lunch lineage_sargo cp2a userdebug` and `m bacon -j$(nproc)`, logged to
    `~/sargo-bpf-test/logs/build-24.log`.
-3. `sargo-test.sh` on the ROM's own kernel: RAM-boots it on the phone inside
-   the phone's boot image (nothing flashed), runs the unit tests, smoke test,
-   hardware check, VTS net and CTS net, and returns to the installed kernel. On
-   PASS it records the result in `boot-test/results.tsv` and pushes `main`.
+3. `sargo-test.sh` on the ROM's own kernel, on every phone in `phones.conf` at
+   once: RAM-boots it inside each phone's own boot image (nothing flashed),
+   runs that phone's share of the unit tests, smoke test, hardware check, VTS
+   net and CTS net, and returns each phone to its installed kernel. Phones on
+   other machines are reached over SSH. With three phones the test takes 22
+   minutes, most of it CTS net on the phone with the SIM; with one phone, 30.
+   On PASS it records the result in `boot-test/results.tsv` and pushes `main`.
 4. Copies the OTA zip, `boot.img`, `dtbo.img`, `vbmeta.img` and the manifest to
    `~/sargo-bpf-test/build-24.0-<date>/` and publishes them as the prerelease
    `lineage-24.0-sargo-<date>`, with the test result in the notes.

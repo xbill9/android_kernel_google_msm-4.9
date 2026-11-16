@@ -37,7 +37,7 @@ pass=0 fail=0 skip=0 tp=0 tf=0
 for m in $MODS; do
   log=$D/$m.log; t=$(date +%s)
   lim=$LIMIT; [ "$m" = CtsLibcoreTestCases ] && lim=$((LIMIT*3))
-  timeout $lim atest "$m" > "$log" 2>&1; rc=$?
+  timeout $lim atest ${ATEST_STEPS:-} "$m" > "$log" 2>&1; rc=$?
   # timeout stops atest but not the test run under it, which keeps the phone's UI automation
   # connection and breaks the next module: stop what is left.
   # The test app on the phone keeps running too (on 2026-11-12 the sensor and camera apps did, and
