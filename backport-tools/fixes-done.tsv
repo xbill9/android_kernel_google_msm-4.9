@@ -77,3 +77,15 @@
 74	0e4d4dcc1a6e	Bluetooth: SMP: make SM/PER/KDU/BI-04-C happy	skipped	-	changes only the SMP error code sent, for Bluetooth qualification
 75	581073f626e3	af_packet: do not call packet_read_pending() from tpacket_destruct_skb()	skipped	-	performance only; needs its own fix c1ba3c0cbdb5 (SO_SNDTIMEO reset); take both together or neither
 76	32bf92416614	namespace: check a submount for references right before unmounting it	skipped	-	core VFS rewrite written against upstream's propagate_umount; 4.9 has the 2017 algorithm; no stable backport to compare
+77	041a14d26715	tcp: start receiver buffer autotuning sooner	ported	28b6e27e8e56	changes behaviour: receive autotuning starts after about 10 segments instead of one initial window
+78	17175d1a27c6	xfrm: esp6: fix encapsulation header offset computation	already	-	in 3dc6c69adab8 (the UDPv6 ESP encap backport used the fixed offset code)
+79	378979e94e95	tcp: remove 64 KByte limit for initial tp->rcv_wnd value	ported	9c9640fcd508	changes behaviour: initial rcv_wnd no longer capped at 64 KB when tcp_rmem[1] is larger; SYN/SYN-ACK window still 65535 max; taken with f4dca95fc0f6
+80	58e39f8d58b1	bpf: Reject non-IPv6 packets in BPF_LWT_ENCAP_SEG6	n/a	-	no SRv6 in this tree (no net/ipv6/seg6*.c, no IPV6_SEG6_BPF); bpf_push_seg6_encap() is never built
+81	695e1408eb90	net: use eth_type_trans_careful() in __dev_forward_skb2()	ported	587d6f2067e8	eth_type_trans_careful() prerequisite not taken; pskb_may_pull() open-coded in __dev_forward_skb()
+82	72d05c00d7ec	tcp: select sane initial rcvq_space.space for big MSS	ported	430bbef8b9b6	changes behaviour: initial rcvq_space.space also capped by rcv_ssthresh
+83	95f1d5e4abb7	bpf: Don't let lwt_in progs call into IPv6 when it is disabled	n/a	-	CONFIG_LWTUNNEL is not set, so lwt_bpf.c is not built; no SRv6 in this tree
+84	a08ba2ab79df	bpf: Clamp the trace length before the skip test in stackid_init()	n/a	-	4.9 has no stackid_init(); bpf_get_stackid() uses init_nr and get_perf_callchain() without context markers, so trace_nr cannot exceed max_depth
+85	bc0fcb9823cd	ipv6: xfrm6: release dst on error in xfrm6_rcv_encap()	already	-	in 3dc6c69adab8 (xfrm6_rcv_encap() releases the dst on a failed lookup)
+86	c1ca06e48e88	bpf: Set a dst for test runs of lwt_in progs	n/a	-	no SRv6 and no LWTUNNEL_BPF, so lwt_push_encap from an lwt_in prog returns -EINVAL before any dst use
+87	d5dba1376e2b	xfrm: esp6: fix the location of the transport header with encapsulation	already	-	in 3dc6c69adab8 (hdr_len += offset present in esp_input_done2())
+88	f4dca95fc0f6	tcp: reduce accepted window in NEW_SYN_RECV state	ported	d9633572fc20	changes behaviour: SYN_RECV ACK check and its ACK use at most 65535; needed with 378979e94e95
