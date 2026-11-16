@@ -334,7 +334,6 @@ bool __skb_flow_dissect(const struct net *net,
 		}
 	}
 
-	WARN_ON_ONCE(!net);
 	if (net) {
 		rcu_read_lock();
 		attached = rcu_dereference(net->flow_dissector_prog);
