@@ -34,6 +34,7 @@ struct bpf_stack_map {
 struct stack_map_irq_work {
 	struct irq_work irq_work;
 	struct rw_semaphore *sem;
+	atomic_t active;
 };
 
 static void do_up_read(struct irq_work *entry)
@@ -43,6 +44,7 @@ static void do_up_read(struct irq_work *entry)
 	work = container_of(entry, struct stack_map_irq_work, irq_work);
 	up_read_non_owner(work->sem);
 	work->sem = NULL;
+	atomic_set_release(&work->active, 0);
 }
 
 static DEFINE_PER_CPU(struct stack_map_irq_work, up_read_work);
@@ -292,7 +294,13 @@ static void stack_map_get_build_id_offset(struct bpf_stack_build_id *id_offs,
 
 	if (irqs_disabled()) {
 		work = this_cpu_ptr(&up_read_work);
-		if (work->irq_work.flags & IRQ_WORK_BUSY)
+		/* The active flag reserves the slot before down_read_trylock()
+		 * and until do_up_read() has released the semaphore, so a
+		 * nested caller cannot take a second read lock that only one
+		 * queued irq_work would release.
+		 */
+		if ((work->irq_work.flags & IRQ_WORK_BUSY) ||
+		    atomic_cmpxchg_acquire(&work->active, 0, 1))
 			/* cannot queue more up_read, fallback */
 			irq_work_busy = true;
 	}
@@ -309,6 +317,9 @@ static void stack_map_get_build_id_offset(struct bpf_stack_build_id *id_offs,
 	 */
 	if (!user || !current || !current->mm || irq_work_busy ||
 	    down_read_trylock(&current->mm->mmap_sem) == 0) {
+		/* release the slot only if this call reserved it */
+		if (work && !irq_work_busy)
+			atomic_set_release(&work->active, 0);
 		/* cannot access current->mm, fall back to ips */
 		for (i = 0; i < trace_nr; i++) {
 			id_offs[i].status = BPF_STACK_BUILD_ID_IP;
