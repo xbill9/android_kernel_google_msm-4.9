@@ -727,8 +727,8 @@ static void pcpu_init_value(struct bpf_htab *htab, void __percpu *pptr,
 
 		for_each_possible_cpu(cpu) {
 			if (cpu == current_cpu)
-				bpf_long_memcpy(per_cpu_ptr(pptr, cpu), value,
-						size);
+				copy_map_value(&htab->map, per_cpu_ptr(pptr, cpu),
+					       value);
 			else
 				memset(per_cpu_ptr(pptr, cpu), 0, size);
 		}
