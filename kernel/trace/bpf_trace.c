@@ -499,14 +499,6 @@ static const struct bpf_func_proto bpf_perf_event_output_proto = {
 	.arg5_type	= ARG_CONST_SIZE_OR_ZERO,
 };
 
-/*
- * Support executing tracepoints in normal, irq, and nmi context that each call
- * bpf_event_output
- */
-struct bpf_trace_sample_data {
-	struct perf_sample_data sds[3];
-};
-
 static DEFINE_PER_CPU(int, bpf_event_output_nest_level);
 struct bpf_nested_pt_regs {
 	struct pt_regs regs[3];
