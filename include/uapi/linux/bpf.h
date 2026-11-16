@@ -2314,7 +2314,7 @@ union bpf_attr {
  *
  * int bpf_sk_select_reuseport(struct sk_reuseport_md *reuse, struct bpf_map *map, void *key, u64 flags)
  *	Description
- *		Select a SO_REUSEPORT sk from a	BPF_MAP_TYPE_REUSEPORT_ARRAY map
+ *		Select a SO_REUSEPORT sk from a	BPF_MAP_TYPE_REUSEPORT_SOCKARRAY map
  *		It checks the selected sk is matching the incoming
  *		request in the skb.
  *	Return
