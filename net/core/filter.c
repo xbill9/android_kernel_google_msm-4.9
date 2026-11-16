@@ -5728,7 +5728,9 @@ u32 bpf_tcp_sock_convert_ctx_access(enum bpf_access_type type,
 
 BPF_CALL_1(bpf_tcp_sock, struct sock *, sk)
 {
-	if (sk_fullsock(sk) && sk->sk_protocol == IPPROTO_TCP)
+	if (sk_fullsock(sk) &&
+	    (sk->sk_family == AF_INET || sk->sk_family == AF_INET6) &&
+	    sk->sk_type == SOCK_STREAM && sk->sk_protocol == IPPROTO_TCP)
 		return (unsigned long)sk;
 
 	return (unsigned long)NULL;
