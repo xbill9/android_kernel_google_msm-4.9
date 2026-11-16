@@ -2177,7 +2177,7 @@ int netif_set_xps_queue(struct net_device *dev, const struct cpumask *mask,
 	if (dev->num_tc) {
 		num_tc = dev->num_tc;
 		tc = netdev_txq_to_tc(dev, index);
-		if (tc < 0)
+		if (tc < 0 || tc >= num_tc)
 			return -EINVAL;
 	}
 
