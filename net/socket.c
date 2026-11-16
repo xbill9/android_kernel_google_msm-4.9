@@ -1855,7 +1855,7 @@ static int __sys_getsockopt(int fd, int level, int optname,
 {
 	int err, fput_needed;
 	struct socket *sock;
-	int max_optlen;
+	int max_optlen __maybe_unused = 0;
 
 	sock = sockfd_lookup_light(fd, &err, &fput_needed);
 	if (sock != NULL) {
@@ -1863,7 +1863,7 @@ static int __sys_getsockopt(int fd, int level, int optname,
 		if (err)
 			goto out_put;
 
-		max_optlen = BPF_CGROUP_GETSOCKOPT_MAX_OPTLEN(optlen);
+		get_user(max_optlen, optlen);
 
 		if (level == SOL_SOCKET)
 			err =
