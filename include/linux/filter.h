@@ -663,21 +663,21 @@ static inline void bpf_jit_set_header_magic(struct bpf_binary_header *hdr)
 DECLARE_STATIC_KEY_FALSE(bpf_stats_enabled_key);
 
 #define BPF_PROG_RUN(prog, ctx)	({				\
-	u32 ret;						\
+	u32 __ret;						\
 	cant_sleep();						\
 	if (static_branch_unlikely(&bpf_stats_enabled_key)) {	\
-		struct bpf_prog_stats *stats;			\
-		u64 start = sched_clock();			\
-		ret = bpf_call_func(prog, ctx);			\
-		stats = this_cpu_ptr(prog->aux->stats);		\
-		u64_stats_update_begin(&stats->syncp);		\
-		stats->cnt++;					\
-		stats->nsecs += sched_clock() - start;		\
-		u64_stats_update_end(&stats->syncp);		\
+		struct bpf_prog_stats *__stats;			\
+		u64 __start = sched_clock();			\
+		__ret = bpf_call_func(prog, ctx);		\
+		__stats = this_cpu_ptr(prog->aux->stats);	\
+		u64_stats_update_begin(&__stats->syncp);	\
+		__stats->cnt++;					\
+		__stats->nsecs += sched_clock() - __start;	\
+		u64_stats_update_end(&__stats->syncp);		\
 	} else {						\
-		ret = bpf_call_func(prog, ctx);			\
+		__ret = bpf_call_func(prog, ctx);		\
 	}							\
-	ret; })
+	__ret; })
 
 #define BPF_SKB_CB_LEN QDISC_CB_PRIV_LEN
 
