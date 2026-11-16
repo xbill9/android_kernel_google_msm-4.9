@@ -344,6 +344,8 @@ bool __skb_flow_dissect(const struct net *net,
 					      FLOW_DISSECTOR_KEY_BASIC,
 					      target_container);
 
+	rcu_read_lock();
+
 	if (skb) {
 		if (!net) {
 			if (skb->dev)
@@ -354,7 +356,6 @@ bool __skb_flow_dissect(const struct net *net,
 	}
 
 	if (net) {
-		rcu_read_lock();
 		attached = rcu_dereference(net->flow_dissector_prog);
 
 		if (attached) {
@@ -382,8 +383,9 @@ bool __skb_flow_dissect(const struct net *net,
 			rcu_read_unlock();
 			return ret;
 		}
-		rcu_read_unlock();
 	}
+
+	rcu_read_unlock();
 
 	if (dissector_uses_key(flow_dissector,
 			       FLOW_DISSECTOR_KEY_ETH_ADDRS)) {
