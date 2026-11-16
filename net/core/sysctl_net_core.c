@@ -28,6 +28,7 @@ static int two __maybe_unused = 2;
 static int min_sndbuf = SOCK_MIN_SNDBUF;
 static int min_rcvbuf = SOCK_MIN_RCVBUF;
 static int max_skb_frags = MAX_SKB_FRAGS;
+static int netdev_budget_usecs_min = 2 * USEC_PER_SEC / HZ;
 static long long_one __maybe_unused = 1;
 static long long_max __maybe_unused = LONG_MAX;
 
@@ -536,7 +537,7 @@ static struct ctl_table net_core_table[] = {
 		.maxlen		= sizeof(unsigned int),
 		.mode		= 0644,
 		.proc_handler	= proc_dointvec_minmax,
-		.extra1		= &zero,
+		.extra1		= &netdev_budget_usecs_min,
 	},
 	{ }
 };
