@@ -2481,6 +2481,29 @@ static const struct bpf_map *bpf_map_from_imm(const struct bpf_prog *prog,
 	return NULL;
 }
 
+static void prepare_dump_pseudo_call(struct bpf_insn *insn)
+{
+	s32 call_off = insn->imm;
+
+	/*
+	 * BPF_CALL_ARGS only exists for interpreter fallback.
+	 * 1. For interpreter (BPF_CALL_ARGS): insn->off is the index of
+	 *    interpreters_args array, so here using bpf_call_args_imm()
+	 *    to get the real address offset.
+	 * 2. For JIT (BPF_CALL): insn->off is the subprog id.
+	 */
+	if (insn->code == (BPF_JMP | BPF_CALL_ARGS))
+		insn->imm = bpf_call_args_imm(insn->off);
+	else
+		insn->imm = insn->off;
+
+	/* Avoid dumping a truncated and misleading pc-relative offset. */
+	if (call_off > S16_MAX || call_off < S16_MIN)
+		insn->off = 0;
+	else
+		insn->off = call_off;
+}
+
 static struct bpf_insn *bpf_insn_prepare_dump(const struct bpf_prog *prog,
 					      const struct cred *f_cred)
 {
@@ -2503,6 +2526,9 @@ static struct bpf_insn *bpf_insn_prepare_dump(const struct bpf_prog *prog,
 		}
 		if (insns[i].code == (BPF_JMP | BPF_CALL) ||
 		    insns[i].code == (BPF_JMP | BPF_CALL_ARGS)) {
+			/* Restore the legacy xlated dump layout. */
+			if (insns[i].src_reg == BPF_PSEUDO_CALL)
+				prepare_dump_pseudo_call(&insns[i]);
 			if (insns[i].code == (BPF_JMP | BPF_CALL_ARGS))
 				insns[i].code = BPF_JMP | BPF_CALL;
 			if (!bpf_dump_raw_ok(f_cred))
