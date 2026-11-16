@@ -76,8 +76,14 @@ if [ -n "$CHILD" ]; then
   # (INSTALL_FAILED_VERIFICATION_FAILURE) unless USB installs are exempt. The setting persists.
   adb shell settings put global verifier_verify_adb_installs 0
   SLOT=$(adb shell getprop ro.boot.slot_suffix | tr -d '\r')
-  adb shell "dd if=/dev/block/by-name/boot$SLOT of=/data/local/tmp/boot-base.img bs=4m" >/dev/null 2>&1
-  adb pull /data/local/tmp/boot-base.img "$TOP/boot-base.img" >/dev/null && adb shell rm /data/local/tmp/boot-base.img
+  # The phone's own boot image; retried, since one adb call can fail while other phones start.
+  for i in 1 2 3; do
+    adb shell "dd if=/dev/block/by-name/boot$SLOT of=/data/local/tmp/boot-base.img bs=4m" >> "$TOP/dump.log" 2>&1 \
+      && adb pull /data/local/tmp/boot-base.img "$TOP/boot-base.img" >> "$TOP/dump.log" 2>&1 && break
+    sleep 5
+  done
+  adb shell rm -f /data/local/tmp/boot-base.img
+  [ -s "$TOP/boot-base.img" ] || { say "FAIL: boot image dump (see dump.log)"; exit 1; }
   NOLOG=1 KERNEL=$KOUT/arch/arm64/boot/Image.lz4 bash "$BT/add-logger.sh" "$TOP/boot-base.img" "$TOP/boot-test.img" \
     > "$TOP/repack.log" 2>&1 || { say "FAIL: repack (see repack.log)"; exit 1; }
   rm -f "$TOP/boot-base.img"

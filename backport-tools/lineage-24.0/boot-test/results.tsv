@@ -5,3 +5,4 @@ date	commit	verdict	installed build	report
 2026-11-16 13:39	587d6f2067e8	PASS	24.0-20261115-UNOFFICIAL-sargo	sargo-logs/92FAY00ZMV-test-g3501b07e2e00-20261116-1309
 2026-11-16 14:40	587d6f2067e8	PASS	24.0-20261115-UNOFFICIAL-sargo	sargo-logs/test-g3501b07e2e00-20261116-1418
 2026-11-16 16:37	ee3d92fa2fac	PASS	24.0-20261115-UNOFFICIAL-sargo	sargo-logs/test-00267-gee3d92fa2fac-dirty-20261116-1614
+2026-11-16 18:00	ee3d92fa2fac	FAIL: phone1 phone2	24.0-20261115-UNOFFICIAL-sargo	sargo-logs/test-gcb1b18c7d7fa-20261116-1749
