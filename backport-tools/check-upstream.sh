@@ -4,12 +4,12 @@
 #   (none)    list the fixes new since missing-fixes.tsv, in built code or headers, not decided
 #             in fixes-done.tsv
 #   --apply   also commit each listed fix that applies as is (UPSTREAM: ..., cherry picked from);
-#             the rest are listed for a hand merge. Then: sargo-test, push on PASS.
+#             the rest are listed for a hand merge (sargo update runs this, then tests).
 #   --write   also replace missing-fixes.tsv with this run's full table: run it after deciding
 #             on the listed fixes, so the next run lists only newer ones
 # Record each decision (ported, n/a, skipped) in fixes-done.tsv, so it is not listed again.
 # UPSTREAM_GIT (default ~/sargo-bpf-test/linux-upstream.git) is the mainline clone; KOUT (default
-# the sargo-test build, /android/sargo-bpf-test/kout) tells built code from unbuilt.
+# the `sargo test` build, /android/sargo-bpf-test/kout) tells built code from unbuilt.
 set -e
 UP=${UPSTREAM_GIT:-$HOME/sargo-bpf-test/linux-upstream.git}
 BT=$(cd "$(dirname "$0")" && pwd)

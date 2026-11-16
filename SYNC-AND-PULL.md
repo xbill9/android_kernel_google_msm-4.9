@@ -87,8 +87,8 @@ The two hashes must match.
 
 It finds the newest build on the
 [releases page](https://github.com/xbill9/android_kernel_google_msm-4.9/releases), uses the copy
-`sargo-build` left in `~/sargo-bpf-test/` or downloads it to `~/sargo-rom/`, checks it against
-`SHA256SUMS`, and installs it. `sargo-install tested` takes the newest build marked Latest
+`sargo update` left in `~/sargo-bpf-test/` or downloads it to `~/sargo-rom/`, checks it against
+`SHA256SUMS`, and installs it. `sargo install tested` takes the newest build marked Latest
 instead. Every build is published, so neither machine needs to copy a zip from the other.
 
 ### Keep a zip

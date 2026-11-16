@@ -15,7 +15,7 @@ a GitHub login, and the steps in order.
 |---|---|
 | Memory | RAM plus swap of about 80 GB. Soong analysis held 31 GB resident with 44 GB of swap in use on a 31 GB machine. |
 | Disk | 294 GB for the tree after a complete build (`.repo` 60 GB, `out` 140 GB), plus 1.2 GB per published build in `~/sargo-bpf-test`. |
-| Time | 9 h 13 min for `sargo-build` from an empty `out/` on `gpu` (12 threads, `-j12`), including the publish: 9 h 11 min in `m bacon`, 231,687 ninja steps (2026-11-09). The 2026-11-06 build took 9 h 27 min. |
+| Time | 9 h 13 min for the build step from an empty `out/` on `gpu` (12 threads, `-j12`), including the publish: 9 h 11 min in `m bacon`, 231,687 ninja steps (2026-11-09). The 2026-11-06 build took 9 h 27 min. |
 | OS | Debian sid (forky) on x86_64 here; Ubuntu 24.04 on EC2 (`aws/ec2-build.sh`). |
 
 Machines this has run on:
@@ -38,8 +38,8 @@ gh auth login
 ```
 
 Debian names the lz4 tool `lz4` (Ubuntu: `liblz4-tool`). `gh` must be logged in
-as `xbill9`: `sargo-build` publishes each build as a prerelease and
-`sargo-install` downloads from the releases.
+as `xbill9`: `sargo update` publishes each build as a prerelease and
+`sargo install` downloads from the releases.
 
 ---
 
@@ -54,9 +54,7 @@ ln -s /android ~/android
 gh repo clone xbill9/android_kernel_google_msm-4.9 /android/android_kernel_google_msm-4.9
 ln -s /android/android_kernel_google_msm-4.9 ~/android_kernel_google_msm-4.9
 mkdir -p ~/bin ~/sargo-bpf-test/logs
-ln -s ~/android_kernel_google_msm-4.9/backport-tools/lineage-24.0/sargo-build.sh ~/bin/sargo-build
-ln -s ~/android_kernel_google_msm-4.9/backport-tools/lineage-24.0/phone-install-24.sh ~/bin/sargo-install
-ln -s ~/android_kernel_google_msm-4.9/backport-tools/lineage-24.0/sargo-test.sh ~/bin/sargo-test
+ln -s ~/android_kernel_google_msm-4.9/backport-tools/lineage-24.0/sargo.sh ~/bin/sargo
 ```
 
 `~/bin` must be on `PATH`. Keep the same user name (`xbill`) and the same
@@ -83,22 +81,31 @@ the files it keeps, and a build that already finished then redoes 186,251 steps.
 
 ---
 
-#### Step 3 — Build
+#### Step 3 — Build, test, publish
 
 ```
-setsid nohup sargo-build > ~/sargo-bpf-test/logs/sargo-build-$(date +%Y%m%d).log 2>&1 < /dev/null &
+setsid nohup sargo update > ~/sargo-bpf-test/logs/sargo-update-$(date +%Y%m%d-%H%M).log 2>&1 < /dev/null &
 ```
 
-`sargo-build` does three things and stops at the first failure:
+`sargo update` does four things and stops at the first failure:
 
-1. Pulls this repository, copies the local manifest into the tree, runs
-   `repo sync`, and stops if `update-forks.sh` reports a fork behind upstream
-   (then run `update-forks.sh --apply` and start again).
+1. Pulls this repository, commits the upstream kernel fixes that apply as is
+   (`backport-tools/check-upstream.sh --apply`), copies the local manifest into
+   the tree, runs `repo sync`, rebases any fork that is behind upstream and
+   pushes it (it stops on a conflict), and puts this repository's kernel commit
+   into the tree's `kernel/google/msm-4.9`.
 2. `lunch lineage_sargo cp2a userdebug` and `m bacon -j$(nproc)`, logged to
    `~/sargo-bpf-test/logs/build-24.log`.
-3. Copies the OTA zip, `boot.img`, `dtbo.img`, `vbmeta.img` and the manifest to
+3. `sargo-test.sh` on the ROM's own kernel: RAM-boots it on the phone inside
+   the phone's boot image (nothing flashed), runs the unit tests, smoke test,
+   hardware check, VTS net and CTS net, and returns to the installed kernel. On
+   PASS it records the result in `boot-test/results.tsv` and pushes `main`.
+4. Copies the OTA zip, `boot.img`, `dtbo.img`, `vbmeta.img` and the manifest to
    `~/sargo-bpf-test/build-24.0-<date>/` and publishes them as the prerelease
-   `lineage-24.0-sargo-<date>`, "Not tested on a phone".
+   `lineage-24.0-sargo-<date>`, with the test result in the notes.
+
+With no phone plugged in it stops after the build: an untested ROM is not
+published.
 
 Start it with `setsid nohup` or in tmux, never as a Claude Code background
 shell: Claude Code stops its own background shells under memory pressure, and
@@ -115,14 +122,14 @@ rm -rf ~/android/lineage-24.0/out
 #### Step 4 — Install on the phone
 
 ```
-sargo-install            # newest prerelease
-sargo-install tested     # newest release marked Latest
+sargo install            # newest prerelease
+sargo install tested     # newest release marked Latest
 ```
 
 The phone must already run one of these 24.0 userdebug builds. The script
 installs the OTA into the inactive slot, puts MindTheGapps back (downloaded if
 no copy is in `~/sargo-bpf-test/gapps`), compiles apps, and runs the hardware
-check; a prerelease that passes it is marked Latest, which `sargo-install tested`
+check; a prerelease that passes it is marked Latest, which `sargo install tested`
 installs. The one manual step is on the phone, in recovery: "Install anyway",
 then "Reboot system now". A first install from another ROM: `INSTALL.md` at the
 top of the repository.
@@ -150,7 +157,7 @@ What lives outside GitHub, in `~/sargo-bpf-test`:
 
 | Folder | Size | Needed for |
 |---|---|---|
-| `gapps/` | 1.6 GB | MindTheGapps zips; `sargo-install` downloads them again if missing |
+| `gapps/` | 1.6 GB | MindTheGapps zips; `sargo install` downloads them again if missing |
 | `kmsglog/` | 903 MB | boot-log images for `boot-test/` |
 | `build-24.0-*/` | 1.2 GB each | the same files as the GitHub releases |
 | `logs/` | 703 MB | build and boot logs |
@@ -173,7 +180,7 @@ instance. The first `m bacon` afterwards should do little or nothing.
 #### 🔎 Tip: one manifest, two copies
 
 The build reads `.repo/local_manifests/sargo.xml`; the source of truth is
-`local_manifest-sargo.xml` in this repository. `sargo-build` copies one over the
+`local_manifest-sargo.xml` in this repository. `sargo update` copies one over the
 other on every run, so edit the one in this repository, commit and push. When a
 project changes source (LineageOS to a fork), the next sync needs
 `repo sync -c --force-sync <path>` once.

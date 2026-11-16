@@ -1,5 +1,5 @@
 #!/bin/bash
-# First-time setup of the LineageOS 24.0 tree on a new build machine. Run once; after that, sargo-build.
+# First-time setup of the LineageOS 24.0 tree on a new build machine. Run once; after that, sargo update.
 set -eu
 HERE=$(dirname "$(readlink -f "$0")")
 T=~/android/lineage-24.0

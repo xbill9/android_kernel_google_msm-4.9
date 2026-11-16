@@ -3,12 +3,12 @@
 # build HEAD (kbuild.sh), put it in the phone's own boot image, RAM-boot it (fastboot boot),
 # run every check, reboot to the installed kernel, print one report.
 # A panic (kernel.panic=5) or a hang reboots the installed kernel; nothing on the phone changes.
-# Installed as ~/bin/sargo-test. Usage:
-#   sargo-test                 build, then test (about 35 minutes)
-#   sargo-test --push          build, test, and on PASS commit results.tsv and push main
-#   sargo-test --no-build      test the last build
-#   CTS_MODS="CtsNetTestCases CtsBluetoothTestCases" sargo-test   CTS modules to run (default: net)
-#   CTS_MODS= sargo-test       no CTS
+# Run as `sargo test` (sargo.sh); `sargo update` runs it on the ROM's own kernel. Usage:
+#   sargo test                 build, then test (about 35 minutes)
+#   sargo test --push          build, test, and on PASS commit results.tsv and push main
+#   sargo test --no-build      test the last build (KOUT=<kernel build dir> to pick another)
+#   CTS_MODS="CtsNetTestCases CtsBluetoothTestCases" sargo test   CTS modules to run (default: net)
+#   CTS_MODS= sargo test       no CTS
 # Result: ~/sargo-logs/<serial>-test-<kernel>-<time>/summary.txt, last line PASS or FAIL, and one
 # line per run in boot-test/results.tsv (commit it with the change it tested).
 # The kernel source must be committed: the result is recorded against the commit.
@@ -27,11 +27,12 @@ wake() { adb shell 'svc power stayon usb; input keyevent KEYCODE_WAKEUP; wm dism
 booted() { for i in $(seq 1 "$1"); do [ "$(timeout 5 adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = 1 ] && return 0; sleep 3; done; return 1; }
 bad=""
 fail() { bad="$bad $1"; }
-# One of sargo-build, sargo-test, sargo-install at a time: they share the tree and the phone.
+# One sargo command at a time: they share the tree and the phone.
 . "$L24/sargo-lock.sh"; sargo_lock sargo-test
 SRC=$(cd "$L24/../.." && pwd)
-PUSH=; [ "${1:-}" = --push ] && PUSH=1
-if [ "${1:-}" != --no-build ] && [ -n "$(git -C "$SRC" status --porcelain -- ':(top)' ':(top,exclude)backport-tools' ':(top,exclude,glob)*.md')" ]; then
+PUSH=; BUILD=1
+for a in "$@"; do case $a in --push) PUSH=1 ;; --no-build) BUILD= ;; *) sed -n '2,17p' "$0"; exit 1 ;; esac; done
+if [ -n "$BUILD" ] && [ -n "$(git -C "$SRC" status --porcelain -- ':(top)' ':(top,exclude)backport-tools' ':(top,exclude,glob)*.md')" ]; then
   echo "uncommitted kernel changes; commit them first:"; git -C "$SRC" status --short -- . ':!backport-tools' | head; exit 1
 fi
 
@@ -39,7 +40,7 @@ fi
 SERIAL=$(adb get-serialno)
 INSTALLED=$(kern)
 
-if [ "${1:-}" != --no-build ]; then
+if [ -n "$BUILD" ]; then
   echo "building $(git -C "$L24" log -1 --format='%h %s' | cut -c1-70)"
   bash "$L24/kbuild.sh" > "$KOUT.log" 2>&1 || { tail -20 "$KOUT.log"; echo "FAIL: kernel build (log: $KOUT.log)"; exit 1; }
 fi

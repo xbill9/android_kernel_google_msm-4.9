@@ -1,6 +1,6 @@
 #!/bin/bash
 # Install the newest LineageOS 24.0 build on the attached Pixel 3a, put GApps back and compile apps.
-# Installed as ~/bin/sargo-install. Usage:
+# Run as `sargo install` on the build machine, ~/bin/sargo-install on a laptop. Usage:
 #   sargo-install                 the newest build from GitHub releases (downloaded once, checked)
 #   sargo-install tested          the newest build marked Latest (tested on a phone)
 #   sargo-install rom.zip [gapps.zip]
@@ -19,7 +19,7 @@ CACHE=~/sargo-rom
 GAPPS_URL=https://github.com/MindTheGapps/17.0.0-arm64/releases/download/MindTheGapps-17.0.0-arm64-20261022_132445/MindTheGapps-17.0.0-arm64-20261022_132445.zip
 for d in ~/android/lineage-24.0/out/host/linux-x86/bin ~/platform-tools; do [ -x $d/adb ] && PATH=$d:$PATH; done
 log() { echo; echo "=== $(date +%T) $*"; }
-# One at a time with sargo-build and sargo-test (absent on a laptop install: no lock needed).
+# One sargo command at a time (absent on a laptop install: no lock needed).
 [ -f "$B/sargo-lock.sh" ] && { . "$B/sargo-lock.sh"; sargo_lock sargo-install; }
 die() { echo "!!! STOPPED: $*"; exit 1; }
 prop() { timeout 5 adb shell getprop "$1" 2>/dev/null | tr -d '\r'; }

@@ -1,7 +1,7 @@
 # Boot tests for 24.0 on sargo
 
-The checks `sargo-test` runs on a RAM-booted kernel, and tools for boot problems and long log
-captures. `sargo-test` (`../sargo-test.sh`) runs them in order and judges the result; each also
+The checks `sargo test` runs on a RAM-booted kernel, and tools for boot problems and long log
+captures. `sargo update` and `sargo test` (`../sargo-test.sh`) runs them in order and judges the result; each also
 runs alone on a booted phone. They expect the build machine's layout: the tree in
 `~/android/lineage-24.0`, logs under `~/sargo-bpf-test/logs/` and `~/sargo-logs/`.
 
@@ -23,18 +23,18 @@ runs alone on a booted phone. They expect the build machine's layout: the tree i
 | `udp0test.c`, `udp0test` | Sends UDP datagrams over IPv4 and IPv6 to the wildcard, loopback and v4-mapped addresses, zero-length and one byte, to a socket bound to the wildcard address; prints each one and `N of 7 received`, exit 1 below 7. `build-test.sh udp0test` rebuilds it. |
 | `qmaptest.c`, `qmaptest` | Checks that a qdisc caps an out-of-range `queue_mapping` stored by tc BPF, as root: a cls_bpf direct-action program on the prio root of a 4-queue dummy device stores 7, 64 Ethernet frames sent through AF_PACKET go through it, and the kernel must log `qmt0 selects TX queue 7`. Only for a kernel with the fix: without it the qdisc indexes past the device's tx queues. `build-test.sh qmaptest` rebuilds it. |
 | `xdptest.c`, `xdptest` | Checks that generic XDP re-parses the Ethernet header a program rewrote, as root: on a veth pair, a frame for another host's MAC and a frame with EtherType 0x88b5 are dropped under a pass-only program and must reach a UDP socket once the program rewrites the MAC and the EtherType; controls check that a drop program drops and an unchanged frame arrives. On a kernel without the fixes both rewritten frames are dropped (installed build, 2026-11-14). `build-test.sh xdptest` rebuilds it. |
-| `results.tsv` | one line per `sargo-test` run: date, kernel commit (the last commit that changed kernel source), PASS or FAIL with the failed checks, installed build, report directory. `sargo-build` puts the line for its kernel in the release notes. |
+| `results.tsv` | one line per `sargo test` run: date, kernel commit (the last commit that changed kernel source), PASS or FAIL with the failed checks, installed build, report directory. `sargo-build` puts the line for its kernel in the release notes. |
 | `build-test.sh` | Builds the test programs above (all, or the names given) with the tree's clang and NDK sysroot, after a full build. `LINEAGE_TREE=` picks another tree. |
 
 
 ## Current state
 
 Installed on 92FAY00ZMV (slot a, SELinux enforcing): build `24.0-20261115-1255` (marked Latest),
-kernel `f3ef238ee578`. Kernel test results, one line per `sargo-test` run: `results.tsv`
+kernel `f3ef238ee578`. Kernel test results, one line per `sargo test` run: `results.tsv`
 (commit, PASS/FAIL, report directory under `~/sargo-logs`). Dated notes, newest first:
 `status-history.md`.
 
-What a passing `sargo-test` shows, and the known differences it does not count:
+What a passing `sargo test` shows, and the known differences it does not count:
 
 | Check | Result on a good kernel | Not counted |
 |---|---|---|

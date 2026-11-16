@@ -1,6 +1,6 @@
 #!/bin/bash
 # Build this kernel tree's Image.lz4 outside the platform build, with the LineageOS 24.0 tree's
-# prebuilt toolchain and the ROM's own kernel config (LTO, CFI). Used by sargo-test.sh.
+# prebuilt toolchain and the ROM's own kernel config (LTO, CFI). Used by `sargo test`.
 # Env: KOUT (output dir, default /android/sargo-bpf-test/kout), LINEAGE_TREE, JOBS.
 # The first build copies the config from the ROM build's KERNEL_OBJ; later builds are incremental.
 # Exit status is make's; the image is $KOUT/arch/arm64/boot/Image.lz4.
@@ -11,7 +11,7 @@ KOUT=${KOUT:-/android/sargo-bpf-test/kout}
 mkdir -p "$KOUT"
 if [ ! -f "$KOUT/.config" ]; then
   cp "$B/out/target/product/sargo/obj/KERNEL_OBJ/.config" "$KOUT/.config" \
-    || { echo "no ROM kernel config; run sargo-build once first"; exit 1; }
+    || { echo "no ROM kernel config; run sargo update once first"; exit 1; }
 fi
 CL=$B/prebuilts/clang/kernel/linux-x86/clang-r416183b
 KT=$B/prebuilts/kernel-build-tools/linux-x86

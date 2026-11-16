@@ -129,8 +129,8 @@ bash backport-tools/lineage-24.0/update-forks.sh            # how far each fork 
 bash backport-tools/lineage-24.0/update-forks.sh --apply    # replay fork commits on upstream, push
 ```
 
-`sargo-build` runs the report and stops when a fork is behind; run `--apply`,
-then `sargo-build` again.
+`sargo update` runs the report and rebases a fork that is behind (`--apply`); it stops only
+on a conflict.
 
 ---
 

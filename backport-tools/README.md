@@ -24,10 +24,12 @@ in git history before that date.
 
 ## Taking upstream fixes
 
-    backport-tools/check-upstream.sh --apply   # commit the new fixes that apply as is
-    # hand-merge the rest, or record them in fixes-done.tsv as n/a with the reason
-    sargo-test --push                          # RAM-boot test on the phone; pushes on PASS
+    sargo update        # commits the new fixes that apply as is, builds, tests on the phone,
+                        # pushes and publishes on PASS; lists the fixes that need a hand merge
+    # hand-merge those (then `sargo test --push`), or record them in fixes-done.tsv as n/a
     backport-tools/check-upstream.sh --write   # refresh the table, so the next run lists only newer fixes
+
+`check-upstream.sh` alone (no options) lists the new fixes without committing anything.
 
 `check-upstream.sh` needs the mainline clone (once, no file contents):
 
@@ -67,4 +69,4 @@ LineageOS lists 4.14 as the minimum for 23.x and 24.0. Each of these stopped ini
 - `wlan.ko` must come from the same build: struct changes alter the symbol CRCs it checks
   (`disagrees about version of symbol`). The ROM build makes a matching one.
 - `missing_fixes.py` finds missing upstream fixes only. Two local commits that do not fit
-  together show up on the phone instead, as a kernel warning; `sargo-test` fails on those.
+  together show up on the phone instead, as a kernel warning; `sargo test` fails on those.
