@@ -1577,6 +1577,8 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
 		cgroup_sk_clone(&newsk->sk_cgrp_data);
 		skb_queue_head_init(&newsk->sk_error_queue);
 
+		RCU_INIT_POINTER(newsk->sk_reuseport_cb, NULL);
+
 		rcu_read_lock();
 		filter = rcu_dereference(sk->sk_filter);
 		if (filter != NULL)
@@ -1603,7 +1605,6 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
 			newsk = NULL;
 			goto out;
 		}
-		RCU_INIT_POINTER(newsk->sk_reuseport_cb, NULL);
 
 		if (bpf_sk_storage_clone(sk, newsk)) {
 			sk_free_unlock_clone(newsk);
