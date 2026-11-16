@@ -89,3 +89,63 @@
 86	c1ca06e48e88	bpf: Set a dst for test runs of lwt_in progs	n/a	-	no SRv6 and no LWTUNNEL_BPF, so lwt_push_encap from an lwt_in prog returns -EINVAL before any dst use
 87	d5dba1376e2b	xfrm: esp6: fix the location of the transport header with encapsulation	already	-	in 3dc6c69adab8 (hdr_len += offset present in esp_input_done2())
 88	f4dca95fc0f6	tcp: reduce accepted window in NEW_SYN_RECV state	ported	d9633572fc20	changes behaviour: SYN_RECV ACK check and its ACK use at most 65535; needed with 378979e94e95
+89	0c0a8ed85349	bpf, sockmap: reject overflowing copy + len in bpf_msg_push_data()	ported	d5c4335f4e59	clean (backlog)
+90	36e0f12bbfd3	xdp: add NULL pointer check in __xdp_return()	ported	54683b82d8e4	clean (backlog)
+91	37f3c421e8f0	net/core: Document reuseport_add_sock() bind_inany argument	ported	9b6b2ada99c1	clean (backlog)
+92	390e99cfdda1	bpf: mark bpf_event_notify and bpf_event_init as static	ported	438547451763	clean (backlog)
+93	481c2265286e	bpf: tcp: Fix type confusion in bpf_tcp_sock().	skipped	-	needs sk_is_tcp() (not in this tree); hand merge
+94	49e9d1a9faf2	workqueue: Add RCU annotation for pwq list walk	ported	16191bf3cb42	clean (backlog)
+95	55472017a421	tcp: Set INET_ECN_xmit configuration in tcp_reinit_congestion_control	ported	d0d8dab424a3	clean (backlog)
+96	698d0831ba87	vmalloc: fix __GFP_HIGHMEM usage for vmalloc_32 on 32b systems	ported	683e4ef18613	clean (backlog)
+97	768fb61fcc13	bpf: Fix bpf_event_output re-entry issue	skipped	-	uses struct bpf_trace_sample_data before its definition here; hand merge
+98	8e41f8726dcf	mm/vmalloc: Fix calculation of direct map addr range	ported	9d84033c5c7e	clean (backlog)
+99	9b74ebb2b0f2	cpumap: Use non-locked version __ptr_ring_consume_batched	ported	bd27655365ac	clean (backlog)
+100	a0c584fc1805	bpf: Fix use-after-free in offloaded map/prog info fill	ported	ccb32a33faf8	clean (backlog)
+101	a171fbec88a2	lwt: Check LWTUNNEL_XMIT_CONTINUE strictly	ported	3928b63948be	clean (backlog)
+102	a4837980fd9f	net: revert default NAPI poll timeout to 2 jiffies	ported	8ff5f920910c	clean (backlog)
+103	a48802fb2cd2	bpf, sockmap: fix integer overflow in bpf_msg_pop_data() bounds check	ported	242b9618ebce	clean (backlog)
+104	c13fda93aca1	bpf: Remove tst_run from lwt_seg6local_prog_ops.	ported	db03370af093	clean (backlog)
+105	e4a62833adff	bpf: Disallow bpf_skb_pull_data() for LWT_SEG6LOCAL	ported	8d522d0ecd32	clean (backlog)
+106	e5f635edd393	bpf: Fix precedence bug in convert_bpf_ld_abs alignment check	ported	497070750c89	clean (backlog)
+107	e65a4955b0bb	net: check type when freeing metadata dst	ported	b35918535ba8	clean (backlog)
+108	f3f34ca45b96	bpf, sockmap: Fix wrong rsge offset in bpf_msg_push_data()	ported	3156ebb2f1b5	clean (backlog)
+109	065af3554705	net: fix bpf_xdp_adjust_head regression for generic-XDP	ported	37fd03e4c021	clean (backlog)
+110	01c313dded34	kallsyms: fix building without printk	ported	d900ff0253e6	clean (backlog)
+111	23721a755f98	trace/xdp: fix compile warning: 'struct bpf_map' declared inside parameter list	ported	cf750f971776	clean (backlog)
+112	5032d079909d	bpf: skmsg, fix psock create on existing kcm/tls port	ported	476f93298812	clean (backlog)
+113	552de9106882	bpf: sk_msg, fix socket data_ready events	ported	7b5dab4a3a78	clean (backlog)
+114	5b52a4c3acf5	tcp: remove unnecessary include	ported	717d1beaadc2	clean (backlog)
+115	6943c2b05bf0	bpf: Avoid warning when re-casting __bpf_call_base into __bpf_call_base_args	ported	037260cda363	clean (backlog)
+116	9c2e14b48119	ip_tunnels: Set tunnel option flag when tunnel metadata is present	ported	a67f4916e3b4	clean (backlog)
+117	a0791f0df7d2	bpf: fix BTF limits	ported	3d4c8a512dd3	clean (backlog)
+118	a145c848d69f	module: Extend the preempt disabled section in dereference_symbol_descriptor().	ported	5385d6741fb2	clean (backlog)
+119	c5e2edeb01ae	arm64: insn: Fix ldadd instruction encoding	ported	61af780ed0ee	clean (backlog)
+120	fa87b91c94a8	include/linux/mm.h: fix typo in VM_MPX definition	ported	ee3d92fa2fac	clean (backlog)
+121	0b91bce1ebfc	net: datagram: fix unbounded loop in __skb_try_recv_datagram()	already	-	patch applies in reverse
+122	0fc8c3581dd4	tracing/kprobe: Release kprobe print_fmt properly	already	-	patch applies in reverse
+123	12cc126df82c	bpf: Fix bpf_put_raw_tracepoint()'s use of __module_address()	already	-	patch applies in reverse
+124	141b52a98ab4	net: use the right variant of kfree	already	-	patch applies in reverse
+125	1ad58225dba3	net-sysfs: take the rtnl lock when storing xps_cpus	already	-	patch applies in reverse
+126	202aabe84a8f	xdp: fix uninitialized 'err' variable	already	-	patch applies in reverse
+127	21b172ee11b6	net/xdp: Fix suspicious RCU usage warning	already	-	patch applies in reverse
+128	2cbb259ec4f8	bpf: Reject negative head_room in __bpf_skb_change_head	already	-	patch applies in reverse
+129	2d17d8d79e77	xdp: linearize skb in netif_receive_generic_xdp()	already	-	patch applies in reverse
+130	32e6e967fb36	perf/core: Need CAP_SYS_ADMIN to create k/uprobe with perf_event_open()	already	-	patch applies in reverse
+131	35edfdc77f68	net: set default network namespace in init_dummy_netdev()	already	-	patch applies in reverse
+132	5125e757e62f	bpf: Clear the probe_addr for uprobe	already	-	patch applies in reverse
+133	5c0b485a8c61	udp: Set SOCK_RCU_FREE earlier in udp_lib_get_port().	already	-	patch applies in reverse
+134	5da13ab8b0dc	perf/core: Fix perf_kprobe_init()	already	-	patch applies in reverse
+135	60f7bb66b88b	kprobes: Do not expose probe addresses to non-CAP_SYSLOG	already	-	patch applies in reverse
+136	6358d49ac239	net: Fix a bug in removing queues from XPS map	already	-	patch applies in reverse
+137	664088f8d681	net-sysfs: Fix memory leak in XPS configuration	already	-	patch applies in reverse
+138	6b1340cc00ed	tracing: Fix race in perf_trace_buf initialization	already	-	patch applies in reverse
+139	6fabca2fc94d	bpf: Explicitly check accesses to bpf_sock_addr	already	-	patch applies in reverse
+140	82aaff2f6344	net: free RX queue structures	already	-	patch applies in reverse
+141	d85e8be2a5a0	net: Fix missing meta data in skb with vlan packet	already	-	patch applies in reverse
+142	db38de39684d	flow_dissector: Fix potential use-after-free on BPF_PROG_DETACH	already	-	patch applies in reverse
+143	dc633700f00f	net/af_packet: check len when min_header_len equals to 0	already	-	patch applies in reverse
+144	ead3d7b2b6af	bpf: Check flow_dissector ctx accesses are aligned	already	-	patch applies in reverse
+145	f72eed9b84fb	bpf: sockmap: fix tail fragment offset in bpf_msg_push_data	already	-	patch applies in reverse
+146	0eadcc7a7bc0	perf/core: Fix perf_uprobe_init()	n/a	-	perf_uprobe_init() already uses strndup_user(), the later upstream form
+147	297249569932	net: fix generic XDP to handle if eth header was mangled	already	-	eth header re-check already in netif_receive_generic_xdp() (with orig_host)
+148	34ea38ca2799	bpf: guard bpf_get_current_cgroup_id() with CONFIG_CGROUPS	n/a	-	CONFIG_CGROUPS=y in the sargo config
