@@ -303,4 +303,5 @@
 300	90545cdc3f2b	tcp, ulp: fix leftover icsk_ulp_ops preventing sock from reattach	ported	c6971e348ec5	3-way merge (backlog)
 301	81aabbb9fb7b	bpf, sockmap: bpf_tcp_ingress needs to subtract bytes from sg.size	ported	e3acf9460b5e	3-way merge (backlog)
 302	83540fbc8812	tracing/perf: Use strndup_user() instead of buggy open-coded version	already	-	patch applies in reverse
-303	0bdf399342c5	net: Avoid address overwrite in kernel_connect	ported	045e048539a0	same as the kernel_bind() fix c889a99a21bf
+303	0bdf399342c5	net: Avoid address overwrite in kernel_connect	ported	c35c4cbe0e99	same as the kernel_bind() fix c889a99a21bf
+304	3d4762639dd3	tcp: remove poll() flakes when receiving RST	ported	c00cd0b9cbd5	no Fixes tag, so the scan missed it; fixes the VTS PollOnCloseTest#testReadPollRst flake
