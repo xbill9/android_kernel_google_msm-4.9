@@ -93,11 +93,11 @@
 90	36e0f12bbfd3	xdp: add NULL pointer check in __xdp_return()	ported	54683b82d8e4	clean (backlog)
 91	37f3c421e8f0	net/core: Document reuseport_add_sock() bind_inany argument	ported	9b6b2ada99c1	clean (backlog)
 92	390e99cfdda1	bpf: mark bpf_event_notify and bpf_event_init as static	ported	438547451763	clean (backlog)
-93	481c2265286e	bpf: tcp: Fix type confusion in bpf_tcp_sock().	ported	5b8764879572	hand merge: sk_is_tcp() open-coded
+93	481c2265286e	bpf: tcp: Fix type confusion in bpf_tcp_sock().	ported	1d4a832594a6	hand merge: sk_is_tcp() open-coded
 94	49e9d1a9faf2	workqueue: Add RCU annotation for pwq list walk	ported	16191bf3cb42	clean (backlog)
 95	55472017a421	tcp: Set INET_ECN_xmit configuration in tcp_reinit_congestion_control	ported	d0d8dab424a3	clean (backlog)
 96	698d0831ba87	vmalloc: fix __GFP_HIGHMEM usage for vmalloc_32 on 32b systems	ported	683e4ef18613	clean (backlog)
-97	768fb61fcc13	bpf: Fix bpf_event_output re-entry issue	ported	ed8d5989b7d8	hand merge: struct bpf_trace_sample_data defined here
+97	768fb61fcc13	bpf: Fix bpf_event_output re-entry issue	ported	1cd896cbd3ad	hand merge: struct bpf_trace_sample_data defined here
 98	8e41f8726dcf	mm/vmalloc: Fix calculation of direct map addr range	ported	9d84033c5c7e	clean (backlog)
 99	9b74ebb2b0f2	cpumap: Use non-locked version __ptr_ring_consume_batched	ported	bd27655365ac	clean (backlog)
 100	a0c584fc1805	bpf: Fix use-after-free in offloaded map/prog info fill	ported	ccb32a33faf8	clean (backlog)
@@ -152,113 +152,113 @@
 149	00bf63122459	bpf: report RCU QS in cpumap kthread	n/a	-	CONFIG_TASKS_RCU off and CONFIG_PREEMPT=y; rcu_softirq_qs_periodic absent; cond_resched loop is preemptible
 150	04a899573fb8	bpf: Do not let BPF test infra emit invalid GSO types to stack	n/a	-	convert___skb_to_skb() here never sets gso_segs/gso_size, so test infra cannot build type-less GSO skbs
 151	0708a0afe291	mm: Consider __GFP_NOWARN flag for oversized kvmalloc() calls	n/a	-	kvmalloc_node() has no INT_MAX WARN (7661809d493b not in tree)
-152	07738bc566c3	bpf: Use copy_map_value_locked() in alloc_htab_elem() for BPF_F_LOCK	ported	f62651063cbe	added map_flags arg to alloc_htab_elem()
-153	0ab03f353d36	net-gro: Fix GRO flush when receiving a GSO packet.	ported	ebc84f531517	skb_gro_receive takes **head in 4.9
+152	07738bc566c3	bpf: Use copy_map_value_locked() in alloc_htab_elem() for BPF_F_LOCK	ported	04e3c7d83b12	added map_flags arg to alloc_htab_elem()
+153	0ab03f353d36	net-gro: Fix GRO flush when receiving a GSO packet.	ported	5b5f304e53fd	skb_gro_receive takes **head in 4.9
 154	0c6bc6e531a6	bpf: fix sk_skb programs without skb->dev assigned	n/a	-	__bpf_skb_max_len absent; helpers use constant BPF_SKB_MAX_LEN (SKB_MAX_ALLOC), never skb->dev
-155	0c92c7a3c5d4	tracing: Fix bad use of igrab in trace_uprobe.c	ported	363632386f10	kept d_inode() (4.9 never used d_real_inode)
-156	0ee288e69d03	bpf,perf: Fix perf_event_detach_bpf_prog error handling	ported	118e329be3af	same 2-line removal
-157	1081de1accb2	bpf: Fix NULL pointer dereference in bpf_skb_fib_lookup()	ported	ce1581c3aa94	same code
-158	10f86a2a5c91	bpf: Fix same-register dst/src OOB read and pointer leak in sock_ops	ported	5b984674e864	GET_SK half only; GET_FIELD here lacks fd09af010788 dst==src handling
-159	117932eea99b	cgroup/bpf: use a dedicated workqueue for cgroup bpf destruction	ported	27680c6513cb	same change
-160	120f1c857a73	net: flow_dissector: use DEBUG_NET_WARN_ON_ONCE	ported	d73d671a4f51	no DEBUG_NET in 4.9; WARN removed (upstream no-op equivalent)
-161	12d07c38e1b0	bpf: Don't let bpf_skb_adjust_room() use up the MSS	ported	c97c2b0fc5c6	same check; no UDP GSO/meta_len in 4.9
+155	0c92c7a3c5d4	tracing: Fix bad use of igrab in trace_uprobe.c	ported	bb033041a022	kept d_inode() (4.9 never used d_real_inode)
+156	0ee288e69d03	bpf,perf: Fix perf_event_detach_bpf_prog error handling	ported	47ae60a58152	same 2-line removal
+157	1081de1accb2	bpf: Fix NULL pointer dereference in bpf_skb_fib_lookup()	ported	30b02cf71aa3	same code
+158	10f86a2a5c91	bpf: Fix same-register dst/src OOB read and pointer leak in sock_ops	ported	4cc6895d453f	GET_SK half first, GET_FIELD half in 7feccb7f83db
+159	117932eea99b	cgroup/bpf: use a dedicated workqueue for cgroup bpf destruction	ported	3deda3358c34	same change
+160	120f1c857a73	net: flow_dissector: use DEBUG_NET_WARN_ON_ONCE	ported	c588a2f45f92	no DEBUG_NET in 4.9; WARN removed (upstream no-op equivalent)
+161	12d07c38e1b0	bpf: Don't let bpf_skb_adjust_room() use up the MSS	ported	294a029001b5	same check; no UDP GSO/meta_len in 4.9
 162	13ac7c05bc45	bpf: Bound the nesting that the BTF show code follows	skipped	-	btf_show code absent; older btf_*_seq_show recursion exists but has no state struct to carry a depth bound (needs seq_show ops signature change); BTF load needs CAP_SYS_ADMIN
 163	14a3d3ef02ba	bpf: Remove MEM_UNINIT from skb/xdp MTU helpers	n/a	-	bpf_skb_check_mtu/bpf_xdp_check_mtu helpers absent
-164	1b47026fb4b3	netfilter: xt_connmark: reject invalid shift parameters	ported	95a64d9327d3	single NFPROTO_UNSPEC rev-2 entry in 4.9
+164	1b47026fb4b3	netfilter: xt_connmark: reject invalid shift parameters	ported	13c6a17d85a6	single NFPROTO_UNSPEC rev-2 entry in 4.9
 165	21f947753705	net: ipv4: Set skb->dev for output route resolution	n/a	-	CONFIG_IP_ROUTE_MULTIPATH off and 4.9 output route lookup takes no skb, never reaches the flow dissector
-166	261b61d3735b	bpf: Make post-verification instruction rewrites killable	ported	d6a49ed4da58	verifier.c part only; 4.9 blinding has no env/patch_insn_data path
-167	28f6c37a2910	kprobes: Forbid probing on trampoline and BPF code areas	ported	1e6b9607db90	no static_call check in 4.9
-168	29ebbba7d461	bpf: Don't EFAULT for {g,s}setsockopt with wrong optlen	ported	26930e8e5d42	same logic
+166	261b61d3735b	bpf: Make post-verification instruction rewrites killable	ported	bd2ac35b4a86	verifier.c part only; 4.9 blinding has no env/patch_insn_data path
+167	28f6c37a2910	kprobes: Forbid probing on trampoline and BPF code areas	ported	f3b9ed328a51	no static_call check in 4.9
+168	29ebbba7d461	bpf: Don't EFAULT for {g,s}setsockopt with wrong optlen	ported	533c5753995a	same logic
 169	2b70d4f9b206	Bluetooth: L2CAP: uninitialized variables in l2cap_sock_setsockopt()	n/a	-	4.9 reads with get_user() through typed u16/u32 pointers (no copy_from_sockptr), so opt is fully written; no BT_MODE option
 170	2c02d41d71f9	net/ulp: prevent ULP without clone op from entering the LISTEN status	n/a	-	no tcp_ulp_ops are registered in this tree (TLS/MPTCP/espintcp absent, tcp_bpf not built), so icsk_ulp_ops is never set
 171	2ccbc9a38746	bpf, sockmap: keep sk_msg copy state in sync	n/a	-	CONFIG_BPF_STREAM_PARSER and CONFIG_NET_SOCK_MSG off: sock_map_get_from_fd() stub returns -EINVAL, SK_MSG progs cannot be attached or run
 172	2ef2b20cf4e0	net: annotate data-races around sk->sk_{data_ready,write_space}	n/a	-	the racing writers are skmsg/tcp_bpf/udp_bpf, not built (NET_SOCK_MSG/BPF_STREAM_PARSER off); annotation only
 173	31a420a822ff	bpf: Check sk_state before sk_protocol in bpf_tcp_*_syncookie	n/a	-	CONFIG_SYN_COOKIES off: both helper bodies are compiled out (#ifdef CONFIG_SYN_COOKIES)
-174	33f339a1ba54	bpf, net: Fix a potential race in do_sock_getsockopt()	ported	4fec4e665929	macro used in __sys_getsockopt(); unconditional get_user()
-175	3f553b308bb0	module: propagate error in modules_open()	ported	57dbf60f712f	same one-line change
+174	33f339a1ba54	bpf, net: Fix a potential race in do_sock_getsockopt()	ported	cb6ad005579c	macro used in __sys_getsockopt(); unconditional get_user()
+175	3f553b308bb0	module: propagate error in modules_open()	ported	e7674da5fe3b	same one-line change
 176	3fcc5530bcb2	bpf: fix build without bpf_syscall	n/a	-	build-only fix; proc_dointvec_minmax_bpf_stats absent (sysctl uses proc_do_static_key on bpf_stats_enabled_key from always-built core.c); BPF_SYSCALL=y
 177	406e8a651a7b	net: skmsg: preserve sg.copy across SG transforms	n/a	-	skmsg.c/TLS not built (NET_SOCK_MSG, BPF_STREAM_PARSER, TLS off); SK_MSG progs cannot be attached
 178	407c85c7ddd6	tcp: Set ECT0 bit in tos/tclass for synack when BPF needs ECN	skipped	-	IPv4 needs the tos argument to ip_build_and_send_pkt() (4.9 takes tos from inet_sk(sk)); IPv6-only half would be inconsistent; behavioural, not memory safety
 179	4314a44564eb	bpf: Fix out-of-bounds read in bpf_patch_call_args()	n/a	-	no path here lets a subprog stack_depth exceed MAX_BPF_STACK (no stack_depth_extra/inlining or private stack), so interpreters_args index stays in range
-180	435b08ec0094	bpf, test, cgroup: Use sk_{alloc,free} for test cases	ported	e139bdfcf3aa	kzalloc'd sk gave NULL cgroup (NET_PRIO/CLASSID off) to bpf_skb_cgroup_id
-181	436901649731	bpf: cpumap: Fix memory leak in cpu_map_update_elem	ported	90f7f240ad6b	same; superseded by 640a604585aa as upstream
-182	4540aed51b12	bpf: Enforce expected_attach_type for tailcall compatibility	ported	4f2f5ebdefcc	owner field added to struct bpf_array (no bpf_map_owner)
+180	435b08ec0094	bpf, test, cgroup: Use sk_{alloc,free} for test cases	ported	3fd8961d4d22	kzalloc'd sk gave NULL cgroup (NET_PRIO/CLASSID off) to bpf_skb_cgroup_id
+181	436901649731	bpf: cpumap: Fix memory leak in cpu_map_update_elem	ported	8e53db55315b	same; superseded by 640a604585aa as upstream
+182	4540aed51b12	bpf: Enforce expected_attach_type for tailcall compatibility	ported	5ac8892f7772	owner field added to struct bpf_array (no bpf_map_owner)
 183	458bf2f224f0	net: core: support XDP generic on stacked devices.	skipped	-	moves generic XDP into __netif_receive_skb_core RX hot path; behavioural change for bond/team stacking with later upstream follow-ups, not a safety fix
 184	46df3d209db0	trace: reenable preemption if we modify the ip	n/a	-	no bpf_override_return/error injection; kprobe_perf_func() returns void and kprobe_dispatcher() never modifies ip
-185	4da3b7b8b50f	net: xps: reject an out of range traffic class	ported	0cc65e98258c	check added in 4.9 netif_set_xps_queue()
-186	532d6b36b2bf	bpf: Handle in-place update for full LPM trie correctly	ported	c1dd13211f54	same restructuring
-187	576afddfee8d	bpf: Fix OOB in pcpu_init_value	ported	05bd288a0312	bpf_long_memcpy(round_up size) -> copy_map_value()
-188	5828b9e5b272	bpf: fix end-of-list detection in cgroup_storage_get_next_key()	ported	0da0446c80b0	list_entry_is_head open-coded
-189	58a8f3e2501d	bpf: Fix s16 truncation for large bpf-to-bpf call offsets	ported	bfe249df3370	verifier.c instead of fixups.c; BPF_CALL_IMM open-coded; privileged progs up to 1M insns here
-190	5cf65922bb15	flow_dissector: Drop BPF flow dissector prog ref on netns cleanup	ported	02cd6c6864fe	no pernet .pre_exit in 4.9; uses .exit
+185	4da3b7b8b50f	net: xps: reject an out of range traffic class	ported	fd0972a81808	check added in 4.9 netif_set_xps_queue()
+186	532d6b36b2bf	bpf: Handle in-place update for full LPM trie correctly	ported	746ce93998d0	same restructuring
+187	576afddfee8d	bpf: Fix OOB in pcpu_init_value	ported	c1a5a888a28a	bpf_long_memcpy(round_up size) -> copy_map_value()
+188	5828b9e5b272	bpf: fix end-of-list detection in cgroup_storage_get_next_key()	ported	644e5e45d026	list_entry_is_head open-coded
+189	58a8f3e2501d	bpf: Fix s16 truncation for large bpf-to-bpf call offsets	ported	c36a9dbe4ca7	verifier.c instead of fixups.c; BPF_CALL_IMM open-coded; privileged progs up to 1M insns here
+190	5cf65922bb15	flow_dissector: Drop BPF flow dissector prog ref on netns cleanup	ported	43070604a185	no pernet .pre_exit in 4.9; uses .exit
 191	5efc7b9f7cbd	tcp: annotate data-races around tp->bytes_retrans	n/a	-	annotation only; no lockless reader here (no TCP_NLA_BYTES_RETRANS in opt stats, not in tcp_get_info)
 192	622d13694b5f	xdp: fix xdp_return_frame() kernel BUG throw for page_pool memory model	n/a	-	CONFIG_PAGE_POOL off: is_page_pool_compiled_in() false, MEM_TYPE_PAGE_POOL cannot be registered
-193	640a604585aa	bpf, cpumap: Make sure kthread is running before map update returns	ported	4db51dce0eb2	completion added; reverts 436901649731 error path as upstream
+193	640a604585aa	bpf, cpumap: Make sure kthread is running before map update returns	ported	e538c21759eb	completion added; reverts 436901649731 error path as upstream
 194	6ae08ae3dea2	bpf: Add probe_read_{user, kernel} and probe_read_{user, kernel}_str helpers	skipped	-	adds four new helpers (feature); kernel variants need probe_kernel_read_strict()/strncpy_from_unsafe_strict() (75a1a607bb7e), absent here
 195	6e8cfd6d9d80	tun: Fix use-after-free on XDP_TX	n/a	-	4.9 tun.c has no XDP support (no tun_xdp_tx/XDP_TX path)
-196	704b862f9efd	mm/vmalloc.c: don't unconditonally use __GFP_HIGHMEM	ported	1ac5e6d41175	same code; arm64 ZONE_DMA=y so vmalloc_32 hits it
-197	75f8cf22463d	bpf: Fix out-of-bounds read of rtt_min in sock_ops	skipped	-	needs fd09af010788 first: this tree's SOCK_OPS_GET_FIELD() clobbers src when dst_reg == src_reg, so routing rtt_min through it would turn the common r1=ctx->rtt_min load into a bad-pointer read
+196	704b862f9efd	mm/vmalloc.c: don't unconditonally use __GFP_HIGHMEM	ported	dd22a565427e	same code; arm64 ZONE_DMA=y so vmalloc_32 hits it
+197	75f8cf22463d	bpf: Fix out-of-bounds read of rtt_min in sock_ops	ported	577bef7a571d	via SOCK_OPS_GET_FIELD, after fd09af010788
 198	78c3aff834f7	bpf: fix sysctl.c warning	n/a	-	build-only fix for proc_dointvec_minmax_bpf_stats, which does not exist here (sysctl uses proc_do_static_key)
-199	7ac6e1ae41a0	bpf: Zero queue and stack outputs on lock failure	ported	dd2f4f658555	memset on the in_nmi trylock -EBUSY path
-200	7cbd0c4cebe4	bpf: Fix UAF in sock clone early bailouts	ported	b0377b76669e	sk_clone_lock() in 4.9
-201	7dc211c1159d	bpf: Fix invalid prog->stats access when update_effective_progs fails	ported	1b4219f54f30	guard in BPF_PROG_RUN(); dummy prog has no aux here
-202	7e9f79428372	xdp: Remove WARN() from __xdp_reg_mem_model()	ported	a5f30b9e2695	warning only, code identical
+199	7ac6e1ae41a0	bpf: Zero queue and stack outputs on lock failure	ported	870f4be97067	memset on the in_nmi trylock -EBUSY path
+200	7cbd0c4cebe4	bpf: Fix UAF in sock clone early bailouts	ported	06f700b51bbe	sk_clone_lock() in 4.9
+201	7dc211c1159d	bpf: Fix invalid prog->stats access when update_effective_progs fails	ported	e8833918caec	guard in BPF_PROG_RUN(); dummy prog has no aux here
+202	7e9f79428372	xdp: Remove WARN() from __xdp_reg_mem_model()	ported	772fb4c51f2c	warning only, code identical
 203	833e0e2f24fd	net: dst: move cpu inside ifdef to avoid compilation warning	n/a	-	build warning only when CONFIG_DST_CACHE is off; DST_CACHE=y here
-204	836e66c218f3	bpf: Fix up bpf_skb_adjust_room helper's skb csum setting	ported	9e8d60f94cad	adds BPF_F_ADJ_ROOM_NO_CSUM_RESET uapi flag; tools uapi copy lacks adjust_room flags, untouched
-205	85749218e3a6	bpf: Fix out of bounds memory access in bpf_sk_storage	ported	14ec27961a0d	bucket_log floor of 1; context differs (charge_init)
-206	86a7e0b69bd5	net: prevent rewrite of msg_name in sock_sendmsg()	ported	95ec5b5d301f	__sock_sendmsg split; sock_sendmsg copies msg_name
-207	871019b22d1b	net: set SOCK_RCU_FREE before inserting socket into hashtable	ported	48a77c3b78f5	SOCK_RCU_FREE set before listening-hash insert (ilb)
-208	87ac0d600943	bpf: fix potential 32-bit overflow when accessing ARRAY map element	ported	ccd71f721b69	(u64) casts in lookup/update; helper not needed (no other users)
-209	88d6f130e563	bpf: Improve bucket_log calculation logic	ported	a7601aec5ff0	applies after 85749218e3a6
+204	836e66c218f3	bpf: Fix up bpf_skb_adjust_room helper's skb csum setting	ported	5a4004f18176	adds BPF_F_ADJ_ROOM_NO_CSUM_RESET uapi flag; tools uapi copy lacks adjust_room flags, untouched
+205	85749218e3a6	bpf: Fix out of bounds memory access in bpf_sk_storage	ported	2c46da3e7708	bucket_log floor of 1; context differs (charge_init)
+206	86a7e0b69bd5	net: prevent rewrite of msg_name in sock_sendmsg()	ported	88530110104d	__sock_sendmsg split; sock_sendmsg copies msg_name
+207	871019b22d1b	net: set SOCK_RCU_FREE before inserting socket into hashtable	ported	6d98c6d41d5a	SOCK_RCU_FREE set before listening-hash insert (ilb)
+208	87ac0d600943	bpf: fix potential 32-bit overflow when accessing ARRAY map element	ported	b80269b058bd	(u64) casts in lookup/update; helper not needed (no other users)
+209	88d6f130e563	bpf: Improve bucket_log calculation logic	ported	87f9dcb7fa55	applies after 85749218e3a6
 210	89edbdfc5d03	bpf: Fix NMI/tracepoint re-entry deadlock on lru locks	skipped	-	needs rqspinlock_t (absent) and reworks every LRU lock site
-211	8c7224245557	tracing/uprobes: Check the return value of kstrdup() for tu->filename	ported	6ff1c9e3ec64	kstrdup NULL check in create_local_trace_uprobe
+211	8c7224245557	tracing/uprobes: Check the return value of kstrdup() for tu->filename	ported	c2504c92ba04	kstrdup NULL check in create_local_trace_uprobe
 212	8e83d5359644	bpf: Fix stale offload->prog pointer after realloc	n/a	-	no driver calls bpf_offload_dev_netdev_register; device-bound progs cannot load
-213	9594dc3c7e71	bpf: fix nested bpf tracepoints with per-cpu data	ported	2175311a63e3	3-level nesting for perf_event_output and raw_tp regs
+213	9594dc3c7e71	bpf: fix nested bpf tracepoints with per-cpu data	ported	76d6260388c0	3-level nesting for perf_event_output and raw_tp regs
 214	95fa145479fb	bpf: sockmap/tls, close can race with map free	n/a	-	sockmap/TLS not built: CONFIG_NET_SOCK_MSG off, no net/tls Makefile/Kconfig
-215	9724160b3942	bpf/btf: Accept function names that contain dots	ported	6d615ac6080c	drop dot_ok; __btf_name_valid reads btf->strings directly
+215	9724160b3942	bpf/btf: Accept function names that contain dots	ported	3b3b49622d97	drop dot_ok; __btf_name_valid reads btf->strings directly
 216	972787479ee7	bpf: test_run: Fix the null pointer dereference issue in bpf_lwt_xmit_push_encap	n/a	-	CONFIG_LWTUNNEL_BPF off: bpf_lwt_xmit_push_encap has no IP encap case
-217	98da8ce87dd5	soreuseport: Clear sk_reuseport_cb before failure in sk_clone().	ported	b3ccdb013f7a	clear sk_reuseport_cb before first failure path in sk_clone_lock
-218	990348e5bb45	tcp: clear sock_ops cb flags before force-closing a child socket	ported	14a5aca7e91d	clear cb flags in inet_csk_prepare_forced_close (TCP only)
+217	98da8ce87dd5	soreuseport: Clear sk_reuseport_cb before failure in sk_clone().	ported	6a9a418d4e52	clear sk_reuseport_cb before first failure path in sk_clone_lock
+218	990348e5bb45	tcp: clear sock_ops cb flags before force-closing a child socket	ported	10e754744153	clear cb flags in inet_csk_prepare_forced_close (TCP only)
 219	993d0b287e2e	usercopy: Handle vm_map_ram() areas	n/a	-	4.9 usercopy has no vmalloc area check (0aef499f3172 absent)
-220	99bda1ecbd56	flow_dissector: avoid u16 truncation of skb->len when computing thoff	ported	c301cd09d29b	u32 thoff with U16_MAX cap
+220	99bda1ecbd56	flow_dissector: avoid u16 truncation of skb->len when computing thoff	ported	c1dc7bdf320f	u32 thoff with U16_MAX cap
 221	9a5cb79762e0	bpf: Fix bpf socket lookup from tc/xdp to respect socket VRF bindings	n/a	-	CONFIG_NET_L3_MASTER_DEV off; tree's sk lookup has no sdif
-222	9b75dbeb36fc	bpf, lpm: Fix check prefixlen before walking trie	ported	a405a8d909a6	prefixlen check before trie walk
+222	9b75dbeb36fc	bpf, lpm: Fix check prefixlen before walking trie	ported	ce492b71102c	prefixlen check before trie walk
 223	a5f4d9df1f7b	mm: usercopy: move the virt_addr_valid() below the is_vmalloc_addr()	n/a	-	4.9 usercopy has no kmap/vmalloc checks after virt_addr_valid
 224	a984705ca88b	tcp: annotate data-races around tp->dsack_dups	n/a	-	no lockless reader: tcp_get_timestamping_opt_stats absent in 4.9
 225	ad1e03b2b3d4	core: Don't skip generic XDP program execution for cloned SKBs	skipped	-	needs skb tc-redirect marker (skb_is_tc_redirected); skb_cloned check is the only guard against mirred reinjection
-226	afec62cd0a41	flow_dissector: use RCU protection to fetch dev_net()	ported	07b120731850	RCU section widened over dev_net(); no dev_net_rcu in 4.9
+226	afec62cd0a41	flow_dissector: use RCU protection to fetch dev_net()	ported	131ad5eb1f60	RCU section widened over dev_net(); no dev_net_rcu in 4.9
 227	b1a47b2708d4	bpf: Disable preemption in __bpf_get_stack	n/a	-	all BPF progs run with preemption disabled here (no sleepable/migrate_disable runs)
-228	ba9db6f907ac	net: clear the dst when changing skb protocol	ported	339da4244ada	bpf_skb_change_protocol at 4to6/6to4/net_grow; shrink has no decap flags
-229	bf955b5ab8f6	net: Fix data-races around weight_p and dev_weight_[rt]x_bias.	ported	584a3cb5b711	mutex + READ_ONCE/WRITE_ONCE for weight_p and biases
-230	c180188ec022	net: set the minimum for net_hotdata.netdev_budget_usecs	ported	e9b4d860f9db	netdev_budget_usecs min 2 jiffies
-231	c889a99a21bf	net: prevent address rewrite in kernel_bind()	ported	22e7b2ef75af	kernel_bind copies addr; IPVS/RDS hunks dropped (configs off)
-232	c9a368f1c0fb	bpf: net: Avoid incorrect bpf_sk_reuseport_detach call	ported	a0558861e608	SK_USER_DATA_BPF tag; L2TP=y so reachable
-233	d1f9f79fa2af	net: let net.core.dev_weight always be non-zero	ported	10c0c02961f1	extra1 = &one and proc_dointvec_minmax
-234	d836f5c69d87	net: rtnetlink: validate IFLA_MTU attribute in rtnl_create_link()	ported	a9ddeed69ca7	dev_validate_mtu() in rtnl_create_link; no extack there
-235	e09299225d5b	bpf: Reject narrower access to pointer ctx fields	ported	180d28b36bb4	bpf_ctx_range_ptr for existing ptr fields in filter.c/cgroup.c
-236	e16ec34039c7	bpf: fix potential deadlock in bpf_prog_register	ported	71fadcb84232	drop bpf_event_mutex around raw tp register/unregister
+228	ba9db6f907ac	net: clear the dst when changing skb protocol	ported	1c6edcf79f6b	bpf_skb_change_protocol at 4to6/6to4/net_grow; shrink has no decap flags
+229	bf955b5ab8f6	net: Fix data-races around weight_p and dev_weight_[rt]x_bias.	ported	6e7889744b16	mutex + READ_ONCE/WRITE_ONCE for weight_p and biases
+230	c180188ec022	net: set the minimum for net_hotdata.netdev_budget_usecs	ported	7c361e3a3a76	netdev_budget_usecs min 2 jiffies
+231	c889a99a21bf	net: prevent address rewrite in kernel_bind()	ported	740a427749df	kernel_bind copies addr; IPVS/RDS hunks dropped (configs off)
+232	c9a368f1c0fb	bpf: net: Avoid incorrect bpf_sk_reuseport_detach call	ported	bb8e9d415157	SK_USER_DATA_BPF tag; L2TP=y so reachable
+233	d1f9f79fa2af	net: let net.core.dev_weight always be non-zero	ported	cf773f3f302b	extra1 = &one and proc_dointvec_minmax
+234	d836f5c69d87	net: rtnetlink: validate IFLA_MTU attribute in rtnl_create_link()	ported	aa977b29b73d	dev_validate_mtu() in rtnl_create_link; no extack there
+235	e09299225d5b	bpf: Reject narrower access to pointer ctx fields	ported	9b70259fd131	bpf_ctx_range_ptr for existing ptr fields in filter.c/cgroup.c
+236	e16ec34039c7	bpf: fix potential deadlock in bpf_prog_register	ported	b04adab101dd	drop bpf_event_mutex around raw tp register/unregister
 237	e8e36984080b	bpf: Fix [::] -> [::1] rewrite in sys_sendmsg	already	-	net/ipv6/udp.c udpv6_sendmsg applies BSD'ism after the BPF UDP6_SENDMSG block
 238	ee2a098851bf	bpf: Adjust BPF stack helper functions to accommodate skip > 0	skipped	-	behaviour change to get_perf_callchain init_nr use; would bring in the overflow fixed by 23f852daa4ba
 239	ee43e957ce2e	tcp: annotate data-races around tp->bytes_sent	n/a	-	no lockless reader: tcp_get_timestamping_opt_stats absent in 4.9
 240	ee4f44e0e3c8	bpf: Look at all 64 bits of a BPF_JSET mask on 32-bit	n/a	-	32-bit kernels only; sargo is arm64
 241	f12dd75959b0	bpf: net: Set sk_bpf_storage back to NULL for cloned sk	already	-	bpf_sk_storage_clone() sets newsk->sk_bpf_storage NULL (net/core/bpf_sk_storage.c, from 8f51dfc73bf1)
-242	f202578efc73	flow_dissector: avoid u16 truncation of hlen in bpf_flow_dissect()	ported	500d2ecf34ce	cap hlen to U16_MAX before clamp in bpf_flow_dissect
-243	f3dda7a679df	bpf: net: Avoid copying sk_user_data of reuseport_array during sk_clone	ported	e025e782fd48	adds minimal SK_USER_DATA_NOCOPY/PTRMASK and clone clear (from f1ff5ce2cd5e)
+242	f202578efc73	flow_dissector: avoid u16 truncation of hlen in bpf_flow_dissect()	ported	bca89cc70456	cap hlen to U16_MAX before clamp in bpf_flow_dissect
+243	f3dda7a679df	bpf: net: Avoid copying sk_user_data of reuseport_array during sk_clone	ported	1f1c9f3c8b98	adds minimal SK_USER_DATA_NOCOPY/PTRMASK and clone clear (from f1ff5ce2cd5e)
 244	f99351272933	bpf, cpumap: Hold the device of frames in the queue	n/a	-	cpumap enqueue unreachable: no driver calls xdp_do_redirect, generic XDP has no cpumap path
-245	fa45d484c52c	net: Fix a data-race around netdev_budget_usecs.	ported	686bd03b3a41	READ_ONCE(netdev_budget_usecs) in net_rx_action
-246	fa9dcacdcdf4	bpf: Fix mmap_lock leak in irq_work path	ported	dc0111e4ef8d	atomic active slot in stackmap's own up_read irq_work
+245	fa45d484c52c	net: Fix a data-race around netdev_budget_usecs.	ported	fa1eb31b2cdc	READ_ONCE(netdev_budget_usecs) in net_rx_action
+246	fa9dcacdcdf4	bpf: Fix mmap_lock leak in irq_work path	ported	cb36bb90f32a	atomic active slot in stackmap's own up_read irq_work
 247	faa886ad3ce5	tcp: annotate data-races around tp->delivered and tp->delivered_ce	n/a	-	no lockless reader: tcp_get_timestamping_opt_stats and tcp_ecn.h absent
-248	fb25038586d0	net-sysfs: take the rtnl lock when accessing xps_cpus_map and num_tc	ported	62a4fdb9086b	rtnl_trylock in show_xps_map
-249	fd09af010788	bpf: sock_ops ctx access may stomp registers in corner case	ported	7b8a7e5ade4a	temp-register save in SOCK_OPS_GET_FIELD when dst==src
-250	01b2885d9415	net: Save and restore msg_namelen in sock_sendmsg	ported	5f01cb163520	applies after 86a7e0b69bd5
+248	fb25038586d0	net-sysfs: take the rtnl lock when accessing xps_cpus_map and num_tc	ported	d5841a70217d	rtnl_trylock in show_xps_map
+249	fd09af010788	bpf: sock_ops ctx access may stomp registers in corner case	ported	2a5f9da005c0	temp-register save in SOCK_OPS_GET_FIELD when dst==src
+250	01b2885d9415	net: Save and restore msg_namelen in sock_sendmsg	ported	18534c4839d0	applies after 86a7e0b69bd5
 251	0be9ae5486cd	bpf, events: Use prog to emit ksymbol event for main program	n/a	-	no PERF_RECORD_KSYMBOL / perf_event_bpf_emit_ksymbols in 4.9
 252	22b6034323fd	net, xdp: Update pkt_type if generic XDP changes unicast MAC	already	-	netif_receive_generic_xdp in net/core/dev.c already has orig_host and PACKET_HOST reset
 253	23f852daa4ba	bpf: Fix stackmap overflow check in __bpf_get_stackid()	n/a	-	bug introduced by ee2a098851bf (not present); 4.9 bounds trace_nr by init_nr from max_depth
-254	325f3fb551f8	kprobes: Fix possible use-after-free issue on kprobe registration	ported	40eb9868ba6b	single __module_text_address; also rejects ftrace-trampoline/BPF text like upstream
+254	325f3fb551f8	kprobes: Fix possible use-after-free issue on kprobe registration	ported	9bd5facd978b	single __module_text_address; also rejects ftrace-trampoline/BPF text like upstream
 255	33bfe20dd711	bpf: Sockmap/tls, push write_space updates through ulp updates	n/a	-	sockmap/TLS not built: CONFIG_NET_SOCK_MSG off, no net/tls Makefile/Kconfig
 256	36ccdf85829a	net, xsk: Avoid taking multiple skbuff references	n/a	-	CONFIG_XDP_SOCKETS off
-257	3880cdbed1c4	bpf: Fix WARN() in get_bpf_raw_tp_regs	ported	91b96f5f9bf3	applies after 9594dc3c7e71
-258	6fa6d28051e9	lib/strncpy_from_user.c: Mask out bytes after NUL terminator.	ported	6645dc5b9bae	lib hunk only; bpf_trace comment hunk targets absent function
+257	3880cdbed1c4	bpf: Fix WARN() in get_bpf_raw_tp_regs	ported	e22fa727aff1	applies after 9594dc3c7e71
+258	6fa6d28051e9	lib/strncpy_from_user.c: Mask out bytes after NUL terminator.	ported	efc4b062fa64	lib hunk only; bpf_trace comment hunk targets absent function
 259	8ccc99362b60	net/ulp: use consistent error code when blocking ULP	n/a	-	__tcp_set_ulp() here has no TCP_LISTEN/!clone check (2c02d41d71f9 absent), so no -EINVAL to restore
 260	94ce3b64c62d	net/tls: Use RCU API to access tls_ctx->netdev	n/a	-	TLS device offload not in tree (net/tls has no Makefile/Kconfig, no include/net/tls.h, no bond TLS code)
 261	978c4486cca5	bpf,perf: Fix invalid prog_array access in perf_event_detach_bpf_prog	n/a	-	perf_event_detach_bpf_prog() predates 0ee288e69d03: bpf_prog_array_copy() returns -ENOENT for NULL array and it bails out before any deref
@@ -266,40 +266,41 @@
 263	0608c69c9a80	bpf: sk_msg, sock{map|hash} redirect through ULP	n/a	-	CONFIG_NET_SOCK_MSG off (tcp_bpf.o not built) and no ktls (tls_sw.c absent)
 264	0eac8ce95bb3	ptr_ring: add include of linux/mm.h	n/a	-	ptr_ring.h here uses kcalloc/kfree (slab.h), no kvmalloc_array/kvfree
 265	2660a544fdc0	net: Fix TOCTOU issue in sk_is_readable()	n/a	-	No sk_is_readable()/proto->sock_is_readable in this tree
-266	28b05b928868	net: use correct this_cpu primitive in dev_recursion_level	ported	23935bf8610a	same one-line change
+266	28b05b928868	net: use correct this_cpu primitive in dev_recursion_level	ported	55c9ac3f7df1	same one-line change
 267	31c417c948d7	ip_gre, ip6_gre: Fix race condition on o_seqno in collect_md mode	n/a	-	CONFIG_NET_IPGRE and CONFIG_IPV6_GRE off
 268	3413f04141aa	xsk: Change the tx writeable condition	n/a	-	CONFIG_XDP_SOCKETS off
-269	343a3e8bc635	bpf: Fix -Wshadow warnings	ported	1cde2b5fdaae	locals renamed in BPF_PROG_RUN() (no __BPF_PROG_RUN here)
+269	343a3e8bc635	bpf: Fix -Wshadow warnings	ported	98903843d7af	locals renamed in BPF_PROG_RUN() (no __BPF_PROG_RUN here)
 270	54f89b3178d5	tcp_bpf: Charge receive socket buffer in bpf_tcp_ingress()	n/a	-	CONFIG_NET_SOCK_MSG off; sock.h part only serves tcp_bpf
 271	65c204398928	bpf: Prevent .BTF section elimination	already	-	include/asm-generic/vmlinux.lds.h BTF macro already uses KEEP(*(.BTF))
 272	6648e613226e	bpf, skmsg: Fix NULL pointer dereference in sk_psock_skb_ingress_enqueue	n/a	-	CONFIG_NET_SOCK_MSG off (skmsg.o not built)
 273	7303524e04af	skmsg: Lose offset info in sk_psock_skb_ingress	n/a	-	CONFIG_NET_SOCK_MSG off (skmsg.o not built)
 274	829385f08ae9	strparser: Use delayed work instead of timer for msg timeout	n/a	-	CONFIG_STREAM_PARSER off
 275	9262478220ea	bpf: enforce correct alignment for instructions	n/a	-	bpf_binary_header here is u32 pages (+u32 magic with CFI), image already 4-aligned; no u16 locked bitfield
-276	948dc8c99a22	bpf: btf: fix the brackets of BTF_INT_OFFSET()	ported	d9cb26bc1f1f	uapi btf.h only (no btf.rst, no tools copy)
-277	9974cb5c8790	net: delete redundant function declaration	ported	ab57323cbaa3	same declaration removed
+276	948dc8c99a22	bpf: btf: fix the brackets of BTF_INT_OFFSET()	ported	60af30453e6f	uapi btf.h only (no btf.rst, no tools copy)
+277	9974cb5c8790	net: delete redundant function declaration	ported	d24c51317037	same declaration removed
 278	a351d6087bf7	bpf, sockmap: Fix missing BPF_F_INGRESS flag when using apply_bytes	n/a	-	CONFIG_NET_SOCK_MSG off; no ktls
 279	ac31565c2193	xsk: Fix for xp_aligned_validate_desc() when len == chunk_size	n/a	-	CONFIG_XDP_SOCKETS off
-280	b55cbc8d9b44	bpf: fix doc of bpf_skb_adjust_room() in uapi	ported	d11ccf704413	uapi bpf.h only (tools copy lacks helper docs)
-281	bdb2bc759929	bpf: fix bpf_skb_pull_data documentation	ported	9e48635d8a36	uapi bpf.h only (tools copy lacks helper docs)
-282	bef8e2639242	bpf: avoid unused variable warning in tcp_bpf_rtt()	ported	88b03916bdf3	same change
+280	b55cbc8d9b44	bpf: fix doc of bpf_skb_adjust_room() in uapi	ported	5b4f40575894	uapi bpf.h only (tools copy lacks helper docs)
+281	bdb2bc759929	bpf: fix bpf_skb_pull_data documentation	ported	284fc55de71d	uapi bpf.h only (tools copy lacks helper docs)
+282	bef8e2639242	bpf: avoid unused variable warning in tcp_bpf_rtt()	ported	9c541d1843a8	same change
 283	bf0bdd1343ef	xdp: fix race on generic receive path	n/a	-	CONFIG_XDP_SOCKETS off
 284	c57b557b644d	xsk: fix to reject invalid options in Tx descriptor	n/a	-	CONFIG_XDP_SOCKETS off
-285	c95c34f01bbd	xsk: Remove dangling function declaration from header file	ported	4ae0139076cb	same declaration removed
+285	c95c34f01bbd	xsk: Remove dangling function declaration from header file	ported	a4f46e37fc25	same declaration removed
 286	d888b7af7c14	tcp_bpf: Add sk_rmem_alloc related logic for tcp_bpf ingress redirection	n/a	-	CONFIG_NET_SOCK_MSG off
 287	d894be57ca92	ethernet: use net core MTU range checking in more drivers	n/a	-	none of the touched drivers are built (incl. QCOM_EMAC)
 288	e91de6afa81c	bpf: Fix running sk_skb program types with ktls	n/a	-	CONFIG_NET_SOCK_MSG off and no ktls
 289	ee62ce7a1d90	page_pool: Track DMA-mapped pages and unmap them when destroying the pool	n/a	-	CONFIG_PAGE_POOL off; no pp_magic/PP_SIGNATURE in mm.h
 290	f09ced4053bc	xsk: Fix race in SKB mode transmit with shared cq	n/a	-	CONFIG_XDP_SOCKETS off; no xsk_buff_pool
-291	f170acda7ffa	bpf: Fix a typo of reuseport map in bpf.h.	ported	e5df14f94be0	older doc wording, same typo fixed in uapi bpf.h
+291	f170acda7ffa	bpf: Fix a typo of reuseport map in bpf.h.	ported	389679818ccf	older doc wording, same typo fixed in uapi bpf.h
 292	f941eadd8d6d	bpf: Avoid races in __bpf_prog_run() for 32bit arches	n/a	-	64-bit arm64: u64_stats_update_begin/irqsave are no-ops, upstream says nop on 64bit
 293	fc6d80eb5044	tcp: prevent collapsing skbs across boundary in rtx queue	n/a	-	No tcp_write_collapse_fence()/skb->decrypted or TLS device offload in tree
-294	fd3ba21478d0	net: fix xdp_rxq_info build issue when CONFIG_SYSFS is not set	ported	188f08d8ea97	same struct hunk; CONFIG_SYSFS=y so no layout change
+294	fd3ba21478d0	net: fix xdp_rxq_info build issue when CONFIG_SYSFS is not set	ported	3f0e09eac0c7	same struct hunk; CONFIG_SYSFS=y so no layout change
 295	95920c2ed02b	page_pool: Fix PP_MAGIC_MASK to avoid crashing on some 32-bit arches	n/a	-	CONFIG_PAGE_POOL off; no PP_MAGIC_MASK
 296	a1356ac7749c	xsk: Fix race condition in AF_XDP generic RX path	n/a	-	CONFIG_XDP_SOCKETS off; no xsk_buff_pool
 297	b1b95cb5c0a9	xsk: Rollback reservation at NETDEV_TX_BUSY	n/a	-	CONFIG_XDP_SOCKETS off
 298	f654fae47e83	xsk: Fix broken Tx ring validation	n/a	-	CONFIG_XDP_SOCKETS off
-299	31e67340cc65	mm/vmalloc: Avoid rare case of flushing TLB with weird arguments	ported	43b26e47339e	3-way merge (backlog)
-300	90545cdc3f2b	tcp, ulp: fix leftover icsk_ulp_ops preventing sock from reattach	ported	b84f43ca0021	3-way merge (backlog)
-301	81aabbb9fb7b	bpf, sockmap: bpf_tcp_ingress needs to subtract bytes from sg.size	ported	8e6b0360e3d4	3-way merge (backlog)
+299	31e67340cc65	mm/vmalloc: Avoid rare case of flushing TLB with weird arguments	ported	d13c16f7d366	3-way merge (backlog)
+300	90545cdc3f2b	tcp, ulp: fix leftover icsk_ulp_ops preventing sock from reattach	ported	c6971e348ec5	3-way merge (backlog)
+301	81aabbb9fb7b	bpf, sockmap: bpf_tcp_ingress needs to subtract bytes from sg.size	ported	e3acf9460b5e	3-way merge (backlog)
 302	83540fbc8812	tracing/perf: Use strndup_user() instead of buggy open-coded version	already	-	patch applies in reverse
+303	0bdf399342c5	net: Avoid address overwrite in kernel_connect	ported	045e048539a0	same as the kernel_bind() fix c889a99a21bf
