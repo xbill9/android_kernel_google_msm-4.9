@@ -305,3 +305,132 @@
 302	83540fbc8812	tracing/perf: Use strndup_user() instead of buggy open-coded version	already	-	patch applies in reverse
 303	0bdf399342c5	net: Avoid address overwrite in kernel_connect	ported	c35c4cbe0e99	same as the kernel_bind() fix c889a99a21bf
 304	3d4762639dd3	tcp: remove poll() flakes when receiving RST	ported	c00cd0b9cbd5	no Fixes tag, so the scan missed it; fixes the VTS PollOnCloseTest#testReadPollRst flake
+305	db57a1aa54ff	wifi: rsi: fix kthread lifetime race between self-exit and external-stop	ported	dfdc4cfd97b7	applied as is
+306	8146cd333d23	ALSA: core: Fix potential data race at fasync handling	ported	c4a2200ab5dd	4.9 has no scoped_guard(); open-coded spin_lock_irq()/spin_unlock_irq()
+307	a9029dd55696	cpufreq: Fix hotplug-suspend race during reboot	ported	1d26ebfbcb9c	4.9 has no cpus_read_lock(); uses get_online_cpus()/put_online_cpus()
+308	05310f31ca74	xen/netback: don't do grant copy across page boundary	ported	81093d8323a8	applied as is
+309	b5f1a218ae5e	f2fs: fix normal discard process	ported	031b602bfa39	applied as is
+310	cd11d1a6114b	HID: steam: Prevent NULL pointer dereference in steam_{recv,send}_report	ported	e262c5b69827	applied as is
+311	07ea7a617d6b	ext4: recover csum seed of tmp_inode after migrating to extents	ported	94a9779a63d9	applied as is
+312	bcb62828e3e8	selinux: check return value of sel_make_avc_files	ported	cf553f660154	applied as is
+313	cfd0d84ba28c	binder: fix async_free_space accounting for empty parcels	ported	829cfde8a54c	applied as is
+314	ebb966d3bdfe	netfilter: fix regression in looped (broad|multi)cast's MAC handling	ported	281dc9f3b61a	applied as is
+315	db7205af049d	mac80211: mark TX-during-stop for TX in in_reconfig	ported	8be7ac2595d8	applied as is
+316	e7f7c99ba911	signal: In get_signal test for signal_group_exit every time through the loop	ported	e71882aac9f7	applied as is
+317	adf9ea89c719	f2fs: fix unexpected ENOENT comes from f2fs_map_blocks()	ported	f523b101394a	applied as is
+318	ad126ebddecb	f2fs: fix to account missing .skipped_gc_rwsem	ported	2cd23fb91fa2	applied as is
+319	8f6840c4fd1e	ext4: return error code when ext4_fill_flex_info() fails	ported	2ef134c0f473	applied as is
+320	505f394fa239	HID: hid-input: fix stylus battery reporting	ported	01fceeddcdfe	applied as is
+321	ef3f5830b859	jbd2: add the missing unlock_buffer() in the error path of jbd2_write_superblock()	ported	be9ce1b34acf	applied as is
+322	f4bd34b139a3	loop: replace kill_bdev with invalidate_bdev	ported	7b1a22fccf47	applied as is
+323	64611a15ca9d	dm crypt: avoid truncating the logical block size	ported	b59f74ae18fd	applied as is
+324	e0664ebcea6a	crypto: drbg - fix error return code in drbg_alloc_state()	ported	ecc0bf39fd71	applied as is
+325	4134252ab7e2	Input: fix stale timestamp on key autorepeat events	ported	935c0d24ad2f	applied as is
+326	dc5a941223ed	f2fs: fix to wait all node page writeback	ported	247acecc4ea8	applied as is
+327	ab10ae1c3bef	lib: Reduce user_access_begin() boundaries in strncpy_from_user() and strnlen_user()	ported	de2071e12ac7	applied as is
+328	15b590a81fcd	selinux: ensure the policy has been loaded before reading the sidtab stats	ported	94c0663a21ce	applied as is
+329	8eb52a1ee37a	binder: Fix race between mmap() and binder_alloc_print_pages()	ported	fb6852821173	4.9 has no binder_alloc_get_vma(); the check reads alloc->vma under alloc->mutex
+330	cb8434f16479	f2fs: fix inode rwsem regression	ported	bc31e908e432	applied as is
+331	98194030554c	f2fs: fix to avoid accessing uninitialized field of inode page in is_alive()	ported	8de9495d7fa4	applied as is
+332	e8c82c11c93d	f2fs: fix error path of f2fs_convert_inline_page()	ported	9f5d74e4dcf8	applied as is
+333	05e360061cbd	f2fs: fix to handle error path correctly in f2fs_map_blocks	ported	a8d2d7a05554	applied as is
+334	86f35dc39ef9	f2fs: fix extent corrupotion during directIO in LFS mode	ported	13f0d04d6cc6	applied as is
+335	9ea2f0be6cea	f2fs: fix wrong error injection path in inc_valid_block_count()	ported	e139735283f2	applied as is
+336	6de3c9e3f6b3	ALSA: usb-audio: Fix invalid NULL check in snd_emuusb_set_samplerate()	ported	46a763a2d4db	applied as is
+337	27cae0bcc051	f2fs: fix wrong available node count calculation	ported	3c55d2cee1aa	applied as is
+338	e0aaa332e6a9	xfrm interface: ifname may be wrong in logs	ported	1077d59ba20d	applied as is
+339	f5b07b04e5f0	dma-buf: Discard old fence_excl on retrying get_fences_rcu for realloc	ported	2dd3837ae826	4.9 names it fence_put(), not dma_fence_put()
+340	afa0925c6fcc	packet: unconditionally free po->rollover	ported	ec7eecec4d58	applied as is
+341	877181a8d9dc	selinux: fix non-MLS handling in mls_context_to_sid()	ported	37066e32bbf6	applied as is
+342	eb63f2964dbe	udp6: add missing checks on edumux packet processing	ported	2bb2f5368ddc	applied as is
+343	3d609342cc04	l2tp: fix refcount leakage on PPPoL2TP sockets	ported	004e8994ce67	applied as is
+344	fd40ffc72e2f	selinux: fix missing dput() before selinuxfs unmount	ported	b5a9ee936934	applied as is
+345	4fa55cefee1b	fix a braino in ITER_PIPE iov_iter_revert()	ported	89df836b1b1b	applied as is
+346	cd8d860dcce9	jump_label: Fix anonymous union initialization	n/a	-	4.9 struct static_key has no entries/next union; fails to build
+347	9e77716a75bc	fork: fix pidfd_poll()'s return type	n/a	-	type annotation only; 4.9 has no __poll_t
+348	869833f54e83	f2fs: fix to update map->m_next_extent correctly in f2fs_map_blocks()	skipped	-	needs is_hole from the later f2fs_map_blocks rewrite; precache-extents off-by-one only
+349	055db6957e47	bonding: fix slave stuck in BOND_LINK_FAIL state	n/a	-	needs slave->link_new_state (absent); bonding not used on the phone
+350	a096ccca6e50	tun: tun_chr_open(): correctly initialize socket uid	skipped	-	needs sock_init_data_uid() (absent)
+351	e54192b48da7	of: fix phandle cache creation for DTs with no phandles	n/a	-	4.9 phandle cache differs; fails to build
+352	263447532463	pinctrl: qcom: spmi-gpio: implement .get_direction()	skipped	-	needs analog_pass and GPIO_LINE_DIRECTION_* (absent); adds a callback, not a crash fix
+353	d8eca64eec71	usb: dwc3: gadget: fix race when disabling ep with cancelled xfers	n/a	-	needs dwc3_ep cancelled_list (absent)
+354	02a6982b0ccf	usb: dwc3: gadget: Fix checking for number of TRBs left	n/a	-	needs dwc3_request num_trbs (absent)
+355	4fa3b1c41737	proc: Handle umounts cleanly	n/a	-	target 69879c01a0c3 absent: 4.9 still has pid_ns->proc_mnt (scan matched a cited hash)
+356	937425d4cd3a	watchdog: Use put_device on error	n/a	-	target cb36e29bb0e4 absent: 4.9 calls device_initialize() after misc_register(), so put_device() would hit an uninitialised device
+357	ff244c6b29b1	tun: handle register_netdevice() failures properly	n/a	-	target cf124db566e6 absent: in 4.9 an early register_netdevice() failure does not run the destructor, so the patch would leak
+358	b60706644282	lib/vsprintf: Remove %pCr remnant in comment	n/a	-	comment only
+359	51bfb1d11d6d	futex: Fix kernel-doc notation warning	n/a	-	kernel-doc only
+360	da5c1c0bb316	fs/xattr.c: fix kernel-doc warnings for setxattr & removexattr	n/a	-	kernel-doc only
+361	15ec0fcff6da	kernel/sys.c: replace do_brk with do_brk_flags in comment of prctl_set_mm_map()	n/a	-	comment only
+362	ff72daa371f5	lib/string: remove unnecessary #undefs	n/a	-	cleanup only
+363	5fb14d20f824	net: add kerneldoc comment for sk_peer_lock	n/a	-	kernel-doc only
+364	20646f5b1e79	netfilter: xtables: Bring SPDX identifier back	n/a	-	SPDX line only
+365	9ba5c404bf1d	netfilter: x_tables: Add note about how to free percpu counters	n/a	-	comment only
+366	5e5ac01c2b88	raid6/test: fix a compilation warning	n/a	-	raid6 userspace test, not built
+367	6011002c1584	uio: make symbol 'uio_class_registered' static	n/a	-	sparse warning only
+368	5a59a3a0ef0e	ppp: fix __percpu annotation	n/a	-	sparse annotation only
+369	394e4f5d5834	initramfs: avoid "label at end of compound statement" error	n/a	-	compiler warning only
+370	5f8a4db715ca	infiniband: avoid overflow warning	n/a	-	compiler warning only
+371	146734b09143	string.h: workaround for increased stack usage	n/a	-	stack-usage workaround for a compiler not used here
+372	c03567a8e8d5	include/linux/compiler.h: don't perform compiletime_assert with -O0	n/a	-	-O0 builds only
+373	dc7fe518b049	overflow: Fix -Wtype-limits compilation warnings	n/a	-	compiler warning only
+374	7f34b43e07cb	arm64: fix clang warning about TRAMP_VALIAS	n/a	-	compiler warning only
+375	b330f3972f4f	fbdev: c2p: Fix link failure on non-inlining	n/a	-	link failure on a config not built here
+376	f50caa9b517a	debugfs: fix debugfs_real_fops() build error	n/a	-	build error on a config not built here
+377	342ed2400b78	workqueue: Remove unnecessary kfree() call in rcu_free_wq()	n/a	-	cleanup only
+378	595a438c78db	tracing: Make exported ftrace_set_clr_event non-static	n/a	-	export only, no in-tree user
+379	5b8481fa42ac	ipv6: Need to export ipv6_push_frag_opts for tunneling now.	n/a	-	export only, no in-tree user
+380	421d3a860d3d	binder: Remove unused binder lock events	n/a	-	removes unused tracepoints
+381	a594dec76077	binder: Remove unused binder lock events	n/a	-	removes unused tracepoints
+382	6f566af34628	Revert "typec: tcpm: Only request matching pdos"	skipped	-	behaviour change (typec PDO selection)
+383	1c024241d018	xhci: Improve the XHCI system resume time	skipped	-	performance (xhci resume time)
+384	9a6058312ea9	PCI/PM: Power up all devices during runtime resume	skipped	-	behaviour change (PCI runtime PM)
+385	e74d93e96d72	block: keep bdi->io_pages in sync with max_sectors_kb for stacked devices	skipped	-	behaviour change (block io_pages)
+386	95491e3cf378	net: ethtool: remove error check for legacy setting transceiver type	skipped	-	behaviour change (ethtool legacy transceiver)
+387	6878e7de6af7	driver core: suppress sending MODALIAS in UNBIND uevents	skipped	-	behaviour change (uevent MODALIAS)
+388	80a780a167d9	mmc: core: prepend 0x to pre_eol_info entry in sysfs	skipped	-	sysfs output format change
+389	176ef3c4dea3	f2fs: replace ktype default_attrs with default_groups	n/a	-	sysfs API refactor (default_groups)
+390	70a9ac36ffd8	f2fs: fix up f2fs_lookup tracepoints	n/a	-	tracepoint output only
+391	6564d0ad67ef	ALSA: ctl: Workaround for lockdep warning wrt card->ctl_files_rwlock	n/a	-	lockdep false positive only
+392	0113d9c9d1cc	ipv4: fix null-deref in ipv4_link_failure	already	-	patch applies in reverse
+393	0135c482fa97	f2fs: fix error path handling in truncate_dnode()	already	-	patch applies in reverse
+394	015b5bcbcb62	pinctrl: devicetree: don't free uninitialized dev_name on error path	already	-	patch applies in reverse
+395	0cd8feea8777	ext4: add i_data_sem protection in ext4_destroy_inline_data_nolock()	already	-	patch applies in reverse
+396	0d3984415054	perf/core: Fix low freq setting via IOC_PERIOD	already	-	patch applies in reverse
+397	1118aaa3b351	udp: also consider secpath when evaluating ipsec use for checksumming	already	-	patch applies in reverse
+398	13721a2ac66b	watchdog: Fix kmemleak in watchdog_cdev_register	already	-	patch applies in reverse
+399	25f420a0d4cf	Bluetooth: L2CAP: Fix ERTM re-init and zero pdu_len infinite loop	already	-	patch applies in reverse
+400	3091c21d3e93	binder: fix async space check for 0-sized buffers	already	-	patch applies in reverse
+401	31643d84b8c3	binder: fix hang of unregistered readers	already	-	patch applies in reverse
+402	381a0925c556	Bluetooth: hci_sock: Serialize dead-device detachment	already	-	patch applies in reverse
+403	41e99fe20051	usb: storage: Fix memory leak in USB bulk transport	already	-	patch applies in reverse
+404	420c84c330d1	usbnet: Prevents free active kevent	already	-	patch applies in reverse
+405	5ebdc6be16c2	phy: core: Fix an OF node refcount leakage in _of_phy_get()	already	-	patch applies in reverse
+406	687617555ced	Bluetooth: L2CAP: validate option length before reading conf opt value	already	-	patch applies in reverse
+407	75065a892906	net: af_key: fix sadb_x_filter validation	already	-	patch applies in reverse
+408	75f4197f1e11	dcache: don't put a mountpoint on a dentry that's being removed	already	-	patch applies in reverse
+409	782161895eb4	netfilter: ctnetlink: use helper function to calculate expect ID	already	-	patch applies in reverse
+410	8b07c1fb0f1a	f2fs: fix to initialize map.m_pblk in f2fs_precache_extents()	already	-	patch applies in reverse
+411	8d61f926d420	netlink: fix potential deadlock in netlink_set_err()	already	-	patch applies in reverse
+412	902c0b188752	netfilter: xt_IDLETIMER: fix panic that occurs when timer_type has garbage value	already	-	patch applies in reverse
+413	90449f2d1e1f	scsi: sg: Do not sleep in atomic context	already	-	patch applies in reverse
+414	94824ac9a8aa	ext4: fix off-by-one error in do_split	already	-	patch applies in reverse
+415	94894c9c477e	sched/rt: Skip currently executing CPU in rto_next_cpu()	already	-	patch applies in reverse
+416	973a57891608	usb: gadget: core: Check for unset descriptor	already	-	patch applies in reverse
+417	a0cedbcc8852	pinctrl: devicetree: fix refcount leak in pinctrl_dt_to_map()	already	-	patch applies in reverse
+418	a90bca2228c0	fs: sysfs: Fix reference leak in sysfs_break_active_protection()	already	-	patch applies in reverse
+419	ac1499fcd40f	ipv4: route: Prevent rt_bind_exception() from rebinding stale fnhe	already	-	patch applies in reverse
+420	adb9743d6a08	binder: fix memory leak in binder_init()	already	-	patch applies in reverse
+421	c1201b37f666	KEYS: Use acquire when reading state in keyring search	already	-	patch applies in reverse
+422	c2dbe32d5db5	sched/psi: Fix use-after-free in ep_remove_wait_queue()	already	-	patch applies in reverse
+423	c541a51b8ce8	f2fs: fix wrong max cost initialization	already	-	patch applies in reverse
+424	c6df843348d6	regmap: fix NULL deref on lookup	already	-	patch applies in reverse
+425	c9f62c8b2dbf	ext4: fix RENAME_WHITEOUT handling for inline directories	already	-	patch applies in reverse
+426	d6854daa67be	ALSA: usb-audio: Bound MIDI endpoint descriptor scans	already	-	patch applies in reverse
+427	de1689813840	ALSA: pcm: remove redundant variable runtime	already	-	patch applies in reverse
+428	e02938613eb2	f2fs: avoid trying to get invalid block address	already	-	patch applies in reverse
+429	e6807641ac94	HID: playstation: Add missing check for input_ff_create_memless	already	-	patch applies in reverse
+430	806a5198c059	Bluetooth: L2CAP: Fix rejecting L2CAP_CONN_PARAM_UPDATE_REQ	already	-	patch applies in reverse
+431	9b6c20f78847	net: usb: ax88179_178a: fix rx frame length for non-last packets	already	-	patch applies in reverse
+432	835d1c3a9879	arm64: Drop unnecessary include from asm/smp.h	already	-	patch applies in reverse
+433	ae79d5588a04	perf/core: Fix !CONFIG_PERF_EVENTS build warnings and failures	already	-	patch applies in reverse
