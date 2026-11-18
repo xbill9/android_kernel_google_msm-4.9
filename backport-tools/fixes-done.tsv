@@ -981,3 +981,5 @@
 978	30b03f2a0592	udp: Fall back to software USO if IPv6 extension headers are present	n/a	-	4.9 has no UDP GSO (UDP_SEGMENT, 4.18): no gso_size path in udp_send_skb or udp_offload; target 10154dbded6d code absent
 979	d96016a764f6	udp: Compute L4 checksum as usual when not segmenting the skb	n/a	-	4.9 has no UDP GSO (UDP_SEGMENT, 4.18): no gso_size path in udp_send_skb or udp_offload; target 10154dbded6d code absent
 980	8c409989678e	f2fs: fix start segno of large section	ported	3cdf1f2cc759	Fixes 61461fc921b7 (section walk must start at the section, not the SIT block)
+981	9facb861dc6b	ipv6: fib6: fix NULL deref in fib6_walk_continue() on multi-batch dump	ported	185c547b4b52	fixes pre-4.9 code (not in the scan); hit on sargo in CtsNetTestCases 2026-11-18, oops at ip6_fib.c:1597
+982	19b4ed644d68	ipv6: fix fib6 walker UAF on seq stop	ported	cf1d4d5f7125	fixes pre-4.9 code (not in the scan); same walker
