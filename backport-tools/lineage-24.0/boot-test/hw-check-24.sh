@@ -23,10 +23,14 @@ STAY=$(sh_ settings get global stay_on_while_plugged_in)
 ROT=$(sh_ settings get system accelerometer_rotation)
 BRI=$(sh_ settings get system screen_brightness_mode)
 OFFAPPS=$(sh_ pm list packages -d | sed 's/^package://')
-use_app() { # enable an app the user disabled, for one test; restore() disables it again
-  case " $(echo $OFFAPPS) " in *" $1 "*) sh_ pm enable "$1" >/dev/null; REENABLED="${REENABLED:-} $1" ;; esac; }
+use_app() { # an app the user disabled or removed, back for one test; restore() undoes that
+  case " $(echo $OFFAPPS) " in *" $1 "*) sh_ pm enable "$1" >/dev/null; REENABLED="${REENABLED:-} $1" ;; esac
+  sh_ pm list packages "$1" | grep -qx "package:$1" \
+    || { sh_ cmd package install-existing "$1" >/dev/null; REINSTALLED="${REINSTALLED:-} $1"; }; }
 restore() {
   for p in ${REENABLED:-}; do sh_ pm disable-user "$p" >/dev/null; done
+  for p in ${REINSTALLED:-}; do sh_ pm uninstall --user 0 "$p" >/dev/null; done
+  [ -n "${NFC_WAS_OFF:-}" ] && sh_ svc nfc disable
   sh_ settings put global stay_on_while_plugged_in "$STAY"
   sh_ settings put system accelerometer_rotation "$ROT"
   sh_ settings put system screen_brightness_mode "$BRI"
@@ -70,6 +74,11 @@ else res FAIL bluetooth "did not turn $s1 within 20 s (state $(bt))"; bt_to $s0 
 
 # NFC
 n=$(sh_ dumpsys nfc | grep -m1 -o 'mState=[a-z_]*')
+if [ "$n" = mState=off ]; then # switched off in Settings: on for the test, off again in restore()
+  NFC_WAS_OFF=1; sh_ svc nfc enable
+  wait_for 10 '[ "$(sh_ dumpsys nfc | grep -m1 -o "mState=[a-z_]*")" = mState=on ]'
+  n=$(sh_ dumpsys nfc | grep -m1 -o 'mState=[a-z_]*')
+fi
 [ "$n" = mState=on ] && res PASS nfc "$n" || res FAIL nfc "${n:-no nfc service}"
 
 # Modem and SIM
