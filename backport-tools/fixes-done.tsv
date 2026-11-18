@@ -356,7 +356,7 @@
 353	d8eca64eec71	usb: dwc3: gadget: fix race when disabling ep with cancelled xfers	n/a	-	needs dwc3_ep cancelled_list (absent)
 354	02a6982b0ccf	usb: dwc3: gadget: Fix checking for number of TRBs left	n/a	-	needs dwc3_request num_trbs (absent)
 355	4fa3b1c41737	proc: Handle umounts cleanly	n/a	-	target 69879c01a0c3 absent: 4.9 still has pid_ns->proc_mnt (scan matched a cited hash)
-356	937425d4cd3a	watchdog: Use put_device on error	n/a	-	target cb36e29bb0e4 absent: 4.9 calls device_initialize() after misc_register(), so put_device() would hit an uninitialised device
+356	937425d4cd3a	watchdog: Use put_device on error	ported	1a48406287ca	target cb36e29bb0e4 was ported in the drivers batch, so put_device() is now correct
 357	ff244c6b29b1	tun: handle register_netdevice() failures properly	n/a	-	target cf124db566e6 absent: in 4.9 an early register_netdevice() failure does not run the destructor, so the patch would leak
 358	b60706644282	lib/vsprintf: Remove %pCr remnant in comment	n/a	-	comment only
 359	51bfb1d11d6d	futex: Fix kernel-doc notation warning	n/a	-	kernel-doc only
@@ -631,3 +631,349 @@
 628	e75ce117905d	f2fs: fix condition in __allow_reserved_blocks()	ported	731459988ae1	apply root reservation only when reserve_root is set
 629	6840faddb656	f2fs: fix to update upper_p in __get_secs_required() correctly	n/a	-	fixes the 1acd73edbbfe code, which is not in this tree
 630	8c409989678e	f2fs: fix start segno of large section	n/a	-	fixes the use_section path of get_ckpt_valid_blocks() added by 61461fc921b7, not present
+631	0187c08058da	HID: hid-input: only ignore 0 battery events for digitizers	n/a	-	not built: CONFIG_HID_BATTERY_STRENGTH is not set
+632	03f705b9ca58	ALSA: usb-audio: Relax __free() variable declarations	n/a	-	fcp.c/mixer_scarlett2.c absent; no __free() users in sound/usb here
+633	05645366f389	usb: dwc3: gadget: Fix list_del corruption in dwc3_ep_dequeue	already	-	dwc3_gadget_ep_dequeue already jumps to out0 when !r->trb
+634	068834a2773b	USB: quirks: Ignore duplicate endpoint on Sound Devices MixPre-D	ported	cbd80e3b3906	BACKPORT: USB_QUIRK_ENDPOINT_IGNORE/usb_endpoint_ignore are still named USB_QUIRK_ENDPOINT_BLACKLIST/usb_endpoint_blacklist here
+635	0aea736ddb87	usb: gadget: f_fs: Fix a race condition when processing setup packets.	ported	efdb8ffd1ddb	UPSTREAM: applied unchanged (context-only differences)
+636	0eae2fde164c	usb: dwc3: pci: Add "linux,sysdev_is_parent" property	n/a	-	d64ff406e51e's dwc3-pci sysdev property code is absent here; dwc3-pci not used on sargo
+637	1739a976312e	ALSA: usb-audio: Complete cleanup after system-resume errors	ported	7ea520be9dc9	BACKPORT: this __usb_audio_resume() has no snd_usb_pcm_resume() loop (no UAC3 power domains); only the mixer-resume error path is changed
+638	1f74d3bff6fe	HID: nintendo: stop device IO before hid_hw_stop on probe failure	ported	11359636fe5d	BACKPORT: this earlier version of the driver has no joycon_init()/joycon_leds_create(); every error path after hid_device_io_start() (the err_mutex fall-through and the joycon_input_create() failure) now goes through err_io_stop
+639	23385cec5f35	usb: dwc3: gadget: refactor dwc3_repare_one_trb	skipped	-	refactor only; this tree's dwc3_prepare_one_trb already takes req (no __dwc3_prepare_one_trb)
+640	27b376b945c0	HID: nintendo: fix out-of-bounds read in joycon_ctlr_read_handler()	n/a	-	this (FROMLIST v1) driver parses only the 12-byte report header; no IMU/union parsing
+641	2b24eb060c2b	ALSA: usb-audio: Add sample rate quirk for Audioengine D1	ported	22faca78e9af	BACKPORT: no quirk_flags_table here; the ID is added to snd_usb_get_sample_rate_quirk(), the pre-flags equivalent of QUIRK_FLAG_GET_SAMPLE_RATE
+642	2b54f785b4d4	ALSA: usb-audio: Fix missing endian conversion	ported	d8c1c2134453	BACKPORT: the helper is uac2_control_is_readable() here (no UAC3 uac_v2v3_* helpers)
+643	2de841efaeaf	ALSA: usb-audio: Fix forgotten conversion of control query functions	already	-	parse_audio_feature_unit already passes control to build_feature_ctl
+644	2e210bbb7429	HID: input: fix battery level reporting on BT mice	n/a	-	not built: CONFIG_HID_BATTERY_STRENGTH is not set
+645	3232a3ce55ed	usb: dwc3: gadget: Remove FS bInterval_m1 limitation	ported	81f52ebf93fc	BACKPORT: dwc->gadget is an embedded struct here (dwc->gadget.speed)
+646	33ff7b49c38b	HID: steam: Reject short reads	ported	09d4182a5df2	BACKPORT: this older steam_recv_report() has no error/debug logging of the received report, so only the length checks and the return of the copied size are added
+647	40e89ff5750f	usb: gadget: Set self-powered based on MaxPower and bmAttributes	ported	2d5098c045df	UPSTREAM: applied unchanged (context-only differences)
+648	41a43013d236	usb: xhci: xhci-ring: Use sysdev for mapping bounce buffer	already	-	xhci bounce buffer map/unmap already use self.sysdev
+649	41a91c606e7d	usb: dwc3: move synchronize_irq() out of the spinlock protected block	ported	7681053a4075	BACKPORT: this dwc3_suspend_common() calls dwc3_gadget_suspend() from a single PERIPHERAL/OTG case (no separate OTG hunk)
+650	44d257e9012e	USB: dwc3: fix runtime pm imbalance on unbind	n/a	-	target change absent: dwc3_remove here still does pm_runtime_put_sync+pm_runtime_allow
+651	5337213381df	ALSA: core: Serialize deferred fasync state checks	ported	07191f31431a	BACKPORT: no guard()/scoped_guard() in 4.9; open-coded spin_lock_irqsave()/spin_lock_irq() pairs
+652	586f4335700f	usb: dwc3: Fix GTXFIFOSIZ.TXFDEP macro name	skipped	-	macro rename only (TXFDEF->TXFDEP), macros unused here
+653	675272d092e4	usb: gadget: f_fs: Use config_ep_by_speed()	already	-	ffs_func_eps_enable already uses config_ep_by_speed()
+654	695cf5ab401c	ALSA: usb-audio: Fix packet size calculation	n/a	-	f0bd62b64016 frame-size (sample_rem/packsize) rework not in tree
+655	69c58deec196	usb: dwc3: gadget: Prevent irq storm when TH re-executes	skipped	-	IRQ-storm fix relies on enabling IMOD on all controllers (behaviour change on msm dwc3, whose IRQ/suspend path differs); not taken without device testing
+656	6bc2906253e7	ALSA: usb-audio: More comprehensive mixer map for ASUS ROG Zenith II	skipped	-	needs usbmix connector_map support (absent); device mixer-map rework
+657	79504249d7e2	HID: hid-steam: Move hidraw input (un)registering to work	skipped	-	lock-ordering cleanup (upstream: no deadlock); needs newer client_opened counter/sensors code
+658	7bc369cb3d3f	Input: xpad - fix PDP Marvel Xbox 360 controller	ported	0dfea298cd51	UPSTREAM: applied unchanged (context-only differences)
+659	7c07553807c5	USB: gadget: Add ID numbers to configfs-gadget driver names	n/a	-	fc274c1e9973 gadget bus not in tree
+660	7c65699a3a31	HID: sony: clean up device list on probe failure	ported	381ef717d58f	BACKPORT: no guard()/scoped_guard() in 4.9; sony_input_configured() and sony_remove() keep their open-coded cleanup because they also free output_report_dmabuf (not devm-managed here); sony_cleanup() is added to the sony_probe() hid_hw_start() failure and missing-input-claim paths
+661	7fe8dec3f628	ALSA: usb-audio: Cap the packet size pre-calculations	n/a	-	f0bd62b64016 frame-size (sample_rem/packsize) rework not in tree
+662	89dbb335cb6a	ALSA: jack: Fix mutex call in snd_jack_report()	ported	a156d536b47c	UPSTREAM: applied unchanged (context-only differences)
+663	8affe37c525d	usb: dwc3: gadget: fix high speed multiplier setting	ported	fe5204302e75	BACKPORT: this tree has no __dwc3_prepare_one_trb()/trb_length; the length parameter of dwc3_prepare_one_trb() is replaced by req->request.length
+664	96bd39df29c2	usb: dwc3: gadget: Fix list_del corruption in dwc3_ep_dequeue	already	-	same fix as 05645366f389; already goto out0
+665	974bba5c118f	usb: config: fix iteration issue in 'usb_get_bos_descriptor()'	ported	6f65b2dec544	UPSTREAM: applied unchanged (context-only differences)
+666	a2e70a89fa58	HID: multitouch: new class MT_CLS_EGALAX_P80H84	skipped	-	device class change with no stated bug; old hid-multitouch lacks the mt_application model it was written for
+667	a368ecde8a50	USB: core: Fix duplicate endpoint bug by clearing reserved bits in the descriptor	ported	d25848d3beed	UPSTREAM: applied unchanged (context-only differences)
+668	ab5f3404b776	HID: nintendo: Add missing array termination	n/a	-	joycon_dpad_inputs_jc[] absent in this older driver version
+669	bdd1b147b802	USB: quirks: blacklist duplicate ep on Sound Devices USBPre2	ported	1738ddc6ec1e	UPSTREAM: applied unchanged (context-only differences)
+670	c6b8e79306f5	usb: host: xhci-plat: allow sysdev to inherit from ACPI	n/a	-	ACPI parent case only; CONFIG_ACPI is not set
+671	d07644524b65	HID: input: read battery capacity from its actual report offset	n/a	-	not built: CONFIG_HID_BATTERY_STRENGTH is not set
+672	d723bc1fe2e7	HID: nintendo: register input device after capabilities are set	n/a	-	no rumble/FF in this driver version; input_register_device already runs after all capabilities are set
+673	d74ffae8b8dd	usb-storage: Add a limitation for blk_queue_max_hw_sectors()	n/a	-	09324d32d2a0 (unlimited segment size with virt boundary) not in tree; dma_max_mapping_size() absent
+674	d7c90d9f9a5b	USB: gadget: Fix return of -EBUSY	n/a	-	fc274c1e9973 gadget bus not in tree
+675	d850c1658328	xhci: Fix kernel oops in trace_xhci_free_virt_device	n/a	-	no trace_xhci_free_virt_device tracepoint in this xhci
+676	d92f2c59cc2c	xhci: Don't let USB3 ports stuck in polling state prevent suspend	ported	15753f44a66b	UPSTREAM: applied unchanged (context-only differences)
+677	df9158826b00	usb: gadget: core: force synchronous registration	n/a	-	fc274c1e9973 gadget bus not in tree
+678	ecfbd7b9054b	usb: gadget: f_fs: Fix setting of device and driver data cross-references	skipped	-	msm f_fs uses its own inst_status scheme that re-links ffs_dev/ffs_data across instance re-creation; upstream rework conflicts with it
+679	f9d76d15072c	USB: gadget: Add ID numbers to gadget names	n/a	-	fc274c1e9973 gadget bus not in tree
+680	fa4e7a6fa12b	ALSA: usb-audio: Fix regression on detection of Roland VS-100	ported	48b3c260d0d7	BACKPORT: format is unsigned int in this parse_audio_format_i_type(), so it is printed with %x instead of %llx
+681	fe7f7ac8e0c7	HID: usbhid: Eliminate recurrent out-of-bounds bug in usbhid_parse()	ported	f6c21fedb73e	BACKPORT: hid-hyperv here reads wDescriptorLength without le16_to_cpu(); only the member name is changed there
+682	52521e839883	ALSA: usb-audio: Evaluate packsize caps at the right place	n/a	-	f0bd62b64016 frame-size (sample_rem/packsize) rework not in tree
+683	8e812e9355a6	usb: gadget: Check bmAttributes only if configuration is valid	ported	49a49b0aeb7e	UPSTREAM: applied unchanged (context-only differences)
+684	c783e1258f29	usb: gadget: Fix setting self-powered state on suspend	ported	1cbd971df6af	UPSTREAM: applied unchanged (context-only differences)
+685	e53fc232a65f	HID: hid-steam: Fix use-after-free when detaching device	n/a	-	fixes 79504249d7e2 (unregister_work), not taken here
+686	a930d8bd94d8	usb: chipidea: Always build ULPI code	n/a	-	not built: CONFIG_USB_CHIPIDEA is not set
+687	dbd24ec17b85	usb-storage: apply IGNORE_UAS only for HIKSEMI MD202 on RTL9210	n/a	-	not built: CONFIG_USB_UAS is not set (uas-detect.h/unusual_uas.h only used under it)
+688	018d4671b9bb	clk: Unlink clock if failed to prepare or enable	ported	8abe00a12183	unlink at out: label (no unlock: label in 4.9)
+689	03eab318cedd	regulator: core: use system_freezable_wq for init complete work	n/a	-	no deferred init-complete work here; cleanup runs synchronously in late_initcall
+690	04d31610a722	zram: fix the issue that the write - back limits might overflow	skipped	-	no-op on this 4K-page build (PAGE_SIZE/4096 == 1)
+691	059efd847a40	scsi: ufs: delete redundant function ufshcd_def_desc_sizes()	skipped	-	cleanup: removes redundant default-size init
+692	0f2c771e74b5	mmc: core: Correct descriptions in mmc_of_parse()	skipped	-	kernel-doc comment only
+693	160f99db9432	dm verity: fix DM_VERITY_OPTS_MAX value	ported	cb7ae229632f	OPTS_MAX 2->3 (no root-hash-sig opts term in 4.9)
+694	173d42721b46	drm/msm: Set max segment size earlier	skipped	-	downstream SDE msm_drv: splat is a6xx GMU (GPU here is KGSL); move would also need dma_parms alloc reordering
+695	17605afaae82	scsi: core: Avoid that a kernel warning appears during system resume	n/a	-	scsi_device_resume here predates quiesced_by/blk pm_only (3a0a529971ec not in tree)
+696	195bbe5e1c29	regulator: core: Fix rdev reference leak in regulator_resolve_supply()	ported	bc97f7d16729	put_device on self-supply path
+697	1c6ceeee6ebb	drm/atomic: Fix memleak on ERESTARTSYS during non-blocking commits	skipped	-	needs drm_crtc_state->commit (4.15+); 4.9 crtc destroy_state holds no commit ref to drop
+698	1d7cb11e1090	phy: core: Fix phy_get() to not return error on link creation failure	n/a	-	phy-core here has no consumer device_link_add (987351e1ea77 absent)
+699	1e111c4b3a72	scsi: sd: fix missing put_disk() when device_add(&disk_dev) fails	n/a	-	4.9 scsi_disk_release() itself calls put_disk(); no gendisk leak
+700	1f1693118c24	spmi: pmic-arb: correct duplicate APID to PPID mapping logic	already	-	pmic_arb_read_apid_map_v5 already uses !valid || write_owner == ee first
+701	2c1b5a84669d	cpufreq: Fix get_cpu_device() failure in add_cpu_dev_symlink()	ported	5eb55a207985	pass dev into add_cpu_dev_symlink
+702	388b4e6a00bb	scsi: core: Avoid that system resume triggers a kernel warning	n/a	-	no WARN_ON_ONCE(!quiesced_by) in 4.9 scsi_device_resume
+703	38d75297745f	watchdog: set cdev owner before adding	ported	585d16517cd1	cdev.owner set before cdev_device_add
+704	391f057f44a5	zram: fix out-of-bounds access in read_block_state()	n/a	-	read_block_state needs CONFIG_ZRAM_MEMORY_TRACKING (not set)
+705	39495ef5d6f8	vt: selection: Fix unsigned underflow and slab-out-of-bounds read in paste_selection()	n/a	-	4.9 paste_selection loop re-checks sel_buffer_lth > pasted each pass; no unsigned underflow form
+706	3b82a051c101	drivers/block/zram/zram_drv.c: fix error return codes not being returned in writeback_store	ported	952dd4287bd5	ret = len set up front
+707	3f174274d224	spi: fix misleading controller deregistration kernel-doc	skipped	-	kernel-doc comment only
+708	4063384ef762	net: add vlan_get_protocol_and_depth() helper	ported	a85bfe70c146	adds vlan_get_protocol_and_depth(); used in skb_network_protocol, br_forward, macvtap
+709	4719b69bb66b	net: phy: restore the interrupt when the generic bind cycle fails	ported	4c4effe40a4a	restore phydev->irq on generic bind failure
+710	4c0d2e96ba05	net: phy: consider that suspend2ram may cut off PHY power	skipped	-	PM behaviour change (resume via phy_init_hw); upstream relies on phy_init_hw interrupt restore absent here; no phylib PHYs on sargo
+711	4ce62d5b2f7a	net: usb: ax88179_178a: stop lying about skb->truesize	already	-	ax88179_rx_fixup already allocates fresh skbs and sets no truesize
+712	5038a66dad01	pinctrl: core: delete incorrect free in pinctrl_enable()	n/a	-	no pinctrl_enable()/pinctrl_claim_hogs() split here (6118714275f0 absent)
+713	54f809cfbd6b	drm/atomic: Fix memleak on ERESTARTSYS during non-blocking commits	skipped	-	needs drm_crtc_state->commit (4.15+); 4.9 crtc destroy_state holds no commit ref to drop
+714	5801169a2ed2	of: __of_detach_node() - remove node from phandle cache	n/a	-	CONFIG_OF_DYNAMIC=n: nodes are never detached; this tree's phandle cache is a different early/boot-only variant
+715	5df7af85ecd8	net: phy: Add general dummy stubs for MMD register access	skipped	-	adds unused stub API; 4.9 phy_driver has no read_mmd/write_mmd hooks to plug it into
+716	5e6b6651d22d	mmc: sdhci-msm: fix mutex while in spinlock	n/a	-	CAF sdhci-msm here has no 14lpp DLL reset / xo_clk rate read under host->lock
+717	635a9fca54f4	tty: ldsic: fix tty_ldisc_autoload sysctl's proc_handler	ported	d2e0686c7b6f	proc_dointvec_minmax (table lives in tty_ldisc.c)
+718	649cab56de8e	of: properly check for error returned by fdt_get_name()	skipped	-	only affects malformed DTBs; 4.9 populate_node() returns fpsize (0 stops unflatten); switching to error propagation needs caller restructuring
+719	732fd9f0b9c1	zram: fix use-after-free in zram_bvec_write_partial()	n/a	-	partial IO only exists when PAGE_SIZE != 4096 (4K build); 4.9 partial path already forces the sync read
+720	74363ec674cb	zram: fix uninitialized ZRAM not releasing backing device	skipped	-	leak reachable only on rmmod (ZRAM=y here); 4.9 reset path would need NULL comp/table guards restructured
+721	82c3cefb9f16	iommu: Don't use lazy flush for untrusted device	n/a	-	4.9 dma-iommu has no flush queue or pci untrusted flag
+722	8527beb12087	PM: sleep: wakeirq: fix wake irq arming	ported	9688b8731519	track WAKE_IRQ_DEDICATED_ENABLED instead of runtime PM status at arm/disarm
+723	894913e2d35c	zram: fix out-of-bounds access in writeback_store()	ported	cf3824b2d903	nr_pages read under init_lock after init_done check
+724	9253d71011c3	mmc: sdhci-msm: Clear tuning done flag while hs400 tuning	n/a	-	CAF sdhci-msm tuning/HS400 flow differs (upstream ff06ce417828 code absent)
+725	98e48cd9283d	regulator: core: resolve supply for boot-on/always-on regulators	skipped	-	4.9 set_machine_constraints() never enables the supply, so the defer alone does not fix ordering; changes probe deferral of every boot-on regulator with a supply on the boot path
+726	993eb48fa199	i2c: dev: check return value when calling dev_set_name()	ported	1dddd1fc283d	check dev_set_name() return
+727	9f7a9a448da7	spmi: pmic-arb: replace the writel_relaxed with __raw_writel	skipped	-	endianness cleanup; no-op on little-endian arm64
+728	a1e1cb72d964	dm: fix redundant IO accounting for bios that need splitting	n/a	-	4.9 dm.c has no depth-first bio_split/generic_make_request recursion (18a25da84354 absent)
+729	a86675968e23	Revert "drm/dp_mst: Remove VCPI while disabling topology mgr"	n/a	-	reverted commit 64e62bdf04ab not in this form here; set_mst takes payload_lock before mgr->lock (no inversion)
+730	a90c275eb144	vt_ioctl: Revert VT_RESIZEX parameter handling removal	n/a	-	988d0763361b not applied here: vt_resizex still handles v_vlin/v_clin
+731	a95881d6aa2c	pinctrl: qcom: Properly clear "intr_ack_high" interrupts when unmasking	n/a	-	upstream msm_gpio_irq_clear_unmask() absent (CAF irq_enable differs); only SoCs with intr_ack_high affected, PINCTRL_SDM670 has none
+732	aafd56fc7904	pinctrl: core: Remove extra kref_get which blocks hogs being freed	n/a	-	no pinctrl_enable()/pinctrl_claim_hogs() split here (6118714275f0 absent)
+733	b8a9ac1a5b99	of: of_node_get()/of_node_put() nodes held in phandle cache	n/a	-	CONFIG_OF_DYNAMIC=n: of_node_get/put are no-ops and nodes are never freed; cache is boot-only here
+734	b9952b5218ad	of: overlay: update phandle cache on overlay apply and remove	n/a	-	CONFIG_OF_OVERLAY=n (overlay.o not built)
+735	b9ca5f8560af	tty: pty: Fix race condition between release_one_tty and pty_write	skipped	-	reverted upstream by 0eae4686a128 (circular locking dependency)
+736	ba62319a42c5	regulator: core: fix resource leak in regulator_register()	ported	af78955554ef	regulator_put(rdev->supply) on wash: path
+737	be48c412f6eb	zram: refuse to use zero sized block device as backing device	ported	832fb0a272e8	reject zero-sized backing device
+738	c307459b9d1f	fs/kernel_read_file: Remove FIRMWARE_PREALLOC_BUFFER enum	skipped	-	LSM read-id cleanup across fs/exec, module, IMA; no IMA/LoadPin here, no functional bug on this config
+739	c46f09175dab	scsi: sd: Check for unaligned partial completion	skipped	-	adds a generic resid alignment check to sd_done() (behaviour change); mpt3sas part not built
+740	cb36e29bb0e4	watchdog: initialize device before misc_register	ported	8c8ed566a823	device_initialize before misc_register
+741	cc770ce34aee	scsi: ufs: Make ufshcd_print_trs() consider UFSHCD_QUIRK_PRDT_BYTE_GRAN	n/a	-	debug print only, and UFSHCD_QUIRK_PRDT_BYTE_GRAN is set by no host driver here (ufs-qcom)
+742	cf9d052aa600	pinctrl: qcom: Don't clear pending interrupts when enabling	skipped	-	irq enable/mux behaviour change built on upstream PDC/skip_wake_irqs structure; CAF TLMM code here differs (dirconn), too risky to adapt
+743	da17d6905d29	of/fdt: Don't worry about non-memory region overlap for no-map	n/a	-	8a5a75e5e9e5 absent: 4.9 nomap path is plain memblock_remove() with no -EBUSY overlap check
+744	e121a833745b	driver core: Add missing dev->bus->need_parent_lock checks	n/a	-	4.9 __device_release_driver() has no device_links_busy() unlock/relock loop
+745	e17354961bb5	zram_drv: update for backing dev info changes	already	-	zram already uses queue->backing_dev_info-> pointer form
+746	e8c5d45f82ce	dm verity: fix error handling for check_at_most_once on FEC	ported	3389b7340bcb	do not skip validated blocks when the bio failed (bi_error)
+747	effa467870c7	iommu/vt-d: Don't queue_iova() if there is no flush queue	n/a	-	not built: CONFIG_INTEL_IOMMU=n; 4.9 iova.c has no flush queue
+748	f21c601a2bb3	dm: use bio_split() when splitting out the already processed bio	n/a	-	4.9 dm.c has no depth-first bio_clone_bioset split (18a25da84354 absent)
+749	f866fbc842de	ipv4: fix data-races around inet->inet_id	skipped	-	data-race fix changing inet_sock.inet_id to atomic_t (struct layout change across net stack), annotation-class
+750	f8995c2df519	drm/ioc32: stop speculation on the drm_compat_ioctl path	ported	574cf8f65aca	array_index_nospec on compat ioctl nr
+751	fb0171a4c01b	PCI: Make link retraining use RMW accessors for changing LNKCTL	n/a	-	not built: CONFIG_PCIEASPM=n (4.9 retrain code lives in pcie/aspm.c)
+752	0eae4686a128	Revert "tty: pty: Fix race condition between release_one_tty and pty_write"	n/a	-	reverts b9ca5f8560af, which is not in the tree
+753	19fc4240358b	pinctrl: qcom: spmi-gpio: make direction changes exclusive	n/a	-	no pmic_gpio_get_direction() here (263447532463 absent)
+754	4bca7e80b645	init: Initialize noop_backing_dev_info early	n/a	-	10e14073107d not here: __mark_inode_dirty() looks up the wb only after the unhashed/I_FREEING bail-outs
+755	57e0076e6575	zram: fix return value on writeback_store	ported	d494328c1aed	submit_bio_wait result kept in err
+756	7913145afa51	of/fdt: declared return type does not match actual return type	n/a	-	follow-up to 649cab56de8e, which is not taken
+757	7f654157f0ae	net: phy: make mdio_bus_phy_suspend/resume as __maybe_unused	n/a	-	fixes 4c0d2e96ba05, which is not taken
+758	86a8eeb0e913	regulator: core: move supply check earlier in set_machine_constraints()	n/a	-	follow-up to 98e48cd9283d, which is not taken
+759	ae1cf4759972	pinctrl: core: fix possible memory leak when pinctrl_enable() fails	n/a	-	no pinctrl_enable()/pinctrl_claim_hogs() split here (6118714275f0 absent)
+760	e225128c3f8b	pinctrl: qcom: Clear latched interrupt status when changing IRQ type	n/a	-	fixes cf9d052aa600's set_type clear (no was_enabled/ack in set_type here); cf9d052aa600 not taken
+761	e7a7681c8596	PM: sleep: wakeirq: fix wake irq warning in system suspend	n/a	-	no dev_pm_enable_wake_irq_complete()/WAKE_IRQ_DEDICATED_REVERSE in 4.9
+762	00f17a8219f0	net: ena: fix compilation error in xtensa architecture	n/a	-	not built: CONFIG_ENA_ETHERNET=n
+763	01091c496f92	acpi/nfit: improve bounds checking for 'func'	n/a	-	not built: CONFIG_ACPI=n / CONFIG_ACPI_NFIT=n
+764	0650bf52b31f	net: dsa: be compatible with masters which unregister on shutdown	n/a	-	not built: CONFIG_NET_DSA=n
+765	0d9668721311	media: videobuf2-dma-contig: fix bad kfree in vb2_dma_contig_clear_max_seg_size	n/a	-	not built: CONFIG_VIDEOBUF2_DMA_CONTIG=n (file is drivers/media/v4l2-core/ in 4.9)
+766	0f6925b3e8da	virtio_net: Do not pull payload in skb->head	n/a	-	not built: CONFIG_VIRTIO_NET=n
+767	12856e7acde4	PCI/IOV: Mark VFs as not implementing PCI_COMMAND_MEMORY	n/a	-	not built: CONFIG_PCI_IOV=n
+768	203dab8395d9	wil6210: fix build warnings without CONFIG_PM	n/a	-	not built: CONFIG_WIL6210=n
+769	22db06337f59	ACPI: sleep: Avoid breaking S3 wakeup due to might_sleep()	n/a	-	not built: CONFIG_ACPI=n
+770	2859de7637b5	iwlwifi: mvm: always init rs_fw with 20MHz bandwidth rates	n/a	-	not built: CONFIG_IWLMVM=n (rs-fw.c absent)
+771	2e7179c628d3	net: dsa: b53: do not set learning and unicast/multicast on up	n/a	-	not built: CONFIG_B53=n, CONFIG_NET_DSA=n
+772	32f408ac3e5d	drm/i915/gt: Restore coarse power gating	n/a	-	not built: CONFIG_DRM_I915=n
+773	3410fbcd47dc	{net, RDMA}/mlx5: Fix override of log_max_qp by other device	n/a	-	not built: CONFIG_MLX5_CORE=n, CONFIG_MLX5_INFINIBAND=n
+774	42e6cae1b35b	sfc: revert changes to NIC revision numbers	n/a	-	not built: CONFIG_SFC=n
+775	795130b31986	IB/hfi1: Remove unused define	n/a	-	not built: CONFIG_INFINIBAND_HFI1=n
+776	7a107b2c6b81	Revert "serial: 8250: Handle UART without interrupt on TEMT using em485"	n/a	-	not built: CONFIG_SERIAL_8250=n
+777	8a05aa4ce3bf	mtip32xx: avoid to read HOST_CAP from HW in .queue_rq()	n/a	-	not built: CONFIG_BLK_DEV_PCIESSD_MTIP32XX=n
+778	8c892df41500	brcmfmac: fix roamoff=1 modparam	n/a	-	not built: CONFIG_BRCMFMAC=n
+779	90045fc9c788	mlxsw: spectrum: Relax sanity checks during enslavement	n/a	-	not built: CONFIG_MLXSW_CORE=n
+780	9498da46d1ce	staging: octeon-ethernet: fix incorrect PHY mode	n/a	-	not built: CONFIG_OCTEON_ETHERNET=n
+781	a829f033e966	drm/i915: Wedge the GPU if command parser setup fails	n/a	-	not built: CONFIG_DRM_I915=n
+782	aceeafefff73	optee: use driver internal tee_context for some rpc	n/a	-	not built: CONFIG_OPTEE=n
+783	b353b241f1eb	net: fec: Use a spinlock to guard `fep->ptp_clk_on`	n/a	-	not built: CONFIG_NET_VENDOR_FREESCALE=n
+784	ba50bf1ce9a5	Drivers: hv: vmbus: Check for ring when getting debug info	n/a	-	not built: CONFIG_HYPERV=n
+785	bc93b9ae0151	vfio-pci: Avoid recursive read-lock usage	n/a	-	not built: CONFIG_VFIO_PCI=n
+786	ce69e553b9a4	drm/i915/gt: Restore coarse power gating	n/a	-	not built: CONFIG_DRM_I915=n
+787	cf761e3dacc6	PCI/MSI: Add an option to write MSIX ENTRY_DATA before any reads	n/a	-	opt-in quirk flag for Sun Neptune NIU MSI-X only; no user here (drivers/pci/msi/ layout absent)
+788	d46c69a087aa	scsi: qla2xxx: Clear cmds after chip reset	n/a	-	not built: CONFIG_SCSI_QLA_FC=n
+789	e4330d8bf669	ACPI / scan: Fix enumeration for special SPI and I2C devices	n/a	-	not built: CONFIG_ACPI=n
+790	01b825f997ac	Revert "net: fec: Use a spinlock to guard `fep->ptp_clk_on`"	n/a	-	not built: CONFIG_NET_VENDOR_FREESCALE=n
+791	03390aa32e66	packet: use consistent hard_header_len in non-ring send paths	ported	9ef521f096e6	BACKPORT: sendmsg_spkt and packet_snd use one hard_header_len snapshot; vnet_hdr_sz/min_header_len hunks absent
+792	0567fc9e90b9	crypto: skcipher - fix aligning block size in skcipher_copy_iv()	n/a	-	skcipher_walk API (4.10) absent; 4.9 crypto/skcipher.c has no walk code
+793	05b700ba6003	block: fix segment calculation for passthrough IO	n/a	-	multi-page bvec splitting (bvec_split_segs, 5.1) absent in 4.9 blk-merge.c
+794	0783ac95b4a0	mm/shmem: fix build without THP	n/a	-	shmem_punch_compound/huge-page undo_range code (5.7) absent
+795	07edfece8bcb	workqueue: Fix unbind_workers() VS wq_worker_running() race	n/a	-	wq_worker_running() (5.6 worker accounting rework) absent
+796	084f5601c357	seccomp: make function __get_seccomp_filter static	skipped	-	cleanup: static/missing-prototype warning only
+797	0958b33ef5a0	tracing/trigger: Fix to return error if failed to alloc snapshot	n/a	-	bug from 0bbe7f719985 return-value convention; 4.9 event_trigger_callback maps reg()==0 to -ENOENT
+798	0a041ebca495	perf/core: Call LSM hook after copying perf_event_attr	ported	9b1323a3e870	BACKPORT (context only): LSM perf_event_open hook now sees the copied attr
+799	0c76ef3f26d5	kprobes: Fix check for probe enabled in kill_kprobe()	n/a	-	only matters for KPROBES_ON_FTRACE, which arm64 4.9 lacks (kprobe_ftrace() is 0)
+800	0cabf2af6f5a	crypto: skcipher - Fix crash on zero-length input	n/a	-	skcipher_walk API (4.10) absent
+801	0d4370cfe36b	proc: don't allow async path resolution of /proc/thread-self components	n/a	-	only io-wq workers (PF_IO_WORKER, io_uring) resolve /proc/thread-self asynchronously; absent in 4.9
+802	10de795a5add	kprobes: Fix compiler warning for !CONFIG_KPROBES_ON_FTRACE	skipped	-	compiler-warning fix only; kernel/kprobes.o builds clean here
+803	10e14073107d	writeback: Fix inode->i_io_list not be protected by inode->i_lock error	ported	ee854d961c64	BACKPORT: i_io_list moves under i_lock; __mark_inode_dirty grabs wb list_lock early
+804	11854fe263eb	binfmt_elf: Move brk for static PIE even if ASLR disabled	skipped	-	behaviour fix for ASLR-disabled static PIE only; 4.9 set_brk()/brk layout differs from the upstream code
+805	175f0e25abea	sched/core: Fix rules for running on online && !active CPUs	skipped	-	QCOM 4.9 sched core diverges (cpu isolation, allow_iso in select_fallback_rq, WALT); the is_cpu_allowed() rework across migrate/fallback/wakeup is not a safe hand-merge
+806	17a9be317475	initramfs: Always do fput() and load modules after rootfs populate	ported	0f1eb6d67b36	BACKPORT: fput/load_default_modules run without a bootloader initrd too; skip_initramfs path unchanged
+807	1a63dcd8765b	softirq: Reorder trace_softirqs_on to prevent lockdep splat	n/a	-	not built: preempt/irq tracepoints (CONFIG_PREEMPTIRQ_EVENTS, PREEMPT/IRQSOFF tracers) off; trace_preempt_on absent from softirq path
+808	26444eb71465	mm/vmalloc: acquire init_mm lock on huge vmap to avoid ptdump UAF	n/a	-	ptdump not built (CONFIG_ARM64_PTDUMP off); mmap_lock.h/huge vmap ptdump walk absent
+809	270b6f13454c	crypto: xts - Only add ecb if it is not already there	n/a	-	4.9 xts.c is the old blkcipher template; skcipher-based create() (4.10) absent
+810	27ae357fa82b	mm, oom: fix concurrent munlock and oom reaper unmap, v3	ported	5d3d5f7e7b01	BACKPORT: exit_mmap reaps oom victim before munlock; loop kept without mmu_notifier calls as in 4.9
+811	27c32e553834	mm/ptdump: always stabilise against page table freeing using init_mm	n/a	-	mm/ptdump.c absent; CONFIG_ARM64_PTDUMP off
+812	27ff768fa21c	tracing: Test the 'Do not trace this pid' case in create event	n/a	-	trace_pid_list_first()/no_pid_list (5.16) absent
+813	2987ee196c88	igmp: convert struct ip_sf_list to RCU	skipped	-	large RCU conversion of ip_sf_list (135+/82-); lockdep recursion needs an XFRM policy on a multicast destination
+814	2a872fa4e9c8	ring-buffer: Check if memory is available before allocation	ported	90709ae9d415	BACKPORT: si_mem_available() check before the Android PF_DUMPCORE allocation loop
+815	2b5bbcb1c9c2	huge tmpfs: remove shrinklist addition from shmem_setattr()	n/a	-	huge tmpfs shrinklist not built (CONFIG_TRANSPARENT_HUGEPAGE off)
+816	2b88cba55883	net: preserve skb_end_offset() in skb_unclone_keeptruesize()	n/a	-	skb_unclone_keeptruesize() absent
+817	2c4f1fcbef0b	kprobe: Do not use uaccess functions to access kernel memory that can fault	skipped	-	needs probe_mem_read() fetch rework (5.0); 4.9 KERNEL_DS uaccess path has exception fixup on arm64
+818	2e8cff0a0eee	arm64: fix rodata=full	n/a	-	rodata=full / rodata_full (5.x) absent
+819	3149c79f3cb0	mm,hwpoison: unmap poisoned page before invalidation	n/a	-	not built: CONFIG_MEMORY_FAILURE off
+820	324318f0248c	netfilter: xtables: zero padding in data_to_user	ported	087ba8f8fd1c	BACKPORT: x_tables part only; 4.9 ebtables does not call xt_data_to_user()
+821	340e84573878	block: delay freeing the gendisk	n/a	-	gendisk/bdev lifetime rework (part0 as bdev inode, 5.11+) absent
+822	3542dcb15cef	iommu/dma: Resurrect the "forcedac" option	n/a	-	the forcedac option belongs to the intel-iommu DMA conversion (drivers/iommu/intel/, 5.x); absent here
+823	37801a36b4d6	selinux: avoid dereference of garbage after mount failure	ported	56e046e42062	BACKPORT: return on kern_mount failure; selinuxfs_mount kept (used by exit_sel_fs)
+824	383c4613c67c	mm: close theoretical race where stale TLB entries could linger	n/a	-	madvise_cold_or_pageout (5.4) absent; MADV_FREE relock path follows split_huge_page, unreachable with CONFIG_TRANSPARENT_HUGEPAGE off
+825	399cfd133f88	mm/mprotect: use huge_ptep_get() for hugetlb	n/a	-	not built: CONFIG_HUGETLB_PAGE off, hugetlb_entry never called
+826	3b5bbe798b24	pidfd: prevent creation of pidfds for kthreads	skipped	-	behaviour change (refuse kthread pidfds) against pidfd_prepare() (6.x); 4.9 pidfd code differs
+827	3d378dc713f3	kobject: fix dereference before null check on kobj	n/a	-	4.9 kobject_del() has no get_ktype() before the NULL check (aa30f47cf666 absent)
+828	431bca24308c	lib/vsprintf: Hash printed address for netdev bits fallback	ported	8c0acfda7d5e	BACKPORT: %pN fallback hashed via ptr_to_id(); forward declaration added
+829	44585f7bc0cb	psi: fix "defined but not used" warnings when CONFIG_PROC_FS=n	n/a	-	warning only with CONFIG_PROC_FS=n; PROC_FS=y here
+830	49b1f22b567b	block: avoid to READ fields of null bio	n/a	-	multi-page bvec blk_bio_segment_split (5.1) absent
+831	4a2f704eb2d8	block: fix get_max_segment_size() overflow on 32bit arch	n/a	-	get_max_segment_size() (5.1) absent
+832	4aa9fc2a435a	Revert "mm, memory_hotplug: initialize struct pages for the full memory section"	n/a	-	reverted memmap_init_zone section-tail init is not in this tree
+833	4cc70f75853b	arm64/hw_breakpoint: reject unaligned watchpoints that would truncate BAS	ported	a7c6f97eb786	BACKPORT: check added to arch_validate_hwbkpt_settings()
+834	4f8413a3a799	genirq: Track whether the trigger type has been set	n/a	-	the irqd_get_trigger_type() shared-IRQ compare (382bd4de6182 / f2596a9808ac) is no longer in __setup_irq() here; it compares action flags
+835	5102bb1c9f82	psi: Fix "defined but not used" warnings when CONFIG_PROC_FS=n	n/a	-	warning only with CONFIG_PROC_FS=n; PROC_FS=y here
+836	5125e4e867ab	crypto: xts - Fix an error handling path in 'create()'	n/a	-	4.9 xts.c is the old blkcipher template; skcipher create() absent
+837	51ae3f4ac5e9	mm/cma: fix placement of trace_cma_alloc_start/finish	n/a	-	named cma tracepoints (7bc1aec5e287) absent; tree's trace_cma_alloc_start() is after the NULL/count checks
+838	554ec5086536	lib/vsprintf: Do not handle %pO[^F] as %px	n/a	-	%pO device-node specifier handling absent from 4.9 lib/vsprintf.c pointer()
+839	5a6d6a6ccb5f	sched/fair: Refill bandwidth before scaling	n/a	-	not built: CONFIG_CFS_BANDWIDTH off (FAIR_GROUP_SCHED off)
+840	5c72feee3e45	mm/filemap.c: don't bother dropping mmap_sem for zero size readahead	ported	54322c184fdc	BACKPORT: skip mmap_sem drop when ra_pages is 0
+841	62849a961292	workqueue: Remove the warning in wq_worker_sleeping()	n/a	-	wq_worker_running/sleeping rework (6d25be5782e4, 5.6) absent
+842	62c07983bef9	once: add DO_ONCE_SLOW() for sleepable contexts	ported	ec255a646cf2	BACKPORT: DO_ONCE_SLOW() on the 4.9 static_key DO_ONCE form; table_perturb seeding no longer runs with irqs off
+843	65ac33bed8b9	arm64: stacktrace: Don't WARN when unwinding other tasks	n/a	-	kunwind unwinder (6.x) absent from arm64 stacktrace.c
+844	6603523bf5e4	crypto: api - Fix use-after-free and race in crypto_spawn_alg	ported	897a2f556025	BACKPORT: race half only (DYING set via crypto_shoot_alg under write lock); spawn->dead UAF half n/a in 4.9
+845	67ab51cbdfee	arm64: tls: Fix context-switching of tpidrro_el0 when kpti is enabled	ported	a9b6ad29c8d0	BACKPORT (context only): always zero tpidrro_el0 for native tasks
+846	6857e209015f	fs: don't silently unmount busy mounts	skipped	-	depends on the 6.x propagate_umount() rewrite (trim_one/handle_locked, propagation_would_overmount); umount semantics change
+847	6a909ea83f22	tracing: Limit access to parser->buffer when trace_get_user failed	ported	78ef0aab6da3	BACKPORT: parser marked failed on trace_get_user() errors so callers skip the unterminated buffer
+848	6bd87eec23cb	bdi: add a ->dev_name field to struct backing_dev_info	skipped	-	adds 64 bytes to struct backing_dev_info, which changes 2944 exported symbol CRCs, so the vendor wlan.ko (QCA_CLD_WLAN=m) will not load; only fixes a use-after-free reading a removed bdi name in writeback tracing
+849	6fd2fe494b17	copy_process(): don't use ksys_close() on cleanups	ported	7ba3fd3b0b56	BACKPORT: pidfd installed only after the last failure point; error path no longer closes an fd in a shared table
+850	71c751f2a43f	arm64: add sentinel to kpti_safe_list	ported	eaf7e19491d0	BACKPORT: sentinel for is_midr_in_range_list() walk of kpti_safe_list
+851	73e2d827a501	arm64: Initialize jump labels before setup_machine_fdt()	n/a	-	random.c has no crng static branch (f5bda35fba61 absent), so no static key is enabled from setup_machine_fdt(); arm64 calls jump_label_init() in smp_prepare_boot_cpu()
+852	744e1885922a	crypto: scomp - fix req->dst buffer overflow	ported	9325259cc183	BACKPORT: refuse to copy more than the caller dst length
+853	807697246858	printk: Update @console_may_schedule in console_trylock_spinning()	n/a	-	console_lock owner hand-off (dbdda842fe96, console_trylock_spinning) absent from 4.9 printk.c
+854	8088d3dd4d7c	crypto: skcipher - fix crash flushing dcache in error path	n/a	-	skcipher_walk API (4.10) absent
+855	818e0fa293ca	block: Change a rcu_read_{lock,unlock}_sched() pair into rcu_read_{lock,unlock}()	n/a	-	4.9 blk_queue_enter() has no rcu_read_lock_sched() section (PREEMPT_ONLY gate absent)
+856	81933038f5e2	pid_namespace: make zap_pid_ns_processes() freezable	n/a	-	TASK_FREEZABLE (6.1) absent; pid_namespace.c not built (CONFIG_PID_NS off)
+857	8236b0ae31c8	bdi: wake up concurrent wb_shutdown() callers.	ported	b51abe2accf3	BACKPORT: wake concurrent wb_shutdown() waiters; clear_and_wake_up_bit() open-coded
+858	8332326e8e47	mm/mmap.c: replace do_brk with do_brk_flags in comment of insert_vm_struct()	skipped	-	comment-only change
+859	89027579bc6c	crypto: xts - Propagate NEED_FALLBACK bit	n/a	-	4.9 xts.c is the old blkcipher template; no ecb child / NEED_FALLBACK path
+860	9014143bab2f	fork: don't check parent_tidptr with CLONE_PIDFD	already	-	tree's CLONE_PIDFD block (clone3-era, args->pidfd) has no parent_tidptr check
+861	9282012fc0aa	page_alloc: fix invalid watermark check on a negative value	ported	35887ea8cb98	BACKPORT (context only): clamp usable_free so a negative value cannot pass the unsigned compare
+862	942341dcc574	mm: fix use-after-free when anon vma name is used after vma is freed	n/a	-	refcounted struct anon_vma_name (5.17) absent; Android 4.9 stores the name as a user pointer
+863	97739501f207	cpufreq: schedutil: Avoid using invalid next_freq	ported	a8695001ffc1	BACKPORT: do not reuse next_freq when it is the UINT_MAX limits-changed marker
+864	98ca62ba9e2b	sysctl: always initialize i_uid/i_gid	skipped	-	no effect here: inode_init_always() already sets i_uid/i_gid to 0 in init_user_ns before set_ownership()
+865	9df0eb180c20	crypto: xts,lrw - fix out-of-bounds write after kmalloc failure	n/a	-	skcipher xts/lrw create paths absent (old blkcipher xts; lrw not built)
+866	a067d94d37ed	arm64: kaslr: Adjust the offset to avoid Image across alignment boundary	n/a	-	only fails when the Image is larger than the swapper table span (16K/64K pages); CONFIG_ARM64_4K_PAGES here with a 1GB span
+867	a1400af75563	mm, proc: report PR_SET_THP_DISABLE in proc	skipped	-	new /proc/<pid>/status field (feature); THP not built
+868	a317ebccaa36	mm: percpu: use kmemleak_ignore_phys() instead of kmemleak_free()	n/a	-	not built: CONFIG_DEBUG_KMEMLEAK off
+869	aa4a829bdace	crypto: xts - Fix use-after-free on EINPROGRESS	n/a	-	4.9 xts.c is the old blkcipher template; no async subreq EINPROGRESS path
+870	aaeee62c841c	block: fix updating bio's front segment size	n/a	-	front segment size from multi-page bvec split (5.1) absent
+871	abe3c631447d	selinux: enable use of both GFP_KERNEL and GFP_ATOMIC in convert_context()	ported	68b2333f5b1f	BACKPORT (context only): GFP_ATOMIC kstrdup when converting under the sidtab spinlock
+872	adeaa21a4b69	arm64: ssbd: explicitly depend on <linux/prctl.h>	already	-	arch/arm64/kernel/ssbd.c already includes <linux/prctl.h>
+873	aff037078eca	sched/psi: use kernfs polling functions for PSI trigger polling	ported	e7bfd29800f1	BACKPORT: cgroup psi triggers poll via kernfs so rmdir cannot free a waitqueue a poller still uses
+874	b111df8447ac	y2038: alarm: fix half-second cut-off	n/a	-	4.9 alarm_setitimer() still uses timeval tv_usec >= 500000, which is correct; y2038 timespec64 conversion absent
+875	b284909abad4	cpu/hotplug: Fix "SMT disabled by BIOS" detection for KVM	n/a	-	not built: CONFIG_HOTPLUG_SMT is x86-only; KVM/x86 parts absent
+876	b77fa617a2ff	pstore: Remove needless lock during console writes	skipped	-	locking cleanup; 4.9 pstore console path uses ->write_buf and relies on buf_lock
+877	c14376de3a1b	printk: Wake klogd when passing console_lock owner	n/a	-	console_lock owner hand-off (dbdda842fe96, console_trylock_spinning) absent from 4.9 printk.c
+878	c14ca8386539	crypto: skcipher - Fix skcipher_walk_aead_common	n/a	-	skcipher_walk API (4.10) absent
+879	c28f922c9dce	clone_private_mnt(): make sure that caller has CAP_SYS_ADMIN in the right userns	skipped	-	no exposure here: 4.9 overlayfs (sole caller) is not FS_USERNS_MOUNT, so mounting it already needs global CAP_SYS_ADMIN
+880	c7fcb99877f9	sched/rt: Fix sysctl_sched_rr_timeslice intial value	ported	598466f397fd	BACKPORT: initial value 100 instead of 99 ms at HZ=300
+881	ca10d851b9ad	workqueue: Override implicit ordered attribute in workqueue_apply_unbound_cpumask()	skipped	-	reverted upstream by aac8a59537df (row below); net no change
+882	d04d5882cd67	printk: Disable passing console lock owner completely during panic()	n/a	-	console_lock owner hand-off (dbdda842fe96, console_trylock_spinning) absent from 4.9 printk.c
+883	d099ea6e6fde	crypto - Avoid free() namespace collision	already	-	equivalent 414eae103d3e (gcc-10: avoid shadowing standard library 'free()' in crypto) renamed free->free_inst
+884	d1868328dec5	block: Fix the maximum minor value is blk_alloc_ext_minor()	n/a	-	4.9 uses idr_alloc() with exclusive end NR_EXT_DEVT; the ida_alloc_range() off-by-one is absent
+885	d472cf797c4e	debugfs: fix error when writing negative value to atomic_t debugfs file	ported	60e767df693b	BACKPORT: atomic_t debugfs files accept negative values again via simple_attr_write_signed()
+886	d51507098ff9	printk: disable optimistic spin during panic	n/a	-	console_lock owner hand-off (dbdda842fe96, console_trylock_spinning) absent from 4.9 printk.c
+887	d86564a2f085	mm/tlb, x86/mm: Support invalidating TLB caches for RCU_TABLE_FREE	n/a	-	enables HAVE_RCU_TABLE_INVALIDATE for x86 only; arm64 unaffected
+888	d91bdd96b55c	cpu/SMT: Make SMT control more robust against enumeration failures	n/a	-	not built: CONFIG_HOTPLUG_SMT off (x86-only)
+889	da74240eb3fc	mm/filemap: add missing mem_cgroup_uncharge() to __add_to_page_cache_locked()	n/a	-	xarray-based __add_to_page_cache_locked (5.x) absent; 4.9 uses try_charge/cancel_charge on all error paths
+890	dc8d37ed304e	cpu/SMT: Fix x86 link error without CONFIG_SYSFS	n/a	-	not built: CONFIG_HOTPLUG_SMT off (x86-only)
+891	dcaca01a42cc	crypto: skcipher - don't WARN on unprocessed data after slow walk step	n/a	-	skcipher_walk API (4.10) absent
+892	dd040b6f6d56	radix-tree: fix private list warnings	n/a	-	radix_tree_free_nodes() private_list WARN not in this tree
+893	ddb9fd7a5440	fs/select: rework stack allocation hack for clang	skipped	-	stack-frame tuning for clang -Wframe-larger-than; tree builds clean with clang
+894	de1b0ee490ea	block: ensure bdi->io_pages is always initialized	skipped	-	no effect here: readahead uses max(bdi->io_pages, ra_pages), so a zero io_pages does not shrink requests
+895	dffcac2cb88e	mm/vmscan.c: prevent useless kswapd loops	ported	ae7af1f10689	BACKPORT (context only): kswapd keeps the previous classzone_idx when it could not sleep
+896	e02a9f048ef7	mm/swap.c: make functions and their kernel-doc agree	skipped	-	kernel-doc only
+897	e4a38402c36e	oom_kill.c: futex: delay the OOM reaper to allow time for proper futex cleanup	skipped	-	behaviour change: delays every OOM reap by 2 s via a per-task timer (timer_setup, 4.15); this tree exports wake_oom_reaper() for immediate reaping on the Android low-memory path
+898	ec12bc2909f9	lib/vsprintf: Hash legacy clock addresses	n/a	-	only the !CONFIG_COMMON_CLK branch changes; COMMON_CLK=y here
+899	f0050a3e214a	PM: wakeup: Delete space in the end of string shown by pm_show_wakelocks()	ported	489e0c5d990e	BACKPORT (context only): drop trailing space before the newline in wake_lock/wake_unlock output
+900	faeb2831b517	mm: set folio swapbacked iff folios are dirty in try_to_unmap_one	n/a	-	folio/VM_DROPPABLE code absent; 4.9 MADV_FREE pages keep PageSwapBacked (4.12 lazyfree rework absent)
+901	fcd0ccd836ff	mm/gup: fix gup_pud_range() for dax	n/a	-	not built: CONFIG_FS_DAX off; no pud_devmap gup path
+902	fe4f6c801c03	fscrypt: fix the test_dummy_encryption mount option	n/a	-	tree's fs/crypto has no dummy raw_key memset (newer fscrypt dummy-context code)
+903	fe8c3623ab06	pstore/ram: Check start of empty przs during init	ported	c4ee8bb9bf89	BACKPORT: empty prz with nonzero start is treated as corrupt and reset
+904	ff51ff84d82a	sched/core: Avoid spurious lock dependencies	already	-	tree's init_idle() already calls __sched_fork() before taking pi_lock/rq->lock
+905	14362a254179	fsnotify: introduce mark type iterator	n/a	-	fsnotify_iter_info mark-type iteration (4.18) absent; fanotify not built
+906	2081b3bd0c11	arm64: fix rodata=full again	n/a	-	rodata=full (2e8cff0a0eee) absent
+907	28dd29c06d0d	fork: return proper negative error code	ported	15725c3b3d78	UPSTREAM: set retval when anon_inode_getfile() fails
+908	2a4187f4406e	once: rename _SLOW to _SLEEPABLE	ported	2e4c2d515b04	BACKPORT: rename _SLOW to _SLEEPABLE on the 4.9 DO_ONCE_SLOW() port, keeping upstream naming
+909	2b4f27c36bcd	crypto: skcipher - set walk.iv for zero-length inputs	n/a	-	skcipher_walk API (4.10) absent
+910	356ff8a9a78f	Revert "mm, thp: consolidate THP gfp handling into alloc_hugepage_direct_gfpmask"	n/a	-	not built: THP and NUMA off (huge_memory.c, mempolicy.c not built); reverted gfp consolidation absent
+911	89add40066f9	net: drop bad gso csum_start and offset in virtio_net_hdr	ported	7ba50af32128	BACKPORT: tcp_gso_segment() drops GSO skbs whose csum_start is not the TCP header; virtio_net.h/UDP parts absent
+912	9c9828d3ead6	mm, page_alloc, thp: prevent reclaim for __GFP_THISNODE THP allocations	n/a	-	__GFP_THISNODE THP reclaim path only matters with THP; CONFIG_TRANSPARENT_HUGEPAGE off
+913	aac8a59537df	Revert "workqueue: Override implicit ordered attribute in workqueue_apply_unbound_cpumask()"	n/a	-	reverts ca10d851b9ad, which is not applied here
+914	acfa60dbe038	arm64: mm: Fix "rodata=on" when CONFIG_RODATA_FULL_DEFAULT_ENABLED=y	n/a	-	rodata=full (2e8cff0a0eee) absent; asm/setup.h absent
+915	ddc204b517e6	copy_process(): Move fd_install() out of sighand->siglock critical section	ported	a13fc64e194f	BACKPORT: fd_install() moved out of the siglock/tasklist_lock section
+916	e730558adffb	fsnotify: consistent behavior for parent not watching children	n/a	-	fsnotify_iter_info (4.18) absent; fanotify not built
+917	fadeedd7cfc5	sched/psi: Create the psimon kthread outside of cgroup_mutex	n/a	-	tree's cgroup_pressure_write() drops cgroup_mutex before psi_trigger_create() (a5b98009f16d absent)
+918	0032ce0f85a2	ptrace: Prevent kernel-infoleak in ptrace_get_syscall_info()	n/a	-	struct ptrace_syscall_info / PTRACE_GET_SYSCALL_INFO (5.3) absent
+919	0774a964ef56	KVM: Fix out of range accesses to memslots	n/a	-	not built: KVM off (and s390)
+920	079c24d56902	mm/tracing: rss_stat: ensure curr is false from kthread context	ported	56c11eb27995	BACKPORT (context only): rss_stat curr is false for kthreads using a borrowed mm
+921	24d4da5c2565	wifi: ieee80211: correct FILS status codes	ported	acaea50d5339	BACKPORT (context only): FILS status codes 112/113 per 802.11ai; no in-tree users
+922	2f0799a0ffc0	mm, thp: restore node-local hugepage allocations	n/a	-	not built: CONFIG_NUMA and CONFIG_TRANSPARENT_HUGEPAGE off
+923	376653435dac	kernel.h: remove duplicate include of asm/div64.h	n/a	-	4.9 kernel.h includes asm/div64.h only once
+924	39f985c8f667	fs/cachefiles: Remove wait_bit_key layout dependency	n/a	-	not built: CONFIG_CACHEFILES off; wait_bit_key layout dependency absent
+925	39ff83f2f6cc	time: Handle negative seconds correctly in timespec64_to_ns()	n/a	-	not built: on 64-bit 4.9 timespec64_to_ns is timespec_to_ns (no unsigned clamp); the patched variant is the 32-bit one
+926	3d1e236022cc	objtool: Prevent GCC from merging annotate_unreachable()	n/a	-	not built: CONFIG_STACK_VALIDATION (objtool, x86-only) off
+927	3e6743e28b9b	random: include <linux/once.h> in the right header	skipped	-	header include hygiene only; no build failure here
+928	4578be130a64	overflow: Correct check_shl_overflow() comment	skipped	-	comment-only change
+929	47227d27e2fc	string.h: fix incompatibility between FORTIFY_SOURCE and KASAN	n/a	-	not built: CONFIG_KASAN off
+930	4d004099a668	lockdep: Fix lockdep recursion	n/a	-	not built: CONFIG_LOCKDEP off; lockdep_recursion per-cpu rework absent
+931	51e50fbd3efc	psi: fix "no previous prototype" warnings when CONFIG_CGROUPS=n	n/a	-	warning only with CONFIG_CGROUPS=n; CGROUPS=y here
+932	5393802c94e0	genalloc.h: fix htmldocs warning	skipped	-	kernel-doc only
+933	55149d06534a	objtool, compiler.h: Fix __unreachable section relocation size	n/a	-	not built: CONFIG_STACK_VALIDATION (objtool, x86-only) off
+934	57a0ef02fefa	ima: Reset IMA_NONACTION_RULE_FLAGS after post_setattr	n/a	-	not built: CONFIG_IMA off
+935	5b3fdc9f2ff1	random: Do not include <linux/prandom.h> in <linux/random.h>	skipped	-	header include refactor only; no bug in this tree
+936	5d3c4c79384a	KVM: Stop looking for coalesced MMIO zones if the bus is destroyed	n/a	-	not built: KVM off
+937	62575e270f66	ceph: check session state after bumping session->s_seq	n/a	-	not built: CONFIG_CEPH_FS off
+938	649ea4d5a624	objtool: Assume unannotated UD2 instructions are dead ends	n/a	-	not built: objtool / CONFIG_STACK_VALIDATION is x86-only
+939	69a94abb82ee	export.h, genksyms: do not make genksyms calculate CRC of trimmed symbols	n/a	-	only matters with CONFIG_TRIM_UNUSED_KSYMS, which is off
+940	79038a99445f	kernfs: add stub helper for kernfs_generic_poll()	n/a	-	stub only matters with CONFIG_KERNFS=n; KERNFS=y here
+941	7a1636089acf	btrfs: fix invalid delayed ref after subvolume creation failure	n/a	-	not built: CONFIG_BTRFS_FS off
+942	7a3dc4f35bf8	driver core: Add missing kernel doc for device::msi_lock	skipped	-	kernel-doc only
+943	7d2c3f54e6f6	crypto: af_alg - remove locking in async callback	n/a	-	not built: CONFIG_CRYPTO_USER_API_* off (af_alg not built)
+944	7fb5e5083190	mmu_gather: fix the CONFIG_MMU_GATHER_NO_RANGE case	n/a	-	CONFIG_MMU_GATHER_NO_RANGE / tlb_update_vma_flags (5.x) absent
+945	81bd415c91eb	watchdog/core: Add missing prototypes for weak functions	skipped	-	missing-prototype warning only
+946	8dd591ad0104	spi: <linux/spi/spi.h>: add missing struct kernel-doc entry	skipped	-	kernel-doc only
+947	95fc45d1dea8	ax25: rcu protect dev->ax25_ptr	n/a	-	not built: CONFIG_AX25 off
+948	9bbe60a67be5	atm: Preserve value of skb->truesize when accounting to vcc	n/a	-	not built: CONFIG_ATM off
+949	a6ecfb11bf37	KVM: arm/arm64: vgic-its: Take the srcu lock when writing to guest memory	n/a	-	not built: KVM off
+950	af84537dbd1b	SUNRPC: fix race to sk_err after xs_error_report	n/a	-	not built: CONFIG_SUNRPC off
+951	b25e6a5f78e8	ubifs: Fix space leak when powercut happens in linking tmpfile	n/a	-	not built: CONFIG_UBIFS_FS off
+952	ba1ed9e17b58	KVM: arm: vgic-v2: Only use the virtual state when userspace accesses pending bits	n/a	-	not built: KVM off
+953	bb43a59944f4	Rename .data.unlikely to .data..unlikely	n/a	-	collision with the AutoFDO/Propeller .data.unlikely prefix (cb87481ee89d); neither is in this tree
+954	bd7c05fb4a47	ocfs2: fix circular locking dependency in ocfs2_init_acl()	n/a	-	not built: CONFIG_OCFS2_FS off
+955	bf44f488e168	tracing: Change offset type to s32 in preempt/irq tracepoints	n/a	-	not built: preempt/irq tracepoints (CONFIG_PREEMPTIRQ_EVENTS) off
+956	c43aeb198048	fix brown paperbag bug in inlined copy_..._iter()	n/a	-	4.9 copy_to_iter()/copy_from_iter() are out of line with no check_copy_size() wrapper
+957	cd7eb8f83fcf	mm/slab: make __free(kfree) accept error pointers	n/a	-	linux/cleanup.h and __free(kfree) (6.x) absent
+958	d50fd948d3d0	media: dvb/frontend.h: fix kernel-doc warnings	skipped	-	kernel-doc only
+959	dbefa1f31a91	Rename .data.once to .data..once to fix resetting WARN*_ONCE	n/a	-	WARN_ONCE reset (__start_once/__end_once, clear_warn_once) absent, so nothing clears the .data.once range
+960	e4c82eafb609	selinux: add proper NULL termination to the secclass_map permissions	skipped	-	no functional effect: perms[33] initializer zero-fills the missing NULL terminator
+961	e649b3f0188f	KVM: x86: Fix APIC page invalidation race	n/a	-	not built: KVM off (x86)
+962	ec2444530612	psi: Fix "no previous prototype" warnings when CONFIG_CGROUPS=n	n/a	-	warning only with CONFIG_CGROUPS=n; CGROUPS=y here
+963	f1100605590a	xfs: remove unused event xfs_alloc_near_nominleft	n/a	-	not built: CONFIG_XFS_FS off
+964	f3c802a1f300	crypto: algif_aead - Only wake up when ctx->more is zero	n/a	-	not built: CONFIG_CRYPTO_USER_API_* off (af_alg not built)
+965	f65c4bbbd682	Squashfs: fix handling and sanity checking of xattr_ids count	n/a	-	not built: CONFIG_SQUASHFS off
+966	fddf9055a60d	lockdep: Use raw_cpu_*() for per-cpu variables	n/a	-	not built: CONFIG_LOCKDEP off
+967	ff5e72ebef41	9p: apply review requests for fid refcounting	n/a	-	not built: CONFIG_NET_9P off
+968	fff4b87e594a	perf/x86/intel/uncore: Make package handling more robust	n/a	-	not built: x86 perf uncore
+969	201c1db90cd6	iommu/iova: Fix compilation error with !CONFIG_IOMMU_IOVA	n/a	-	stub only for CONFIG_IOMMU_IOVA=n; IOMMU_IOVA=y here
+970	525c0edc032b	ocfs2: make ocfs2_calc_xattr_init() return void	n/a	-	not built: CONFIG_OCFS2_FS off
+971	6513eb3d3191	net: tighten bad gso csum offset check in virtio_net_hdr	n/a	-	the virtio_net_hdr_to_skb() TCP csum_offset check it tightens (from 89add40066f9) is absent from 4.9 virtio_net.h
+972	af955bf15d2c	crypto: af_alg - Fix race around ctx->rcvused by making it atomic_t	n/a	-	not built: CONFIG_CRYPTO_USER_API_* off (af_alg not built)
+973	baffd723e44d	lockdep: Revert "lockdep: Use raw_cpu_*() for per-cpu variables"	n/a	-	not built: CONFIG_LOCKDEP off
+974	e269d79c7d35	net: missing check virtio	n/a	-	4.9 virtio_net_hdr_to_skb() has no csum_start/thlen 'needed' block; e269d79c7d35 code absent (and reverted upstream by 89add40066f9)
+975	ec1e1b610917	objtool: Prevent GCC from merging annotate_unreachable(), take 2	n/a	-	not built: CONFIG_STACK_VALIDATION (objtool, x86-only) off
+976	4bca7e80b645	init: Initialize noop_backing_dev_info early	ported	83cd108641e3	follow-up to 10e14073107d (no Fixes target in the scan): noop bdi must be set up before devtmpfs mounts
