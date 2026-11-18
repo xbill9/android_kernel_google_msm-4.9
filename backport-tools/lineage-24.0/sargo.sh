@@ -5,7 +5,7 @@
 #                    apply as is, build the ROM with this kernel tree, then test that ROM's kernel
 #                    on the plugged-in phone (RAM boot: nothing is flashed). On PASS: push the
 #                    kernel and publish the ROM as a GitHub release. On FAIL nothing is published.
-#   sargo install    install the newest release on the phone (args: tested | rom.zip [gapps.zip])
+#   sargo install    install the newest release on the phone (args: --all | tested | rom.zip [gapps.zip])
 #   sargo test       test this kernel tree on the phone without building the ROM (a kernel change
 #                    in progress; builds the kernel alone, about 35 minutes)
 #

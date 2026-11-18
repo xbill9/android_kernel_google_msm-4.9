@@ -4,6 +4,7 @@
 #   sargo-install                 the newest build from GitHub releases (downloaded once, checked)
 #   sargo-install tested          the newest build marked Latest (tested on a phone)
 #   sargo-install rom.zip [gapps.zip]
+#   sargo-install --all           every phone in phones.conf at once (others over SSH), one summary
 # It updates these scripts first, and downloads MindTheGapps if no copy is found. The unmodified
 # MindTheGapps zip needs a build from 24.0-20261109 on (kernel with EROFS); for an older rom.zip
 # pass a repack-gapps.sh zip (*-sargo.zip). An earlier repacked install is removed first, which
@@ -19,6 +20,20 @@ CACHE=~/sargo-rom
 GAPPS_URL=https://github.com/MindTheGapps/17.0.0-arm64/releases/download/MindTheGapps-17.0.0-arm64-20261022_132445/MindTheGapps-17.0.0-arm64-20261022_132445.zip
 for d in ~/android/lineage-24.0/out/host/linux-x86/bin ~/platform-tools; do [ -x $d/adb ] && PATH=$d:$PATH; done
 log() { echo; echo "=== $(date +%T) $*"; }
+# --all: this script on every phone in phones.conf at the same time; "local" is this machine, any
+# other name is an SSH host with sargo-install in ~/bin. Logs: ~/sargo-rom/install-<host>-<time>.log.
+if [ "${1:-}" = --all ]; then
+  shift; T=$(date +%m%d-%H%M); mkdir -p ~/sargo-rom; pids=""; hosts=""
+  for h in $(grep -vE '^\s*(#|$)' "$B/phones.conf" | awk '{print $1}'); do
+    L=~/sargo-rom/install-$h-$T.log
+    if [ "$h" = local ]; then "$SELF" "$@" > "$L" 2>&1 < /dev/null &
+    else ssh -o BatchMode=yes "$h" "~/bin/sargo-install $*" > "$L" 2>&1 < /dev/null & fi
+    pids="$pids $!"; hosts="$hosts $h"; echo "$h: installing (log: $L)"
+  done
+  wait $pids
+  for h in $hosts; do printf '%-16s %s\n' "$h" "$(grep -aE '^=== .* DONE|STOPPED|hw-check:' ~/sargo-rom/install-$h-$T.log | tail -2 | paste -sd' ')"; done
+  exit 0
+fi
 # One sargo command at a time (absent on a laptop install: no lock needed).
 [ -f "$B/sargo-lock.sh" ] && { . "$B/sargo-lock.sh"; sargo_lock sargo-install; }
 die() { echo "!!! STOPPED: $*"; exit 1; }
@@ -96,20 +111,23 @@ timeout 20 adb root >/dev/null 2>&1; sleep 3; timeout 60 adb wait-for-device
 [ "$(timeout 5 adb shell id -u | tr -d '\r')" = 0 ] || die "adb root does not work: the phone must run a userdebug build of this ROM (see INSTALL.md for a first install)"
 
 G=${2:-}
-if [ -z "$G" ]; then
-  GD="$HOME/sargo-bpf-test/gapps $CACHE $(dirname "$Z")"
-  G=$(for d in $GD; do ls "$d"/MindTheGapps-17*-arm64-*.zip; done 2>/dev/null | grep -v -- -sargo | tail -1)
-  if [ -z "$G" ]; then
-    log "downloading MindTheGapps"
-    mkdir -p "$CACHE"
-    G=$CACHE/$(basename "$GAPPS_URL")
-    curl -fL --retry 3 -o "$G.part" "$GAPPS_URL" && mv "$G.part" "$G" || die "MindTheGapps download failed"
-  fi
-fi
-[ -f "$G" ] || die "$G not found"
-G=$(realpath "$G")
 echo "rom:   $Z"
-echo "gapps: $G"
+
+find_gapps() { # the MindTheGapps zip: $2, a local copy, or a download
+  if [ -z "$G" ]; then
+    GD="$HOME/sargo-bpf-test/gapps $CACHE $(dirname "$Z")"
+    G=$(for d in $GD; do ls "$d"/MindTheGapps-17*-arm64-*.zip; done 2>/dev/null | grep -v -- -sargo | tail -1)
+    if [ -z "$G" ]; then
+      log "downloading MindTheGapps"
+      mkdir -p "$CACHE"
+      G=$CACHE/$(basename "$GAPPS_URL")
+      curl -fL --retry 3 -o "$G.part" "$GAPPS_URL" && mv "$G.part" "$G" || die "MindTheGapps download failed"
+    fi
+  fi
+  [ -f "$G" ] || die "$G not found"
+  G=$(realpath "$G")
+  echo "gapps: $G"
+}
 
 log "installing the update into the other slot (about 7 minutes; do not use the phone)"
 OLD=$(prop ro.boot.slot_suffix)
@@ -158,6 +176,11 @@ sideload() {
   timeout 20 adb root >/dev/null 2>&1; sleep 3; timeout 60 adb wait-for-device
 }
 
+# A build with Google apps built in (vendor/gapps) needs no trip to recovery.
+if timeout 5 adb shell pm path com.google.android.gms 2>/dev/null | grep -qE 'package:/(product|system|system_ext)/'; then
+  log "GApps: built into this build; no recovery step"
+else
+find_gapps
 if [[ "$G" != *-sargo.zip ]] && timeout 5 adb shell test -e /product/priv-app/PrebuiltGmsCoreVic; then
   log "removing the repacked GApps first: the phone goes to recovery now"
   C=$(mktemp -d)/remove-repacked-gapps.zip
@@ -169,6 +192,7 @@ fi
 
 log "GApps: the phone goes to recovery now"
 sideload "$G" "run: bash $B/boot-test/post-install-24.sh"
+fi
 
 log "permissions and app compile (about 3 minutes)"
 bash "$B/boot-test/post-install-24.sh" || die "post-install check failed (see above)"

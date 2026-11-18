@@ -32,4 +32,6 @@
   <project name="xbill9/android_vendor_apn" path="vendor/apn" remote="github" revision="main" />
   <remove-project name="LineageOS/android_vendor_lineage" />
   <project name="xbill9/android_vendor_lineage" path="vendor/lineage" remote="github" revision="lineage-24.0" />
+  <!-- Google apps built into the ROM (included from device/google/bonito/lineage_sargo.mk). -->
+  <project name="MindTheGapps/vendor_gapps" path="vendor/gapps" remote="github" revision="cinnamonbun" clone-depth="1" />
 </manifest>
