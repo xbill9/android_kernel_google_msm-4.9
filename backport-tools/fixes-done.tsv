@@ -434,3 +434,200 @@
 431	9b6c20f78847	net: usb: ax88179_178a: fix rx frame length for non-last packets	already	-	patch applies in reverse
 432	835d1c3a9879	arm64: Drop unnecessary include from asm/smp.h	already	-	patch applies in reverse
 433	ae79d5588a04	perf/core: Fix !CONFIG_PERF_EVENTS build warnings and failures	already	-	patch applies in reverse
+434	025c65e119bf	xfrm: Honor original L3 slave device in xfrmi policy lookup	n/a	-	VRF-only: CONFIG_NET_L3_MASTER_DEV not set, so there is no L3 slave ifindex to honor
+435	0c2ed186bbe1	wifi: cfg80211: use wiphy work for socket owner autodisconnect	skipped	-	needs the wiphy_work infrastructure (absent in 4.9); the plain work_struct teardown in 4.9 is structured differently (no _cfg80211_unregister_wdev() for netdevs)
+436	0ec986ed7bab	tcp: fix incorrect undo caused by DSACK of TLP retransmit	ported	43f6d190a1a6	BACKPORT: context only in tcp_retransmit_timer() (tlp_retrans from 76be93fc0702 present)
+437	0f1ae2821fa4	netfilter: nat: restore default DNAT behavior	n/a	-	port rovers still present (6ed5943f8735 not in tree; nf_nat_proto_common.c picks the offset)
+438	170a1fb9c01b	netfilter: Force fake conntrack entry to be at least 8 bytes aligned	n/a	-	skb->nfct is a plain pointer with separate nfctinfo (a9e419dc7be6 not in tree)
+439	1fcc064b305a	netfilter: rpfilter/fib: Set ->flowic_uid correctly for user namespaces.	ported	c391d12be7d0	BACKPORT: par->net for xt_net(par), no l3mdev context; nft_fib hunks dropped (NF_TABLES not set)
+440	22d6552f827e	xfrm interface: fix management of phydev	ported	9140c7db687b	BACKPORT: 4.9 xfrmi_dev_setup() uses dev->destructor
+441	25c1a9ca53db	tcp_cubic: fix incorrect HyStart round start detection	ported	eb2ddb7b67f6	BACKPORT: tp->snd_cwnd instead of tcp_snd_cwnd(); 4.9 bictcp_acked() has no !ca->found test (4e1fddc98d25 present)
+442	28465227c80f	xfrm: provide message size for XFRM_MSG_MAPPING	n/a	-	only used by the 64=>32 compat translator; CONFIG_XFRM_USER_COMPAT not set (xfrm_compat.o not built)
+443	329f0b9b48ee	netfilter: xt_IDLETIMER: reject rev0 reuse of ALARM timer labels	n/a	-	Android xt_IDLETIMER here has no revision 0/ALARM timer_type split (68983a354a65 not in tree)
+444	3301ab7d5aeb	net/ipv6: release expired exception dst cached in socket	n/a	-	no IPv6 exception table in 4.9: ip6_negative_advice() calls ip6_del_rt(), whose ip6_rt_put() consumes the dst_hold(), so no leak
+445	355fbcbdc253	xfrm: use compat translator only for u64 alignment mismatch	already	-	equivalent Android guard: translator path skipped unless !CONFIG_ANDROID || CONFIG_XFRM_USER_COMPAT, so arm64 compat tasks use the native parser
+446	3c8fc8782044	inet: frags: rework rhashtable dismantle	skipped	-	needs fqdir (frag dir allocated apart from struct net), rcu_work and pernet pre_exit, all absent in 4.9; netns-dismantle-only race
+447	3cd740b98596	netfilter: allow ipv6 fragments to arrive on different devices	ported	17950d15c912	BACKPORT: no fqdir; key.iif=0 for non-mcast/LL in fq_find() on &net->nf_frag.frags
+448	45a36a18d019	xfrmi: drop ignore_df check before updating pmtu	ported	3edfb16d099f	BACKPORT: 4.9 open-codes dst->ops->update_pmtu()
+449	460b360104d5	net_sched: fix a crash in tc_new_tfilter()	n/a	-	tcf_block_find() (e368fdb61d8e) not in tree
+450	48f486e13ffd	net: xfrm: fix memory leak in xfrm_user_policy()	n/a	-	compiled out: the translator block in xfrm_user_policy() is under !CONFIG_ANDROID || CONFIG_XFRM_USER_COMPAT; ANDROID=y, XFRM_USER_COMPAT unset
+451	5057e1aca011	net/sched: act_api: use RCU with deferred freeing for action lifecycle	n/a	-	tc_action still has tcfa_rcu and frees via call_rcu() (d7fb60b9cafb not in tree)
+452	55f0bfc03705	af_packet: fix soft lockup issue caused by tpacket_snd()	ported	c84265524af7	UPSTREAM: same diff, offsets only
+453	584f3742890e	net: add sock_init_data_uid()	ported	6b1eb4023088	BACKPORT: 4.9 sock_init_data() layout (sk_wq assignment, atomic sk_refcnt)
+454	5b0af621c3f6	net: restrict SO_REUSEPORT to inet sockets	ported	9da3303b2a8f	BACKPORT: sk_is_inet() open-coded as AF_INET/AF_INET6 test in sock_setsockopt()
+455	5dee6d692345	net: ipv4: fix a memleak in ip_setup_cork	ported	0c8a953c4f3d	BACKPORT: rt NULL check moved up together with the MTU check, ahead of cork->opt allocation
+456	5f2fb802eee1	ipv6: old_dport should be a __be16 in __ip6_datagram_connect()	skipped	-	sparse type annotation only (__be32 holding a __be16 port, no functional effect)
+457	5fc6266af7b4	bridge: mcast: Fix MLD2 Report IPv6 payload length check	n/a	-	e57f61858b7c (nsrcs_offset rework) not in tree; MLD2 code here already sizes the read with sizeof(__nsrcs)
+458	61792b677415	netfilter: ipv6: fix oops when defragmenting locally generated fragments	already	-	nf_ct_frag6_gather() already saves/restores skb->_skb_refdst around nf_ct_frag6_reasm()
+459	653d7ddf6cba	inet: frags: publish queues before arming timer	ported	c4789dd52b81	BACKPORT: netns_frags, no inet_frag_putn(); lost-race path calls inet_frag_destroy() directly (timer not armed yet)
+460	660899ddf06a	xfrm: Fix inbound traffic via XFRM interfaces across network namespaces	skipped	-	4.9 Android xfrmi backport resolves if_id inside __xfrm_decode_session() (also used on output/forward), not in __xfrm_policy_check(); the net switch needs restructuring; only affects xfrmi moved across netns
+461	6e00f7dd5e4e	ipv6: frags: fix /proc/sys/net/ipv6/ip6frag_low_thresh	already	-	ip6frag_low_thresh already uses proc_doulongvec_minmax
+462	7081d46d3231	xfrm: account XFRMA_IF_ID in aevent size calculation	ported	be6d71f5a6ae	BACKPORT: no SA_DIR/SA_PCPU terms in 4.9 msgsize; replaces BUG() on build_aevent() failure
+463	72bf4f1767f0	net: do not leave an empty skb in write queue	n/a	-	tcp_remove_empty_skb() (fdfc5c8594c2) not in tree
+464	78eb166cdefc	tcp: Fix data-races around sysctl_tcp_min_snd_mss.	skipped	-	READ_ONCE() data-race annotation only
+465	7a67e69a339a	vti6: Keep set MTU on link creation or change, validate it	n/a	-	vti6_link_config() does not set the MTU at all here (53c81e95df17 not in tree)
+466	7fb668ac7b49	netfilter: nf_ct_expect: nf_ct_expect_related_report(): Return zero on success.	n/a	-	nf_ct_expect_insert() still returns int 0 on success here (4dee62b1b9b4 not in tree)
+467	833a9fd28c9b	wifi: cfg80211: Fix not unregister reg_pdev when load_builtin_regdb_keys() fails	n/a	-	signed regdb keys (90a53e4432b1, load_builtin_regdb_keys()) not in tree
+468	88230ef1f31b	cfg80211: fix CFG80211_EXTRA_REGDB_KEYDIR typo	n/a	-	CFG80211_EXTRA_REGDB_KEYDIR / regdb key loading (90a53e4432b1) not in tree
+469	898904226b5a	net_sched: reset pointers to tcf blocks in classful qdiscs' destructors	n/a	-	tcf block infrastructure (6529eaba33f0) not in tree; classful qdiscs use tcf_destroy_chain()
+470	8bda81a4d400	lwtunnel: Validate RTA_ENCAP_TYPE attribute length	n/a	-	not built: CONFIG_LWTUNNEL not set, so lwtunnel.c (the only functional hunk) is not compiled; other hunks are comments
+471	8bedb6c46945	netfilter: xt_CT: fix usersize for v1 and v2 revision	ported	1f9c41cb49a3	BACKPORT: 4.9 registers rev 1/2 once as NFPROTO_UNSPEC (2 entries, not 4)
+472	8fc0e3b6a866	xfrm: interface: fix ipv4 pmtu check to honor ip header df	ported	8036228b967f	BACKPORT: icmp_send()/icmpv6_send() instead of *_ndo_send()
+473	9adc89af724f	net: let skb_orphan_partial wake-up waiters.	ported	0a5cbfe256ff	BACKPORT: destructor test open-coded (no can_skb_orphan_partial()); atomic_inc_not_zero() on sk_refcnt
+474	9f8550e4bd9d	xfrm: fix disable_xfrm sysctl when used on xfrm interfaces	ported	6818b52c2a1c	BACKPORT: no xfrm_lookup_with_ifid(); test fl->flowi_xfrm.if_id in xfrm_lookup()
+475	a268e0f2455c	net: fix proc_fs init handling in af_packet and tls	n/a	-	build-config fix for CONFIG_PROC_FS=n; PROC_FS=y here and net/tls is not in tree
+476	a622b40035d1	l2ip: fix possible use-after-free	ported	f1e2cb1de902	BACKPORT: atomic_inc_not_zero() on atomic_t ref_count; no l2tp_tunnel_get_nth() in 4.9
+477	a699781c79ec	ethtool: check device is present when getting link settings	ported	3deefa0358c6	BACKPORT: net/core/ethtool.c; presence check placed before both the ksettings and legacy get_settings paths
+478	aafc2e3285c2	ipv6: annotate accesses to fn->fn_sernum	skipped	-	READ_ONCE/WRITE_ONCE annotation of fn_sernum only
+479	aebfa52a925d	netfilter: drop template ct when conntrack is skipped.	ported	21cecf011d71	BACKPORT: skb->nfct = NULL instead of skb->_nfct = 0
+480	b4331a681822	vti6: Change minimum MTU to IPV4_MIN_MTU, vti6 can carry IPv4 too	n/a	-	vti6_link_config() does not set the MTU at all here (53c81e95df17 not in tree)
+481	b59e6979a863	net: sched: fix static key imbalance in case of ingress/clsact_init error	n/a	-	tcf block infrastructure (6529eaba33f0) not in tree; ingress/clsact init cannot fail after the static key increment
+482	b6fe0440c637	bridge: implement missing ndo_uninit()	ported	7a457922af23	BACKPORT: context only (gc_timer instead of gc_work); fixes stats leak when register_netdevice() fails after ndo_init
+483	b87b04f5019e	ipv4: Fix device used for dst_alloc with local routes	n/a	-	CONFIG_NET_L3_MASTER_DEV not set: l3mdev_master_dev_rcu() is always NULL, old and new code both allocate on loopback
+484	bc5bde9ce3cc	ipv4: fix use-after-free in fib_nhc_update_mtu()	ported	c92e922bb22b	BACKPORT: 4.9 nh_update_mtu() on struct fib_nh; fnhe_update_pmtu() added to route.c/route.h
+485	c07ff8592d57	netem: fix return value if duplicate enqueue fails	ported	f6f3bafe6a2e	BACKPORT: 4.9 corrupt/GSO path keeps the list in segs; netem_segment() failure clears skb and jumps to finish_segs; no segs re-link before qdisc_drop_all()
+486	c1ce1560a1ae	secure_seq: fix sparse errors	n/a	-	secure_seq.c here still uses MD5, SipHash conversion 7cd23e5300c1 not in tree (and the code is DCCP-only, IP_DCCP not set)
+487	c283e9ada7fc	xfrm: fix sk_dst_cache double-free in xfrm_user_policy()	ported	7475f7891759	BACKPORT: context only (__user optval instead of sockptr_t)
+488	c5d1030f2300	xfrm interface: fix list corruption for x-netns	ported	c16e32598e01	BACKPORT: context only (no extack in 4.9 changelink)
+489	c6741fbed6dc	vti6: Properly adjust vti6 MTU from MTU of lower device	n/a	-	vti6_link_config() does not set the MTU at all here (53c81e95df17 not in tree)
+490	c6dbf7aaa482	net/ipv6: fix addrconf_sysctl_addr_gen_mode	ported	b986348bb884	BACKPORT: 4.9 takes rtnl only around addrconf_dev_config() (no rtnl_trylock()/out label); errors return directly
+491	c76fe2d98c72	net: ipv6: send unsolicited NA after DAD	ported	1179786790b9	BACKPORT: context only (4.9 addrconf_dad_begin()/rs_timer signatures)
+492	c95c5f58b35e	xfrm interface: fix oops when deleting a x-netns interface	ported	247b62bf12bf	BACKPORT: .exit_batch added beside the .init/.exit hooks 4.9 still has
+493	cc1ff87bce1c	pppoe: drop PFC frames	skipped	-	hardening/behaviour change (drop PFC frames on PPPoE); the harm is unaligned access on strict-alignment arches, arm64 handles it
+494	cf12e6f91246	tcp: don't free a FIN sk_buff in tcp_remove_empty_skb()	n/a	-	tcp_remove_empty_skb() (fdfc5c8594c2) not in tree; 4.9 do_fault only frees the skb it just allocated
+495	d1ebd9081879	xfrm: fix compat ALLOCSPI request use-after-free	n/a	-	CONFIG_XFRM_USER_COMPAT not set: no translator registers, xfrm_get_translator() is always NULL so alloc_compat() is never called
+496	d375b98e0248	ip6_tunnel: fix NEXTHDR_FRAGMENT handling in ip6_tnl_parse_tlv_enc_lim()	ported	e5d53d9b3a99	BACKPORT: AH length open-coded (no ipv6_authlen() in 4.9)
+497	d7be102f2945	cfg80211: initialize regulatory keys/database later	n/a	-	regdb key loading (90a53e4432b1) not in tree; no regulatory_init_db()
+498	de2c211868b9	ipvs: Always clear ipvs_property flag in skb_scrub_packet()	n/a	-	CONFIG_IP_VS not set: ipvs_reset() is empty and skb->ipvs_property is never set
+499	e28587cc491e	sit: do not call ipip6_dev_free() from sit_init_net()	n/a	-	4.9 uses dev->destructor and register_netdev() failure does not run it (cf124db566e6 not in tree), so the explicit ipip6_dev_free() is the only free
+500	e4b019515f95	Bluetooth: Enforce validation on max value of connection interval	skipped	-	behaviour change for Bluetooth qualification (reject LE conn param updates above current max interval), not a memory-safety fix
+501	e6194923237f	esp: Fix memleaks on error paths.	ported	5e3177abce85	BACKPORT: pre-split esp_output(); only the skb_to_sgvec() error paths leaked (esp4 out/in, esp6 out)
+502	e67b72b90b7e	tcp: use alloc_large_system_hash() to allocate table_perturb	skipped	-	4.9 allocates table_perturb in non-__init inet_hashinfo_init() (also used by dccp), alloc_large_system_hash() is __init; boot-time kmalloc robustness only
+503	e84a4927a404	net: annotate races around sk->sk_uid	skipped	-	READ_ONCE/WRITE_ONCE annotation of sk_uid across many files; data-race annotation only
+504	e9e7e85d75f3	xfrm interface: avoid corruption on changelink	ported	1c0862156b7e	BACKPORT: context only (no extack in 4.9 changelink)
+505	eb73b5a91572	Bluetooth: hci_event: Fix sending MGMT_EV_DEVICE_FOUND for invalid address	n/a	-	process_adv_report() has no ext_adv parameter/check (a2ec905d1e16 not in tree)
+506	ec4215683e47	ppp: defer channel free to an RCU grace period to fix pppol2tp RX UAF	ported	6f6d92c8f377	BACKPORT: free is in ppp_destroy_channel() in 4.9; rcu_head added to struct channel, rcu_barrier() in ppp_cleanup()
+507	ed0c99dc0f49	tcp: ensure PMTU updates are processed during fastopen	ported	9f4895c7e98d	BACKPORT: no tcp_mss_clamp() in 4.9; tcp_sync_mss() after the open-coded user_mss clamp
+508	f24c5987dddd	net/ipv6: propagate net.ipv6.conf.all.addr_gen_mode to devices	ported	a7a92f3b58a0	BACKPORT: rtnl_lock() taken around the for_each_netdev() walk since 4.9 does not hold it across the handler
+509	f613e8b4afea	net: add proper RCU protection to /proc/net/ptype	ported	b07f82233f19	BACKPORT: global ptype_all, no per-netns ptype_all/ptype_specific; seq_open_net() size changed instead of proc_create_net()
+510	006a5035b495	inet: frags: flush pending skbs in fqdir_pre_exit()	n/a	-	fqdir_pre_exit() (d5dd88794a13) not in tree
+511	098116e7e640	net: really orphan skbs tied to closing sk	ported	142e2f158a61	BACKPORT: same 4.9 adaptations as 9adc89af724f
+512	32594b098549	inet: frags: fix use-after-free caused by the fqdir_pre_exit() flush	n/a	-	fixes the fqdir_pre_exit() flush (006a5035b495), not in tree
+513	38ec4944b593	gro: ensure frag0 meets IP header alignment	skipped	-	only matters on strict-alignment arches; arm64 does unaligned loads, and with NET_IP_ALIGN=2 here it would just disable the frag0 GRO fast path
+514	68ac0f3810e7	xfrm: state and policy should fail if XFRMA_IF_ID 0	skipped	-	reverted upstream by a3d9001b4e28 (broke userspace that passes XFRMA_IF_ID 0)
+515	6d0d95a1c2b0	xfrm: fix the if_id check in changelink	ported	96136c04e63b	BACKPORT: no extack in 4.9
+516	71e5e886806e	cfg80211: regulatory: make initialization more robust	n/a	-	fixes d7be102f2945 (regulatory_init_db()), not in tree
+517	751a9c763849	netfilter: xtables: fix build failure from COMPAT_XT_ALIGN outside CONFIG_COMPAT	skipped	-	build fix for CONFIG_COMPAT=n only; this config has COMPAT=y and the macro builds
+518	7ad18ff6449c	gro: fix napi_gro_frags() Fast GRO breakage due to IP alignment check	n/a	-	fixes 38ec4944b593, which is not ported
+519	84dad55951b0	udp6: fix encap return code for resubmitting	ported	ec572a1868a7	UPSTREAM: same diff, offsets only
+520	8dce43919566	xfrm: interface with if_id 0 should return error	ported	096bbd26de00	BACKPORT: no extack in 4.9, return -EINVAL without NL_SET_ERR_MSG()
+521	91341fa0003b	inet: frags: annotate races around fqdir->dead and fqdir->high_thresh	n/a	-	fqdir->dead (d5dd88794a13) not in tree; annotation-only
+522	9bc3047374d5	net: tun_chr_open(): set sk_uid from current_fsuid()	ported	687d132651e4	BACKPORT: a096ccca6e50 absent, so tun_chr_open()'s sock_init_data() becomes sock_init_data_uid(current_fsuid()) directly (also fixes CVE-2023-1076)
+523	b128ed5ab273	udp: fix receiving fraglist GSO packets	n/a	-	no UDP fraglist GSO (SKB_GSO_FRAGLIST) and no csum_start check in __udp_gso_segment (89add40066f9 not in tree)
+524	b824476c56a1	inet: frags: invalidate queues before flushing them	n/a	-	fixes the fqdir_pre_exit() flush (006a5035b495), not in tree
+525	c1ba3c0cbdb5	af_packet: fix the SO_SNDTIMEO constraint not effective on tpacked_snd()	ported	5c30584964be	UPSTREAM: same diff, offsets only
+526	d5dd88794a13	inet: fix various use-after-free in defrags units	n/a	-	fixes 3c8fc8782044 (fqdir_exit work queue), not in tree; 4.9 frees the rhashtable synchronously in inet_frags_exit_net()
+527	dc93f46bc4e0	inet: frags: fix use-after-free read in inet_frag_destroy_rcu	n/a	-	fixes 3c8fc8782044 (fqdir_rwork_fn), not in tree
+528	0aa1d18615c1	net/mlx5e: Rx, Fixup skb checksum for packets with tail padding	n/a	-	not built: CONFIG_MLX5_CORE not set
+529	1a2391c30c0b	rxrpc: Fix detection of out of order acks	n/a	-	not built: CONFIG_AF_RXRPC not set
+530	2a06b8982f8f	net: reorder 'struct net' fields to avoid false sharing	skipped	-	struct net field reordering for false sharing; performance only
+531	4039146777a9	net: ipv6: fix returned variable type in ip6_skb_dst_mtu	n/a	-	4.9 ip6_skb_dst_mtu() has no local mtu variable (fade56410c22 not in tree)
+532	52ffeaa358d1	sctp: re-point retained control chunks on association migration	n/a	-	not built: CONFIG_IP_SCTP not set
+533	7d8a3a477b3e	ax25: Fix ax25 session cleanup problems	n/a	-	not built: CONFIG_AX25 not set
+534	b1e3a5607034	xfrm: Fix NULL pointer dereference on policy lookup	ported	73c5e1ddbe89	BACKPORT: context only (skb->sp instead of secpath_exists())
+535	d966ddcc3821	tipc: fix a deadlock when flushing scheduled work	n/a	-	not built: CONFIG_TIPC not set
+536	f1a69a940de5	sctp: detect and prevent references to a freed transport in sendmsg	n/a	-	not built: CONFIG_IP_SCTP not set
+537	8940ba3cfe48	rxrpc: Fix overlapping ACK accounting	n/a	-	not built: CONFIG_AF_RXRPC not set
+538	fe7ca0c13f7d	ipv4: fix IP ID reuse in ip_select_ident_segs()	n/a	-	ip_select_ident_segs() here uses plain inet_id arithmetic (f866fbc842de atomic_add_return() not in tree)
+539	0947ae112108	bpf: Fix a data-race around bpf_jit_limit.	ported	3003fdb4fcfe	READ_ONCE on bpf_jit_limit in bpf_jit_charge_modmem (page-based variant)
+540	0cac51185e65	f2fs: fix to avoid racing in between read and OPU dio write	ported	7887ab9c292e	inode_dio_wait in f2fs_file_read_iter in LFS mode (test_opt LFS)
+541	0e8d040bfa4c	f2fs: clear atomic_write_task in f2fs_abort_atomic_write()	n/a	-	atomic_write_task/original_i_size (5.19 atomic-write rework) absent; this tree's inmem_task is only consulted together with FI_ATOMIC_FILE
+542	0ec4a5b647fc	f2fs: drop the duplicate pval in f2fs_getxattr	n/a	-	f2fs_getxattr() here has no duplicate pval (only the one inside if (buffer))
+543	114a116aaa5f	binder: fix UAF in binder_thread_release()	already	-	binder_free_transaction() already reads t->to_proc under t->lock and pins it with tmp_ref
+544	122733471384	random: schedule jitter credit for next jiffy, not in two jiffies	skipped	-	entropy-timer cadence/perf tuning; this try_to_generate_entropy() predates the samples_per_bit credit logic
+545	15e38ee44d50	f2fs: fix iostat parameter for discard	skipped	-	stats-only change of the fs_discard iostat unit from commands to bytes (user-visible unit change)
+546	19258d05b619	random: modernize documentation comment on get_random_bytes()	skipped	-	comment-only change
+547	1f6cb19be2e2	bpf: Prevent re-mmap()'ing BPF map as writable for initially r/o mapping	already	-	bpf_map_mmap() already clears VM_MAYWRITE for r/o mappings and counts writable mappings in mmap_open/close
+548	25fb04dbce6a	f2fs: fix to avoid inconsistent quota data	ported	d3b94e3d8f00	dquot_initialize in f2fs_truncate and f2fs_convert_inline_inode
+549	277afbde6ca2	f2fs: fix wrong checkpoint_changed value in f2fs_remount()	ported	1e71a25dc737	compare checkpoint state as bool in f2fs_remount
+550	29ec9bed2395	ext4: fix incorrect punch max_end	n/a	-	ext4_punch_hole() is compiled out (#if 0, returns -EOPNOTSUPP) in this tree
+551	2b9ac22b12a2	loop: Fix missing discard support when using LOOP_CONFIGURE	ported	e1b88b5a1539	call loop_config_discard() from loop_configure()
+552	2d9c4a4ed4ee	f2fs: fix UAF caused by decrementing sbi->nr_pages[] in f2fs_write_end_io()	ported	467f1f80ec2b	drop fsync node entry before decrementing nr_pages in write end_io
+553	2e8f4c2b2bb1	f2fs: fix to clear unusable_cap for checkpoint=enable	skipped	-	cosmetic: avoids a stale unusable_cap log message on checkpoint=enable remount
+554	2fdbb8dd0155	fuse: fix deadlock between atomic O_TRUNC and page invalidation	ported	4f4c48de8c46	move pagecache truncate/invalidate out of FUSE_NOWRITE section (open and create)
+555	2fef99b8372c	f2fs: fix missing free nid in f2fs_handle_failed_inode	ported	51d7187c3535	set FI_FREE_NID when node info lookup fails in f2fs_handle_failed_inode
+556	333291ce5055	bpf: Fix bug in mmap() implementation for BPF array map	n/a	-	no array_map_mmap()/BPF_F_MMAPABLE here; ringbuf is the only map_mmap user
+557	378acf3cf19b	f2fs: bound i_inline_xattr_size for non-inline-xattr inodes	ported	d046313a1c02	bound i_inline_xattr_size by MAX for all inodes when flexible_inline_xattr
+558	39ec9e6b141e	random: align entropy_timer_state to cache line	skipped	-	perf: cache-line alignment of the entropy timer state; that struct/credit logic is not in this random.c
+559	3a5834db2b1c	hwrng: core - fix rng list on registration error	ported	c61cb5be06ac	list_del_init the rng on set_current_rng failure
+560	3d7bca9d5837	f2fs: embed f2fs_gc_kthread in f2fs_sb_info	skipped	-	large refactor (embed gc_kthread in sbi across 7 files) to close the sysfs-vs-shutdown gc_thread race
+561	496bb99b7e66	ext4: fix the might_sleep() warnings in kvfree()	ported	357c6d68676b	rcu_access_pointer instead of kvfree under rcu_read_lock (open-coded sites)
+562	4d5b5539742d	binder: use cred instead of task for getsecid	skipped	-	needs security_cred_getsecid(), i.e. the cred_getsecid LSM hook, which 4.9 does not have
+563	570e2ccc7cb3	f2fs: avoid reading already updated pages during GC	skipped	-	the crash is the folio_end_read() VM_BUG_ON on an uptodate folio; 4.9 read end_io just sets PageUptodate again, so here it is only a redundant re-read
+564	5909bedbed38	f2fs: protect extension_list reading with sb_lock in f2fs_sbi_show()	ported	3e9732aea5eb	hold sb_lock while formatting extension_list
+565	5adaccac46ea	ext4: stop overwrite the errcode in ext4_setup_super	skipped	-	ext4_setup_super() here returns MS_RDONLY (flag) not -EROFS; adding the goto would make ext4_remount() return a positive 1 from remount_fs, needs the full error-semantics change
+566	5b86eab84ac8	f2fs: fix to clear dirty flag on folio in error path	ported	8aacd7a183e9	clear dirty (and uptodate) on corrupted node page in __get_node_page error path
+567	5c1768b67250	f2fs: fix to do sanity check correctly on i_inline_xattr_size	ported	37e441e794f4	check i_inline_xattr_size regardless of extra_attr, add MIN bound
+568	5eda1ad1aaff	f2fs: fix deadlock in i_xattr_sem and inode page lock	ported	65332aeba033	take dir i_xattr_sem around inline dentry add; getxattr skips it when ipage is passed
+569	60d488571083	binder: take read mode of mmap_sem in binder_alloc_free_page()	n/a	-	only needed with 3013bf62b67a (binder: reduce mmap_sem write-side lock), which is not in this tree
+570	60e5b2886b92	random: do not use jump labels before they are initialized	n/a	-	no crng_is_ready static branch / crng_set_ready in this random.c
+571	61461fc921b7	f2fs: fix to avoid touching checkpointed data in get_victim()	skipped	-	needs section-wide get_ckpt_valid_blocks(use_section), f2fs_segment_has_free_slot() and __allocate_new_segment() rework on an allocator without AT_SSR; not confident adapting allocation semantics
+572	67ca06872eb0	f2fs: fix to invalidate META_MAPPING before DIO write	ported	7461cbcfd1d0	cover extent-cache hit DIO path and the full mapped range
+573	6af249c996f7	f2fs: fix to do sanity check on dcc->discard_cmd_cnt conditionally	n/a	-	f2fs_issue_discard_timeout() is not called from remount here (put_super and unfreeze only, both need_check=true upstream)
+574	76224355db75	fuse: truncate pagecache on atomic_o_trunc	ported	84253102ec1a	truncate_pagecache instead of invalidate on atomic O_TRUNC open
+575	7a4b21250bf7	bpf: Fix stackmap overflow check on 32-bit arches	n/a	-	32-bit-only roundup_pow_of_two() overflow; arm64 build
+576	7b0033dbc483	f2fs: fix race in concurrent f2fs_stop_gc_thread	ported	a438087ef4c3	s_umount taken for write there
+577	7c98f7cb8fda	remove call_{read,write}_iter() functions	skipped	-	API cleanup (removes call_read_iter/call_write_iter helpers), no functional fix
+578	7dff99b35460	Remove WARN_ALL_UNSEEDED_RANDOM kernel config option	skipped	-	debug config option removal, cleanup
+579	8175c8643917	f2fs: fix zero-sized extent for precache extents	ported	a14c98b6eec9	skip zero-length precache extent update
+580	844545c51a5b	f2fs: fix cgroup writeback accounting with fs-layer encryption	ported	2968e538de45	account cgroup writeback against the pagecache page, not the bounce page
+581	86bc9c742426	bpf: Avoid __bpf_prog_ret0_warn when jit fails	n/a	-	CONFIG_BPF_JIT_ALWAYS_ON is not set so __bpf_prog_ret0_warn is never installed; jit_needed logic absent
+582	957ccc2bc8f9	android: binder: fixup crash introduced by moving buffer hdr	already	-	alloc->buffers is already initialised in binder_alloc_init() and not in the mmap handler
+583	9883494c45a1	f2fs: fix to correct check conditions in f2fs_cross_rename	ported	0e3b88d72877	check FI_PROJ_INHERIT on old_dir in f2fs_cross_rename
+584	9f0c4a46be1f	f2fs: fix to truncate meta inode pages forcely	skipped	-	built on f2fs_invalidate_internal_cache()/post_read refactors absent here; faithful port converts ~7 invalidate sites (some under sentry_lock/curseg_mutex) to a page-waiting truncate and adds a bug_on in do_checkpoint, not confident of the locking
+585	9f6ad5d533d1	loop: loop_set_status_from_info() check before assignment	ported	c71a41170e74	reject offsets/sizelimits > LLONG_MAX before assignment
+586	a408f33e895e	ext4: fix bad checksum after online resize	n/a	-	ext4_update_super() here does not lock s_sbh or set the checksum; ext4_handle_dirty_super() computes it after the overhead update
+587	a5005c3cda6e	fuse: fix weird page warning	ported	a252eba71786	allow PG_waiters when stealing a page
+588	a7a74d7ff55a	binder: Prevent repeated use of ->mmap() via NULL mapping	ported	47ad1418aa62	use buffer_size (not buffer) as the already-mapped marker
+589	a897682793eb	ext4: fix circular lock dependency in ext4_ext_migrate	ported	1b069a292e3b	iput tmp_inode after dropping s_writepages_rwsem
+590	a92019606232	f2fs: don't over-report free space or inodes in statvfs	ported	cc665716082c	clamp statfs by project quota without over-reporting free space/inodes
+591	ae267fc1cfe9	f2fs: fix to abort atomic write only during do_exist()	ported	c9dcfdccd4b7	only drop atomic data in ->flush when the task is exiting
+592	ae284d87abad	f2fs: wait for sysfs kobject removal before freeing f2fs_sb_info	n/a	-	f2fs_unregister_sysfs() here never drops the s_kobj reference (no kobject_put), so there is no delayed release racing the sbi free
+593	b1fe686a765e	fuse: don't unhash root	ported	2b771d5073bc	do not unhash/retry the root inode in fuse_iget
+594	b89ecd60d38e	fuse: ignore PG_workingset after stealing	ported	f6e9e9d9c206	allow PG_workingset when stealing a page
+595	baaa7ebf25c7	f2fs: report delalloc reserve as non-free in statfs for project quota	ported	2f4a29b7b7ef	count dqb_rsvspace as used in project statfs
+596	bb34cc6ca87f	f2fs: fix to update iostat correctly in f2fs_filemap_fault()	ported	1899745b785c	count mapped read iostat when filemap_fault returns VM_FAULT_LOCKED
+597	bb430b694226	loop: LOOP_CONFIGURE: send uevents for partitions	n/a	-	this loop_configure() never suppresses uevents (no dev_set_uevent_suppress)
+598	bb4a2e48d510	binder: return errors from buffer copy functions	ported	b56604fbdf44	copy helpers return -EINVAL instead of BUG_ON; callers adapted to in-kernel fd translation
+599	bc27c52eea18	bpf: avoid holding freeze_mutex during mmap operation	already	-	bpf_map_mmap() already drops freeze_mutex before calling ->map_mmap()
+600	bc8aeb04fd80	f2fs: fix to drop all discards after creating snapshot on lvm device	ported	24da29ec61da	stop issuing discard when max_discard_sectors is 0; drop pending discards on unfreeze
+601	bdf032992489	f2fs: call f2fs_balance_fs outside of locked page	ported	106e1dc82ab9	call f2fs_balance_fs before locking the page in page_mkwrite
+602	be112e7449a6	f2fs: fix to propagate error from f2fs_enable_checkpoint()	skipped	-	error-propagation behaviour change in remount/fill_super checkpoint enable paths
+603	be1ee45d5138	f2fs: Fix a hungtask problem in atomic write	ported	73cfa65b35df	clear FI_ATOMIC_FILE under inmem_lock once the inmem list is empty
+604	c17caf0ba3aa	f2fs: fix uninitialized skipped_gc_rwsem	skipped	-	this f2fs_gc() still has the skipped_atomic_files heuristic, which compares (last_skipped - first_skipped) with the cumulative skipped_gc_rwsem; resetting it every round changes that inmem-drop decision, not a faithful port
+605	c5bf83483382	f2fs: fix to set ipu policy	skipped	-	policy/reporting change (ipu_policy in LFS small-volume tuning) plus new remount restriction
+606	c6d05e0762ab	binder: fix unused alloc->free_async_space	ported	5f5c833ed29d	drop sizeof(struct binder_buffer) from async space accounting
+607	c7f114d864ac	f2fs: fix to avoid use-after-free in f2fs_stop_gc_thread()	ported	b321911c64df	take s_umount around gc/discard thread stop in f2fs_ioc_shutdown
+608	d4bf15a7ce17	f2fs: reduce the scope of setting fsck tag when de->name_len is zero	ported	daaf411ee3cd	only flag fsck for zero name_len after a valid dirent or at slot 0
+609	d80afefb17e0	f2fs: fix to account FS_CP_DATA_IO correctly	skipped	-	iostat accounting only (data_flush), needs new wb_task field split
+610	dfeb376dd4cb	bpf: Prevent mmap()'ing read-only maps as writable	already	-	bpf_map_mmap() already rejects VM_WRITE for BPF_F_RDONLY_PROG maps
+611	e219aecfd4b7	f2fs: avoid victim selection from previous victim section	ported	85766c65b68b	reset next_victim_seg after the last segment of a large section
+612	e3b49ea36802	f2fs: invalidate META_MAPPING before IPU/DIO write	ported	12946a7cfe4e	invalidate META_MAPPING before IPU and DIO write
+613	e6ecb1424291	f2fs: allow to read node block after shutdown	ported	cde3e2135f63	do not fail node reads with -ENOENT after shutdown
+614	e871abcda3b6	random: handle creditable entropy from atomic process context	n/a	-	no set_ready execute_work/static branch in this random.c
+615	eb85c2410d6f	f2fs: quota: fix to avoid warning in dquot_writeback_dquots()	skipped	-	warning-only fix needing umount_lock_holder plumbing through mount/umount/remount/freeze/quotactl
+616	f9ca51596bbf	ext4: make sure the first directory block is not a hole	ported	0312422805e4	reject a hole at directory block 0 for any read type
+617	fe6a8fc5ed2f	loop: unset GENHD_FL_NO_PART_SCAN on LOOP_CONFIGURE	ported	a9c66b27c5bc	clear GENHD_FL_NO_PART_SCAN before partition rescan in loop_configure
+618	fe6f1a6a8eed	random: fix CRNG initialization when random.trust_cpu=1	n/a	-	pre-rework crng_initialize()/primary_crng trust_cpu path is not in this random.c
+619	332fade75d0e	f2fs: allow parallel DIO reads	ported	8dae1b4a8956	only wait when F2FS_DIO_WRITE pages in flight
+620	5c13e2388bf3	f2fs: avoid false alarm of circular locking	skipped	-	lockdep annotation only (false circular-locking report)
+621	a68905d48a4e	f2fs: Fix format specifier in sanity_check_inode()	skipped	-	32-bit format-specifier warning only; the 5c1768b67250 backport already prints MIN/MAX with %zu
+622	a927f1867e61	fuse: fix invalidate lock leak on open O_TRUNC DAX failure	n/a	-	fixes the DAX truncate error path of 2fdbb8dd0155; fuse DAX is not in this tree
+623	fe6b1869243f	binder: fix handling of error during copy	already	-	equivalent in the bb4a2e48d510 backport: fd-array copy failure maps straight to -EINVAL, no positive return path
+624	1acd73edbbfe	f2fs: fix to account dirty data in __get_secs_required()	n/a	-	__get_secs_required()/per-log has_curseg_enough_space() absent, and parse_options() rejects LFS together with checkpoint=disable
+625	37345eae9dea	f2fs: fix to not account invalid blocks in get_left_section_blocks()	n/a	-	get_left_section_blocks() (249ad438e1d9/bf34c93d2645) absent
+626	9720ee80aa18	f2fs: fix to fallback to buffered IO in IO aligned mode	n/a	-	no IO-aligned mode (io_bits/F2FS_IO_ALIGNED) in this f2fs
+627	d26fecb03e1f	f2fs: prevent the current section from being selected as a victim during GC	ported	161fe3e2ad3c	clear next_victim_seg when its section becomes free
+628	e75ce117905d	f2fs: fix condition in __allow_reserved_blocks()	ported	731459988ae1	apply root reservation only when reserve_root is set
+629	6840faddb656	f2fs: fix to update upper_p in __get_secs_required() correctly	n/a	-	fixes the 1acd73edbbfe code, which is not in this tree
+630	8c409989678e	f2fs: fix start segno of large section	n/a	-	fixes the use_section path of get_ckpt_valid_blocks() added by 61461fc921b7, not present
