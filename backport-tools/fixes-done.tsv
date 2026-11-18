@@ -983,3 +983,4 @@
 980	8c409989678e	f2fs: fix start segno of large section	ported	3cdf1f2cc759	Fixes 61461fc921b7 (section walk must start at the section, not the SIT block)
 981	9facb861dc6b	ipv6: fib6: fix NULL deref in fib6_walk_continue() on multi-batch dump	ported	185c547b4b52	fixes pre-4.9 code (not in the scan); hit on sargo in CtsNetTestCases 2026-11-18, oops at ip6_fib.c:1597
 982	19b4ed644d68	ipv6: fix fib6 walker UAF on seq stop	ported	cf1d4d5f7125	fixes pre-4.9 code (not in the scan); same walker
+983	23fec4bd7690	ipv6: fix fib6 walker UAF on NLM_F_REPLACE	ported	dac129a07b6b	fixes pre-4.9 code (not in the scan); rt6_info walker helpers, no skip_in_node in 4.9
