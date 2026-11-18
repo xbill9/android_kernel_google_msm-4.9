@@ -6,7 +6,7 @@
 # a tunnel, fastboot on that machine). A panic (kernel.panic=5) or a hang reboots the installed
 # kernel; nothing on a phone changes.
 # Run as `sargo test` (sargo.sh); `sargo update` runs it on the ROM's own kernel. Usage:
-#   sargo test                 build, then test (about 25 minutes with three phones)
+#   sargo test                 build, then test (about 25 minutes with three or four phones)
 #   sargo test --push          build, test, and on PASS commit results.tsv and push main
 #   sargo test --no-build      test the last build (KOUT=<kernel build dir> to pick another)
 #   CTS_MODS="CtsNetTestCases CtsBluetoothTestCases" sargo test   CTS modules (default: net)

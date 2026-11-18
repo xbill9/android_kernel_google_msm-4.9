@@ -102,6 +102,8 @@ setsid nohup sargo update > ~/sargo-bpf-test/logs/sargo-update-$(date +%Y%m%d-%H
    net and CTS net, and returns each phone to its installed kernel. Phones on
    other machines are reached over SSH. With three phones the test takes 22
    minutes, most of it CTS net on the phone with the SIM; with one phone, 30.
+   A fourth phone (`yoga9i`, no SIM) repeats unit, smoke and VTS net in
+   about 8 minutes, inside the CTS time.
    On PASS it records the result in `boot-test/results.tsv` and pushes `main`.
 4. Copies the OTA zip, `boot.img`, `dtbo.img`, `vbmeta.img` and the manifest to
    `~/sargo-bpf-test/build-24.0-<date>/` and publishes them as the prerelease
