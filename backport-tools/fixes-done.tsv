@@ -977,3 +977,6 @@
 974	e269d79c7d35	net: missing check virtio	n/a	-	4.9 virtio_net_hdr_to_skb() has no csum_start/thlen 'needed' block; e269d79c7d35 code absent (and reverted upstream by 89add40066f9)
 975	ec1e1b610917	objtool: Prevent GCC from merging annotate_unreachable(), take 2	n/a	-	not built: CONFIG_STACK_VALIDATION (objtool, x86-only) off
 976	4bca7e80b645	init: Initialize noop_backing_dev_info early	ported	83cd108641e3	follow-up to 10e14073107d (no Fixes target in the scan): noop bdi must be set up before devtmpfs mounts
+977	2b2bc3bab158	net: Make USO depend on CSUM offload	n/a	-	4.9 has no UDP GSO (UDP_SEGMENT, 4.18): no gso_size path in udp_send_skb or udp_offload; target 10154dbded6d code absent
+978	30b03f2a0592	udp: Fall back to software USO if IPv6 extension headers are present	n/a	-	4.9 has no UDP GSO (UDP_SEGMENT, 4.18): no gso_size path in udp_send_skb or udp_offload; target 10154dbded6d code absent
+979	d96016a764f6	udp: Compute L4 checksum as usual when not segmenting the skb	n/a	-	4.9 has no UDP GSO (UDP_SEGMENT, 4.18): no gso_size path in udp_send_skb or udp_offload; target 10154dbded6d code absent
