@@ -1114,8 +1114,7 @@ alloc:
 	f2fs_allocate_data_block(sbi, NULL, old_blkaddr, &dn->data_blkaddr,
 					&sum, seg_type, NULL, false);
 	if (GET_SEGNO(sbi, old_blkaddr) != NULL_SEGNO)
-		invalidate_mapping_pages(META_MAPPING(sbi),
-					old_blkaddr, old_blkaddr);
+		f2fs_truncate_meta_inode_pages(sbi, old_blkaddr, 1);
 	f2fs_update_data_blkaddr(dn, dn->data_blkaddr);
 
 	/*
@@ -1249,8 +1248,8 @@ int f2fs_map_blocks(struct inode *inode, struct f2fs_map_blocks *map,
 		if (flag == F2FS_GET_BLOCK_DIO) {
 			f2fs_wait_on_block_writeback_range(inode,
 						map->m_pblk, map->m_len);
-			invalidate_mapping_pages(META_MAPPING(sbi),
-				map->m_pblk, map->m_pblk + map->m_len - 1);
+			f2fs_truncate_meta_inode_pages(sbi,
+						map->m_pblk, map->m_len);
 		}
 		goto out;
 	}
@@ -1431,8 +1430,7 @@ sync_out:
 	if (flag == F2FS_GET_BLOCK_DIO && map->m_flags & F2FS_MAP_MAPPED) {
 		f2fs_wait_on_block_writeback_range(inode,
 						map->m_pblk, map->m_len);
-		invalidate_mapping_pages(META_MAPPING(sbi),
-				map->m_pblk, map->m_pblk + map->m_len - 1);
+		f2fs_truncate_meta_inode_pages(sbi, map->m_pblk, map->m_len);
 	}
 
 	if (flag == F2FS_GET_BLOCK_PRECACHE) {
