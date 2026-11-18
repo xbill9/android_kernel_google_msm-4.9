@@ -571,7 +571,7 @@
 568	5eda1ad1aaff	f2fs: fix deadlock in i_xattr_sem and inode page lock	ported	65332aeba033	take dir i_xattr_sem around inline dentry add; getxattr skips it when ipage is passed
 569	60d488571083	binder: take read mode of mmap_sem in binder_alloc_free_page()	n/a	-	only needed with 3013bf62b67a (binder: reduce mmap_sem write-side lock), which is not in this tree
 570	60e5b2886b92	random: do not use jump labels before they are initialized	n/a	-	no crng_is_ready static branch / crng_set_ready in this random.c
-571	61461fc921b7	f2fs: fix to avoid touching checkpointed data in get_victim()	skipped	-	needs section-wide get_ckpt_valid_blocks(use_section), f2fs_segment_has_free_slot() and __allocate_new_segment() rework on an allocator without AT_SSR; not confident adapting allocation semantics
+571	61461fc921b7	f2fs: fix to avoid touching checkpointed data in get_victim()	ported	34742ceb022a	checkpoint=fs on /data runs GC with SBI_CP_DISABLED after OTA; LFS section-wide ckpt check ported, SSR check kept as a safety check (no AT_SSR here), add_victim_entry/__allocate_new_segment hunks dropped (ATGC absent)
 572	67ca06872eb0	f2fs: fix to invalidate META_MAPPING before DIO write	ported	7461cbcfd1d0	cover extent-cache hit DIO path and the full mapped range
 573	6af249c996f7	f2fs: fix to do sanity check on dcc->discard_cmd_cnt conditionally	n/a	-	f2fs_issue_discard_timeout() is not called from remount here (put_super and unfreeze only, both need_check=true upstream)
 574	76224355db75	fuse: truncate pagecache on atomic_o_trunc	ported	84253102ec1a	truncate_pagecache instead of invalidate on atomic O_TRUNC open
@@ -584,7 +584,7 @@
 581	86bc9c742426	bpf: Avoid __bpf_prog_ret0_warn when jit fails	n/a	-	CONFIG_BPF_JIT_ALWAYS_ON is not set so __bpf_prog_ret0_warn is never installed; jit_needed logic absent
 582	957ccc2bc8f9	android: binder: fixup crash introduced by moving buffer hdr	already	-	alloc->buffers is already initialised in binder_alloc_init() and not in the mmap handler
 583	9883494c45a1	f2fs: fix to correct check conditions in f2fs_cross_rename	ported	0e3b88d72877	check FI_PROJ_INHERIT on old_dir in f2fs_cross_rename
-584	9f0c4a46be1f	f2fs: fix to truncate meta inode pages forcely	skipped	-	built on f2fs_invalidate_internal_cache()/post_read refactors absent here; faithful port converts ~7 invalidate sites (some under sentry_lock/curseg_mutex) to a page-waiting truncate and adds a bug_on in do_checkpoint, not confident of the locking
+584	9f0c4a46be1f	f2fs: fix to truncate meta inode pages forcely	ported	aa0caad19aa7	encrypted /data: GC caches encrypted blocks in META_MAPPING; f2fs_truncate_meta_inode_pages() at the 9 matching invalidate sites (4.9 has no f2fs_invalidate_internal_cache)
 585	9f6ad5d533d1	loop: loop_set_status_from_info() check before assignment	ported	c71a41170e74	reject offsets/sizelimits > LLONG_MAX before assignment
 586	a408f33e895e	ext4: fix bad checksum after online resize	n/a	-	ext4_update_super() here does not lock s_sbh or set the checksum; ext4_handle_dirty_super() computes it after the overhead update
 587	a5005c3cda6e	fuse: fix weird page warning	ported	a252eba71786	allow PG_waiters when stealing a page
@@ -980,3 +980,4 @@
 977	2b2bc3bab158	net: Make USO depend on CSUM offload	n/a	-	4.9 has no UDP GSO (UDP_SEGMENT, 4.18): no gso_size path in udp_send_skb or udp_offload; target 10154dbded6d code absent
 978	30b03f2a0592	udp: Fall back to software USO if IPv6 extension headers are present	n/a	-	4.9 has no UDP GSO (UDP_SEGMENT, 4.18): no gso_size path in udp_send_skb or udp_offload; target 10154dbded6d code absent
 979	d96016a764f6	udp: Compute L4 checksum as usual when not segmenting the skb	n/a	-	4.9 has no UDP GSO (UDP_SEGMENT, 4.18): no gso_size path in udp_send_skb or udp_offload; target 10154dbded6d code absent
+980	8c409989678e	f2fs: fix start segno of large section	ported	3cdf1f2cc759	Fixes 61461fc921b7 (section walk must start at the section, not the SIT block)
