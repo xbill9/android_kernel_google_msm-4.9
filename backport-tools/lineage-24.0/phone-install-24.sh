@@ -13,7 +13,8 @@
 # takes one more trip to recovery.
 # The phone must be booted into one of these 24.0 userdebug builds (adb root works). The OTA goes
 # into its inactive slot with update_engine, so each run flips the slot.
-# The only manual step is on the phone, in recovery: "Install anyway", then "Reboot system now".
+# GApps carry over from the old slot, so an update needs no taps. Only a phone without GApps goes
+# to recovery, where the manual step is "Install anyway", then "Reboot system now".
 set -u
 SELF=$(readlink -f "$0")
 B=$(dirname "$SELF")
@@ -188,9 +189,11 @@ sideload() {
   timeout 20 adb root >/dev/null 2>&1; sleep 3; timeout 60 adb wait-for-device
 }
 
-# A build with Google apps built in (vendor/gapps) needs no trip to recovery.
-if timeout 5 adb shell pm path com.google.android.gms 2>/dev/null | grep -qE 'package:/(product|system|system_ext)/'; then
-  log "GApps: built into this build; no recovery step"
+# GApps installed once carry over to the new slot by themselves: update_engine runs their addon.d
+# script after the install (seen 2026-11-19: the Play Store and Play services on the new slot).
+# Play services itself updates into /data, so look for the Play Store on /product.
+if timeout 5 adb shell test -e /product/priv-app/Phonesky/Phonesky.apk; then
+  log "GApps: already on the new slot (carried over by the update); no recovery step"
 else
 find_gapps
 if [[ "$G" != *-sargo.zip ]] && timeout 5 adb shell test -e /product/priv-app/PrebuiltGmsCoreVic; then
