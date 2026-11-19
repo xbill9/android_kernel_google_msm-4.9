@@ -35,7 +35,7 @@ stop() { echo; echo "== STOPPED: $*"; exit 1; }
 . "$HERE/sargo-lock.sh"; sargo_lock "sargo update"
 export SARGO_LOCK_OWNER=$$   # the test below runs under this lock
 
-step "1/4 pull: kernel tree, upstream kernel fixes, LineageOS, forks"
+step "1/5 pull: kernel tree, upstream kernel fixes, LineageOS, forks"
 git -C "$SRC" pull -q --ff-only || stop "this kernel tree and GitHub main have diverged; merge them first"
 bash "$SRC/backport-tools/check-upstream.sh" --apply
 cp "$HERE/local_manifest-sargo.xml" "$T/.repo/local_manifests/sargo.xml"
@@ -53,27 +53,33 @@ git -C "$T/kernel/google/msm-4.9" fetch -q --depth=1 "file://$SRC" "$KC"
 git -C "$T/kernel/google/msm-4.9" checkout -q "$KC"
 echo "kernel: $(git -C "$SRC" log -1 --format='%h %s' "$KC" | cut -c1-80)"
 
-step "2/4 build the ROM (log: $LOG)"
+step "2/5 build the ROM (log: $LOG)"
 ( set +eu +o pipefail
   source build/envsetup.sh
   lunch lineage_sargo cp2a userdebug && m bacon -j"$(nproc)" ) > "$LOG" 2>&1
 grep -q '#### build completed successfully' "$LOG" || { tail -30 "$LOG"; stop "ROM build failed (log: $LOG)"; }
 [ "$(git -C "$T/kernel/google/msm-4.9" rev-parse HEAD)" = "$KC" ] || stop "the ROM's kernel checkout moved during the build"
 
-step "3/4 test the ROM's kernel on the phone"
+step "3/5 test the ROM's kernel on the phone"
 [ "$(adb devices | grep -c 'device$')" = 1 ] || stop "no phone on adb: the ROM is built ($OUT) but not tested, so not published"
 KOUT=$OUT/obj/KERNEL_OBJ bash "$HERE/sargo-test.sh" --no-build --push \
   || stop "the test failed (report above); nothing pushed or published"
 R=$(tail -1 "$HERE/boot-test/results.tsv")
 
-step "4/4 publish $TAG"
+# The test above boots the new kernel on each phone's installed system; this installs the whole
+# build on this machine's phone and boots it (20261118-1835 passed the test and did not boot).
+step "4/5 install the ROM on this machine's phone and boot it"
+bash "$HERE/phone-install-24.sh" --boot-only "$OUT/lineage_sargo-ota.zip" \
+  || stop "the ROM did not boot on the phone (above); nothing published"
+
+step "5/5 publish $TAG"
 mkdir -p "$DIR"
 cp "$OUT/lineage_sargo-ota.zip" "$DIR/lineage-24.0-$DATE-UNOFFICIAL-sargo.zip"
 cp "$OUT"/{boot,dtbo,vbmeta}.img "$DIR/"
 cp .repo/local_manifests/sargo.xml "$DIR/local_manifest-sargo.xml"
 (cd "$DIR" && sha256sum * > SHA256SUMS.tmp && mv SHA256SUMS.tmp SHA256SUMS)
 NOTES="Kernel $(cut -f2 <<< "$R") ($KC on GitHub main): sargo-test $(cut -f3 <<< "$R") on $(cut -f1 <<< "$R"), RAM-booted on a Pixel 3a.
-Not yet installed on a phone: \`sargo install\` marks it Latest when its hardware check passes."
+Installed and booted on a phone before publishing (without GApps); \`sargo install\` marks it Latest when its hardware check passes."
 gh release create "$TAG" "$DIR"/* -R "$REPO" --prerelease \
   --title "LineageOS 24.0 for Pixel 3a (sargo), $DATE" --notes "$NOTES"
 step "done: https://github.com/$REPO/releases/tag/$TAG  (install: sargo install)"

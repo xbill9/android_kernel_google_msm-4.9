@@ -5,6 +5,8 @@
 #   sargo-install tested          the newest build marked Latest (tested on a phone)
 #   sargo-install rom.zip [gapps.zip]
 #   sargo-install --all           every phone in phones.conf at once (others over SSH), one summary
+#   sargo-install --boot-only rom.zip   install and check that it boots, nothing else (no GApps,
+#                                       no app compile); if it does not boot, back to the old slot
 # It updates these scripts first, and downloads MindTheGapps if no copy is found. The unmodified
 # MindTheGapps zip needs a build from 24.0-20261109 on (kernel with EROFS); for an older rom.zip
 # pass a repack-gapps.sh zip (*-sargo.zip). An earlier repacked install is removed first, which
@@ -34,6 +36,7 @@ if [ "${1:-}" = --all ]; then
   for h in $hosts; do printf '%-16s %s\n' "$h" "$(grep -aE '^=== .* DONE|STOPPED|hw-check:' ~/sargo-rom/install-$h-$T.log | tail -2 | paste -sd' ')"; done
   exit 0
 fi
+BOOTONLY=; [ "${1:-}" = --boot-only ] && { BOOTONLY=1; shift; }
 # One sargo command at a time (absent on a laptop install: no lock needed).
 [ -f "$B/sargo-lock.sh" ] && { . "$B/sargo-lock.sh"; sargo_lock sargo-install; }
 die() { echo "!!! STOPPED: $*"; exit 1; }
@@ -145,10 +148,19 @@ echo "$R" | grep -q 'kSuccess' || die "the install did not report kSuccess"
 
 log "rebooting into the new build"
 timeout 20 adb reboot; sleep 15
-wait_boot || die "the phone did not finish booting; it may be in the bootloader"
+# A build that does not boot (init sends the phone to the bootloader) goes back to the old slot.
+back_to_old() {
+  if timeout 10 fastboot devices | grep -q fastboot; then
+    timeout 30 fastboot --set-active="${OLD#_}" >/dev/null 2>&1 && timeout 30 fastboot reboot >/dev/null 2>&1
+    wait_boot && echo "back on slot $(prop ro.boot.slot_suffix), $(prop ro.lineage.version)"
+  else echo "not in the bootloader: switch it back by hand (fastboot --set-active=${OLD#_})"; fi
+}
+wait_boot || { echo "reasons: $(timeout 5 fastboot getvar current-slot 2>&1 | head -1)"; back_to_old
+  die "the new build did not finish booting; boot reasons: $(prop persist.sys.boot.reason.history | head -2 | paste -sd' ')"; }
 NEW=$(prop ro.boot.slot_suffix)
 echo "phone: slot $NEW, $(prop ro.lineage.version), $(timeout 5 adb shell getenforce | tr -d '\r')"
-[ "$NEW" != "$OLD" ] || die "still on slot $OLD; the new slot did not boot"
+[ "$NEW" != "$OLD" ] || die "still on slot $OLD; the new slot did not boot (boot reasons: $(prop persist.sys.boot.reason.history | head -2 | paste -sd' '))"
+if [ -n "$BOOTONLY" ]; then log "BOOT CHECK PASS: $(prop ro.lineage.version) booted on slot $NEW"; exit 0; fi
 
 # One trip to recovery: sideload $1, then wait for the phone to boot again.
 # Recovery shows up as "sideload" in adb devices before it accepts a package; adb sideload then
