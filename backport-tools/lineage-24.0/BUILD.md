@@ -132,11 +132,13 @@ sargo install tested     # newest release marked Latest
 ```
 
 The phone must already run one of these 24.0 userdebug builds. The script
-installs the OTA into the inactive slot, puts MindTheGapps back (downloaded if
-no copy is in `~/sargo-bpf-test/gapps`), compiles apps, and runs the hardware
+installs the OTA into the inactive slot, compiles apps, and runs the hardware
 check; a prerelease that passes it is marked Latest, which `sargo install tested`
-installs. The one manual step is on the phone, in recovery: "Install anyway",
-then "Reboot system now". `sargo install --all` installs on every phone in `phones.conf`. A first install from another ROM: `INSTALL.md` at the
+installs. Google apps carry over to the new slot by themselves (the update runs
+their `addon.d` script), so an update needs no taps: on 2026-11-19
+`sargo install --all` updated all four phones in `phones.conf` in 12 minutes.
+A phone without Google apps goes to recovery once for MindTheGapps; there the
+manual step is "Install anyway", then "Reboot system now". A first install from another ROM: `INSTALL.md` at the
 top of the repository.
 
 ---
