@@ -60,3 +60,4 @@
 59	2e766a1f5f94	modpost: fix acpi MODULE_DEVICE_TABLE built with mismatched endianness	build tool; genksyms change crashed (batch 2), not needed on the phone
 60	0c3e091319e4	modpost: remove incorrect code in do_eisa_entry()	build tool; genksyms change crashed (batch 2), not needed on the phone
 61	1c8f6308e557	iommu/dma: Catch scatterlist length overflows	needs code 4.9 lacks (batch 2 compile)
+62	d4bfa78fd679	Bluetooth: L2CAP: reject accept queue add unless BT_LISTEN	needs 4.9 rework: the 4.9 callback returns a pointer, not an error code
