@@ -3,7 +3,8 @@
 # Usage: check-upstream.sh [--apply] [--write]
 #   (none)    list the fixes new since missing-fixes.tsv, in built code or headers, not decided
 #             in fixes-done.tsv
-#   --apply   also commit each listed fix that applies as is (UPSTREAM: ..., cherry picked from);
+#   --apply   also commit each listed fix that applies as is and compiles (UPSTREAM: ..., cherry
+#             picked from); it compiles the changed files the phone builds, in KOUT;
 #             the rest are listed for a hand merge (sargo update runs this, then tests).
 #   --write   also replace missing-fixes.tsv with this run's full table: run it after deciding
 #             on the listed fixes, so the next run lists only newer ones
@@ -17,7 +18,7 @@ TREE=$(dirname "$BT")
 KOUT=${KOUT:-/android/sargo-bpf-test/kout}
 APPLY=; WRITE=
 for a in "$@"; do case $a in --apply) APPLY=1 ;; --write) WRITE=1 ;; *) sed -n '2,10p' "$0"; exit 1 ;; esac; done
-NEW=$(mktemp); TODO=$(mktemp); trap 'rm -f $NEW $TODO' EXIT
+NEW=$(mktemp); TODO=$(mktemp); trap 'rm -f $NEW $NEW.build $TODO' EXIT
 
 git -C "$UP" fetch -q origin '+refs/heads/master:refs/heads/master'
 echo "mainline $(git -C "$UP" log -1 --format='%h %cd' --date=short master), tree $(git -C "$TREE" rev-parse --short=12 HEAD)"
@@ -52,6 +53,16 @@ if [ -n "$APPLY" ]; then
     if git -C "$UP" format-patch -1 --stdout "$full" | git -C "$TREE" am -q 2>/dev/null; then
       { git -C "$TREE" log -1 --format=%B | sed '1s/^/UPSTREAM: /'; echo "(cherry picked from commit $full)"; } \
         | git -C "$TREE" commit -q --amend -F -
+      # Compile the files it changed that the phone builds; a fix that does not build is
+      # dropped and listed for a hand merge (2026-11-19: one cost a whole ROM build).
+      objs=$(git -C "$TREE" diff --name-only HEAD~1 HEAD -- '*.c' | sed 's/\.c$/.o/' \
+        | while read -r o; do [ -e "$KOUT/$o" ] && echo "$o"; done)
+      if [ -n "$objs" ] && ! KOUT=$KOUT bash "$BT/lineage-24.0/kbuild.sh" $objs > "$NEW.build" 2>&1; then
+        grep -m3 'error:' "$NEW.build" | sed 's/^/    /'
+        git -C "$TREE" reset -q --hard HEAD~1; hand="$hand $h(does-not-build)"
+        echo "  dropped $h: does not build"
+        continue
+      fi
       echo "  committed $(git -C "$TREE" log -1 --format='%h %s' | cut -c1-80)"
     else
       git -C "$TREE" am --abort; hand="$hand $h"

@@ -3,7 +3,8 @@
 # prebuilt toolchain and the ROM's own kernel config (LTO, CFI). Used by `sargo test`.
 # Env: KOUT (output dir, default /android/sargo-bpf-test/kout), LINEAGE_TREE, JOBS.
 # The first build copies the config from the ROM build's KERNEL_OBJ; later builds are incremental.
-# Exit status is make's; the image is $KOUT/arch/arm64/boot/Image.lz4.
+# Exit status is make's; the image is $KOUT/arch/arm64/boot/Image.lz4. Arguments, if any, are the
+# make targets instead (for example net/ipv4/tcp.o: compile one file).
 set -u
 SRC=$(cd "$(dirname "$(readlink -f "$0")")/../.." && pwd)
 B=${LINEAGE_TREE:-$HOME/android/lineage-24.0}
@@ -32,4 +33,4 @@ BISON_PKGDATADIR=$BT/common/bison \
   CROSS_COMPILE_ARM32=$B/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/bin/arm-linux-androideabi- \
   HOSTCC=$CL/bin/clang HOSTCXX=$CL/bin/clang++ HOSTLD=$CL/bin/ld.lld HOSTAR=$CL/bin/llvm-ar \
   DTC_EXT=$KT/bin/dtc CLANG_TRIPLE=aarch64-linux-gnu- CC=clang \
-  PAHOLE=$KT/bin/pahole Image.lz4
+  PAHOLE=$KT/bin/pahole "${@:-Image.lz4}"
