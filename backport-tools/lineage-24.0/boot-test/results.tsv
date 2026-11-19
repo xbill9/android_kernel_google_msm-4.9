@@ -24,3 +24,4 @@ date	commit	verdict	installed build	report
 2026-11-18 14:04	dac129a07b6b	PASS	24.0-20261115-UNOFFICIAL-sargo	sargo-logs/test-00589-g72b2fa925722-dirty-20261118-1341
 2026-11-18 15:23	dac129a07b6b	PASS	24.0-20261115-UNOFFICIAL-sargo	sargo-logs/test-gc48828c4b9ec-20261118-1501
 2026-11-18 20:01	dac129a07b6b	PASS	24.0-20261118-UNOFFICIAL-sargo	sargo-logs/test-g760988abd842-20261118-1938
+2026-11-18 23:24	dac129a07b6b	FAIL: phone3 phone4	24.0-20261118-UNOFFICIAL-sargo	sargo-logs/test-gd35581f2f10d-20261118-2301
