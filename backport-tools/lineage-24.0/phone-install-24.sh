@@ -3,6 +3,7 @@
 # Run as `sargo install` on the build machine, ~/bin/sargo-install on a laptop. Usage:
 #   sargo-install                 the newest build from GitHub releases (downloaded once, checked)
 #   sargo-install tested          the newest build marked Latest (tested on a phone)
+#   sargo-install <tag>           that release (lineage-24.0-sargo-...)
 #   sargo-install rom.zip [gapps.zip]
 #   sargo-install --all           every phone in phones.conf at once (others over SSH), one summary
 #   sargo-install --boot-only rom.zip   install and check that it boots, nothing else (no GApps,
@@ -54,9 +55,11 @@ if [ -z "${SARGO_PULLED:-}" ] && git -C "$B" rev-parse --git-dir >/dev/null 2>&1
   [ "$(git -C "$B" rev-parse HEAD)" = "$before" ] || SARGO_PULLED=1 exec "$SELF" "$@"
 fi
 
-# Prints: tag zip-name zip-url sums-url, for the newest sargo 24.0 release ("tested": newest non-prerelease).
+# Prints: tag zip-name zip-url sums-url, for the newest sargo 24.0 release ("tested": newest non-prerelease;
+# a tag: that release, read through gh, since the public API lists a new release a while later).
 newest_release() {
-  curl -fsSL "https://api.github.com/repos/$REPO/releases?per_page=30" | python3 -c '
+  case ${1:-} in lineage-24.0-sargo-*) gh api "repos/$REPO/releases/tags/$1" | python3 -c 'import json,sys; print(json.dumps([json.load(sys.stdin)]))' ;;
+    *) curl -fsSL "https://api.github.com/repos/$REPO/releases?per_page=30" ;; esac | python3 -c '
 import json, sys
 tested = sys.argv[1] == "tested"
 rs = [r for r in json.load(sys.stdin) if r["tag_name"].startswith("lineage-24.0-sargo-")
@@ -69,7 +72,7 @@ for r in sorted(rs, key=lambda r: r["created_at"], reverse=True):
         break' "${1:-}"
 }
 
-if [ -z "${1:-}" ] || [ "$1" = tested ]; then
+if [ -z "${1:-}" ] || [ "$1" = tested ] || [[ "$1" == lineage-24.0-sargo-* ]]; then
   log "finding the newest build"
   read -r TAG NAME URL SUMS KIND < <(newest_release "${1:-}") || die "cannot read $REPO releases from GitHub"
   echo "build: $TAG ($KIND)"

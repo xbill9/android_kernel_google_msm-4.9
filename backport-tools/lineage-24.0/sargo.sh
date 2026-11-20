@@ -55,9 +55,10 @@ KC=$(git -C "$SRC" rev-parse HEAD)
 git -C "$T/kernel/google/msm-4.9" fetch -q --depth=1 "file://$SRC" "$KC"
 git -C "$T/kernel/google/msm-4.9" checkout -q "$KC"
 echo "kernel: $(git -C "$SRC" log -1 --format='%h %s' "$KC" | cut -c1-80)"
-# What this build is made of: the kernel commit and every project's revision.
+# What this build is made of: the kernel source (without backport-tools, whose commits, such as
+# the test result each run pushes, change nothing in the ROM) and every project's revision.
 STATE_FILE=~/sargo-bpf-test/last-published.state
-STATE=$( { echo "$KC"; repo manifest -r -o - 2>/dev/null | grep -v 'kernel/google/msm-4.9'; } | sha256sum | cut -c1-16)
+STATE=$( { git -C "$SRC" ls-tree -r "$KC" | grep -v $'\tbackport-tools/'; repo manifest -r -o - 2>/dev/null | grep -v 'kernel/google/msm-4.9'; } | sha256sum | cut -c1-16)
 if [ -n "$IFCHANGED" ] && [ "$STATE" = "$(cat "$STATE_FILE" 2>/dev/null)" ]; then
   step "done: nothing changed since the last release ($STATE)"; exit 0
 fi
@@ -95,5 +96,5 @@ echo "$STATE" > "$STATE_FILE"
 echo "published: https://github.com/$REPO/releases/tag/$TAG"
 
 step "6/6 install it on every phone in phones.conf"
-bash "$HERE/phone-install-24.sh" --all
+bash "$HERE/phone-install-24.sh" --all "$TAG"   # by tag: the release list lags a new release
 step "done: https://github.com/$REPO/releases/tag/$TAG"

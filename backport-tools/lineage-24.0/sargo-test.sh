@@ -44,6 +44,8 @@ if [ -n "$CHILD" ]; then
     rsh() { ssh -o BatchMode=yes -o ConnectTimeout=10 "$HOST" "$@"; }
     fb() { timeout 90 ssh -o BatchMode=yes "$HOST" "$RP; fastboot $*"; }
     inbl() { rsh lsusb | grep -q 18d1:4ee0; }
+    # Exit 3: the machine is off or asleep (a phone marked optional in phones.conf is then skipped).
+    rsh true 2>/dev/null || { echo "OFFLINE: $HOST does not answer on SSH"; exit 3; }
     rsh "$RP; adb start-server" >/dev/null 2>&1
     # adb and tradefed on this machine reach the phone through the other machine's adb server.
     PORT=$(python3 -c 'import socket; s = socket.socket(); s.bind(("127.0.0.1", 0)); print(s.getsockname()[1])')
@@ -195,17 +197,20 @@ if [ "$(echo "$PH" | grep -cE 'vts|cts')" -gt 1 ]; then
 fi
 
 i=0; pids=""
-while read -r host only; do
-  i=$((i+1))
+while read -r host only opt; do
+  i=$((i+1)); OPT[$i]=${opt:-}
   SARGO_TOP=$TOP/phone$i bash "$0" --child --host="$host" --only="$only" > "$TOP/phone$i.out" 2>&1 &
   pids="$pids $!"
 done <<< "$PH"
 bad=""; i=0
 for p in $pids; do
   i=$((i+1))
-  wait "$p" || bad="$bad phone$i"
+  wait "$p"; rc=$?
+  if [ "$rc" = 3 ] && [ "${OPT[$i]}" = optional ]; then
+    say "phone$i skipped: $(tail -1 "$TOP/phone$i.out") (optional in phones.conf)"
+  elif [ "$rc" != 0 ]; then bad="$bad phone$i"; fi
 done
-cat "$TOP"/phone*/summary.txt >> "$S"
+cat "$TOP"/phone*/summary.txt >> "$S" 2>/dev/null
 grep -h 'FAIL' "$TOP"/phone*/summary.txt | sed 's/^/  /'
 
 verdict=PASS; [ -z "$bad" ] || verdict="FAIL:$bad"
