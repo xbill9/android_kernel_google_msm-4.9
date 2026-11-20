@@ -7,7 +7,7 @@
 #                    publish the ROM as a GitHub release and install it on every phone in
 #                    phones.conf (no taps). On FAIL nothing is published or installed.
 #   sargo update --if-changed   the same, but stop after the pull when neither LineageOS nor the
-#                    kernel changed since the last release (the nightly run: sargo-nightly.sh)
+#                    kernel changed since the last release
 #   sargo install    install the newest release on the phone (args: --all | tested | rom.zip [gapps.zip])
 #   sargo test       test this kernel tree on the phone without building the ROM (a kernel change
 #                    in progress; builds the kernel alone, about 35 minutes)
