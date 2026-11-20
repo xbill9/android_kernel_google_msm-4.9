@@ -1381,3 +1381,4 @@
 1378	55b2b8af704f	PM: runtime: Update last_busy in rpm_resume() for active devices	ported	3789af810f89	fixes pre-4.9 code (gap scan batch 2)
 1379	d4bfa78fd679	Bluetooth: L2CAP: reject accept queue add unless BT_LISTEN	skipped		applies as is but does not build: returns -EINVAL from a function that returns a pointer in 4.9; in handport-todo.tsv
 1380	66dfb2cacda7	ipv6: raw: fix use-after-free in rawv6_send_hdrinc()	ported	fb8923a5cdfe	fixes pre-4.9 code; hand port (no dst_rt6_info in 4.9)
+1381	62754aad50d0	tcp: fix request_sock use-after-free during Fast Open accept()	ported	724d5499fd2d	fixes pre-4.9 code; hand port: lock for every TCP accept (no syn_fastopen_child in 4.9)

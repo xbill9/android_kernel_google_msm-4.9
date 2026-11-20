@@ -1,7 +1,6 @@
 #	upstream	subject	why
 1	d5e206778e96	ext4: fix OOB read when checking dotdot dir	needs code 4.9 lacks (batch 1 compile)
 2	9333cc809f0a	ext4: fix out-of-bounds read in ext4_read_inline_dir()	needs code 4.9 lacks (batch 1 compile)
-3	62754aad50d0	tcp: fix request_sock use-after-free during Fast Open accept()	needs code 4.9 lacks (batch 1 compile)
 4	d289d5307762	ip6_vti: set netns_immutable on the fallback device.	needs code 4.9 lacks (batch 1 compile)
 6	a927d77778e3	nf_conntrack: fix -Wunused-const-variable=	needs code 4.9 lacks (batch 1 compile)
 7	1f3083aec883	netfilter: nfnetlink_log: initialize nfgenmsg in NLMSG_DONE terminator	needs code 4.9 lacks (batch 1 compile)
