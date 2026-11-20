@@ -357,8 +357,11 @@ struct sock *inet_csk_accept(struct sock *sk, int flags, int *err)
 	req = reqsk_queue_remove(queue, sk);
 	newsk = req->sk;
 
-	if (sk->sk_protocol == IPPROTO_TCP &&
-	    tcp_rsk(req)->tfo_listener) {
+	/* Check tfo_listener only under fastopenq.lock: reqsk_fastopen_remove()
+	 * clears it under the lock and then still uses req, so a lockless
+	 * check could drop the last reference while it does.
+	 */
+	if (sk->sk_protocol == IPPROTO_TCP) {
 		spin_lock_bh(&queue->fastopenq.lock);
 		if (tcp_rsk(req)->tfo_listener) {
 			/* We are still waiting for the final ACK from 3WHS
