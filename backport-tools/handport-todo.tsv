@@ -3,7 +3,6 @@
 2	9333cc809f0a	ext4: fix out-of-bounds read in ext4_read_inline_dir()	needs code 4.9 lacks (batch 1 compile)
 3	62754aad50d0	tcp: fix request_sock use-after-free during Fast Open accept()	needs code 4.9 lacks (batch 1 compile)
 4	d289d5307762	ip6_vti: set netns_immutable on the fallback device.	needs code 4.9 lacks (batch 1 compile)
-5	66dfb2cacda7	ipv6: raw: fix use-after-free in rawv6_send_hdrinc()	needs code 4.9 lacks (batch 1 compile)
 6	a927d77778e3	nf_conntrack: fix -Wunused-const-variable=	needs code 4.9 lacks (batch 1 compile)
 7	1f3083aec883	netfilter: nfnetlink_log: initialize nfgenmsg in NLMSG_DONE terminator	needs code 4.9 lacks (batch 1 compile)
 8	f1ba83755d81	netfilter: nfnetlink_queue: fix entry leak in bridge verdict error path	needs code 4.9 lacks (batch 1 compile)

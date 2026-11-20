@@ -1380,3 +1380,4 @@
 1377	555040535119	usb: pci-quirks: always assert xHCI OS ownership	ported	06a363120279	fixes pre-4.9 code (gap scan batch 2)
 1378	55b2b8af704f	PM: runtime: Update last_busy in rpm_resume() for active devices	ported	3789af810f89	fixes pre-4.9 code (gap scan batch 2)
 1379	d4bfa78fd679	Bluetooth: L2CAP: reject accept queue add unless BT_LISTEN	skipped		applies as is but does not build: returns -EINVAL from a function that returns a pointer in 4.9; in handport-todo.tsv
+1380	66dfb2cacda7	ipv6: raw: fix use-after-free in rawv6_send_hdrinc()	ported	fb8923a5cdfe	fixes pre-4.9 code; hand port (no dst_rt6_info in 4.9)
