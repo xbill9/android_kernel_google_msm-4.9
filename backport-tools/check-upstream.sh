@@ -18,7 +18,7 @@ TREE=$(dirname "$BT")
 KOUT=${KOUT:-/android/sargo-bpf-test/kout}
 APPLY=; WRITE=
 for a in "$@"; do case $a in --apply) APPLY=1 ;; --write) WRITE=1 ;; *) sed -n '2,10p' "$0"; exit 1 ;; esac; done
-NEW=$(mktemp); TODO=$(mktemp); trap 'rm -f $NEW $NEW.build $TODO' EXIT
+NEW=$(mktemp); TODO=$(mktemp); trap 'rm -f $NEW $NEW.build $NEW.reverted $TODO' EXIT
 
 git -C "$UP" fetch -q origin '+refs/heads/master:refs/heads/master'
 echo "mainline $(git -C "$UP" log -1 --format='%h %cd' --date=short master), tree $(git -C "$TREE" rev-parse --short=12 HEAD)"
@@ -48,8 +48,13 @@ if [ -n "$APPLY" ]; then
   [ -z "$(git -C "$TREE" status --porcelain --untracked-files=no)" ] || { echo "--apply needs a clean tree"; exit 1; }
   echo; echo "applying:"
   hand=""
+  # Fixes that mainline later reverted are never applied (2026-11-21: 3f5f118bb657, reverted by
+  # 9d797ee2dce1, dropped file descriptors passed over unix sockets and broke the phones).
+  git -C "$UP" log --since=2016-12-11 --format=%B --grep='This reverts commit' master \
+    | grep -oE 'This reverts commit [0-9a-f]{40}' | awk '{print $4}' > "$NEW.reverted"
   while read -r h; do
     full=$(git -C "$UP" rev-parse "$h")
+    if grep -qx "$full" "$NEW.reverted"; then echo "  skipped $h: reverted in mainline"; continue; fi
     if git -C "$UP" format-patch -1 --stdout "$full" | git -C "$TREE" am -q 2>/dev/null; then
       { git -C "$TREE" log -1 --format=%B | sed '1s/^/UPSTREAM: /'; echo "(cherry picked from commit $full)"; } \
         | git -C "$TREE" commit -q --amend -F -
