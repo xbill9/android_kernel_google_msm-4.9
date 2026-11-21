@@ -1095,6 +1095,8 @@ int nvmem_cell_write(struct nvmem_cell *cell, void *buf, size_t len)
 		return -EINVAL;
 
 	if (cell->bit_offset || cell->nbits) {
+		if (len != DIV_ROUND_UP(cell->nbits, BITS_PER_BYTE) && len != cell->bytes)
+			return -EINVAL;
 		buf = nvmem_cell_prepare_write_buffer(cell, buf, len);
 		if (IS_ERR(buf))
 			return PTR_ERR(buf);
