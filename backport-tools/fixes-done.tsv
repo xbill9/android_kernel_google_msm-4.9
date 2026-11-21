@@ -1382,3 +1382,31 @@
 1379	d4bfa78fd679	Bluetooth: L2CAP: reject accept queue add unless BT_LISTEN	skipped		applies as is but does not build: returns -EINVAL from a function that returns a pointer in 4.9; in handport-todo.tsv
 1380	66dfb2cacda7	ipv6: raw: fix use-after-free in rawv6_send_hdrinc()	ported	fb8923a5cdfe	fixes pre-4.9 code; hand port (no dst_rt6_info in 4.9)
 1381	62754aad50d0	tcp: fix request_sock use-after-free during Fast Open accept()	ported	724d5499fd2d	fixes pre-4.9 code; hand port: lock for every TCP accept (no syn_fastopen_child in 4.9)
+1382	75767213f3d9	Bluetooth: L2CAP: Add missing checks for invalid DCID	ported	89538c58613b	fixes pre-4.9 code; from handport-todo, applies by itself
+1383	540bf24fba16	af_unix: Fix data races in unix_release_sock/unix_stream_sendmsg	ported	97c8ba0cb5ea	fixes pre-4.9 code; from handport-todo, applies by itself
+1384	c65bd945d1c0	Bluetooth: L2CAP: Validate PDU length before reading SDU length in l2cap_ecred_data_rcv()	ported	f6d2b4150275	fixes pre-4.9 code; from handport-todo, applies by itself
+1385	e1d9a6688986	Bluetooth: LE L2CAP: Disconnect if received packet's SDU exceeds IMTU	ported	005befe2ea67	fixes pre-4.9 code; from handport-todo, applies by itself
+1386	dd815e6e3918	Bluetooth: L2CAP: Validate L2CAP_INFO_RSP payload length before access	ported	c5b8684cdfea	fixes pre-4.9 code; from handport-todo, applies by itself
+1387	c5ebb0245fe9	Bluetooth: L2CAP: Reject invalid TxWindow in configuration requests	ported	1b2d0b2714b3	fixes pre-4.9 code; from handport-todo, applies by itself
+1388	df5703348813	Bluetooth: L2CAP: Fix potential user-after-free	ported	3ccbf046e2da	fixes pre-4.9 code; from handport-todo, applies by itself
+1389	3f5f118bb657	af_unix: Call scm_recv() only after scm_set_cred().	ported	e0ef0dcd6c18	fixes pre-4.9 code; from handport-todo, applies by itself
+1390	ade32bd8a738	af_unix: Fix data-race around unix_tot_inflight.	ported	f7ce7e30e44e	fixes pre-4.9 code; from handport-todo, applies by itself
+1391	c531e63871c0	Bluetooth: l2cap: always unlock channel in l2cap_conless_channel()	ported	e185cc96f923	fixes pre-4.9 code; from handport-todo, applies by itself
+1392	c1398cf11b31	Bluetooth: L2CAP: Reject mode changes on connected channels	ported	fd5b1e4ea3c9	fixes pre-4.9 code; from handport-todo, applies by itself
+1393	6c78a213d907	Bluetooth: L2CAP: validate frame length before control and FCS access	ported	7fee66d4121a	fixes pre-4.9 code; from handport-todo, applies by itself
+1394	b6a2bf43aa37	Bluetooth: LE L2CAP: Disconnect if sum of payload sizes exceed SDU	ported	2b6f7e4804d7	fixes pre-4.9 code; from handport-todo, applies by itself
+1395	679ed006d416	af_unix: Fix a data race of sk->sk_receive_queue->qlen.	ported	5e7d215b85a9	fixes pre-4.9 code; from handport-todo, applies by itself
+1396	3a0f38eb285c	af_unix: Annotate data-race of sk->sk_state in unix_inq_len().	ported	8d8319e1d441	fixes pre-4.9 code; from handport-todo, applies by itself
+1397	adf0398cee86	Bluetooth: l2cap: fix null-ptr-deref in l2cap_chan_timeout	ported	70648eca55ff	fixes pre-4.9 code; from handport-todo, applies by itself
+1398	d5e206778e96	ext4: fix OOB read when checking dotdot dir	ported	24ed4ef47fb5	fixes pre-4.9 code; from handport-todo, hand port
+1399	9333cc809f0a	ext4: fix out-of-bounds read in ext4_read_inline_dir()	ported	9f31d4ed176d	fixes pre-4.9 code; from handport-todo, hand port
+1400	d289d5307762	ip6_vti: set netns_immutable on the fallback device.	ported	eb4444058c25	fixes pre-4.9 code; from handport-todo, hand port
+1401	1f3083aec883	netfilter: nfnetlink_log: initialize nfgenmsg in NLMSG_DONE terminator	ported	c262a624dc6c	fixes pre-4.9 code; from handport-todo, hand port
+1402	f1ba83755d81	netfilter: nfnetlink_queue: fix entry leak in bridge verdict error path	ported	8734194c9d68	fixes pre-4.9 code; from handport-todo, hand port
+1403	1cb925c0863e	nsfs: add compat ioctl handler	ported	3f01359375ad	fixes pre-4.9 code; from handport-todo, hand port
+1404	71a98248c63c	xfrm: clear trailing padding in build_polexpire()	ported	d18429ff9554	fixes pre-4.9 code; from handport-todo, hand port
+1405	07d7b25224f5	xfrm: state: reject mark with bits outside its mask on ALLOCSPI	ported	41cc4627e0e4	fixes pre-4.9 code; from handport-todo, hand port
+1406	faaa1e115583	drm/edid: fix OOB read in drm_parse_tiled_block()	ported	ee849245ec0a	fixes pre-4.9 code; from handport-todo, hand port
+1407	87d571d6fb77	ntp: Clamp maxerror and esterror to operating range	ported	0a8f4a91fa8a	fixes pre-4.9 code; from handport-todo, hand port
+1408	75cea9860aa6	net: usb: rtl8150: Fix frame padding	ported	bc9831526e77	fixes pre-4.9 code; from handport-todo, hand port
+1409	f865c143629d	audit: fix potential integer overflow in audit_log_n_string()	ported	9c63d6e752a7	fixes pre-4.9 code; from handport-todo, hand port
