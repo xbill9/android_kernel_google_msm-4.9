@@ -1326,6 +1326,14 @@ static int xfrm_alloc_userspi(struct sk_buff *skb, struct nlmsghdr *nlh,
 
 	x = NULL;
 
+	if (attrs[XFRMA_MARK]) {
+		const struct xfrm_mark *um = nla_data(attrs[XFRMA_MARK]);
+
+		/* Invalid mark value/mask combination */
+		err = -EINVAL;
+		if ((um->v & um->m) != um->v)
+			goto out_noput;
+	}
 	mark = xfrm_mark_get(attrs, &m);
 
 	if (attrs[XFRMA_IF_ID])
