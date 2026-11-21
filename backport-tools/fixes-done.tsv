@@ -1423,23 +1423,23 @@
 1420	3855941f1e40	PM: sleep: Use complete() in device_pm_sleep_init()	n/a		silences a PREEMPT_RT lockdep check (lockdep_assert_RT_in_threaded_ctx) that 4.9 does not have
 1421	7f05e20b989a	of: address: Preserve the flags portion on 1:1 dma-ranges mapping	n/a		only buses with flag cells (PCI, ISA); the Pixel 3a device tree has no PCI or ISA node (none under /proc/device-tree, /sys/bus/pci/devices empty)
 1422	a26cc2934331	drm/mipi-dsi: Set the fwnode for mipi_dsi_device	n/a		silences an fw_devlink error message; 4.9 has no fw_devlink and finds DSI devices by of_node, which it already sets
-1423	d4bfa78fd679	Bluetooth: L2CAP: reject accept queue add unless BT_LISTEN	ported	e6ded2af571d	fixes pre-4.9 code; from handport-todo, hand port
-1424	45d872f0e655	af_unix: Use unix_recvq_full_lockless() in unix_stream_connect().	ported	fc79ca6f1a6c	fixes pre-4.9 code; from handport-todo, hand port
-1425	2725ab3f5ad1	keys: fix lost wakeup when reaping a dead key type	ported	54c32aaaeccd	fixes pre-4.9 code; from handport-todo, hand port
-1426	e8fb5bc76eb8	usb: xhci: Check endpoint is valid before dereferencing it	ported	50d2d8ab133c	fixes pre-4.9 code; from handport-todo, hand port
-1427	42c37c4b75d3	usb: xhci: Fix sleep in atomic context in xhci_free_streams()	ported	c3852c018298	fixes pre-4.9 code; from handport-todo, hand port
-1428	732e3e10234c	klist: avoid accesses after waking klist_remove()	ported	45a482e4f5d4	fixes pre-4.9 code; from handport-todo, hand port
-1429	2aa8a4fa8d5b	net: usb: cdc_ncm: add ndpoffset to NDP16 nframes bounds check	ported	7e41e02608eb	fixes pre-4.9 code; from handport-todo, hand port
-1430	cabd1a976375	net/sched: cls_u32: use skb_header_pointer_careful()	ported	447374be34d6	fixes pre-4.9 code; from handport-todo, hand port
-1431	31507fc2ad36	nvmem: core: improve range check for nvmem_cell_write()	ported	575216d70616	fixes pre-4.9 code; from handport-todo, hand port
-1432	09e70e4f119f	regmap: Synchronize cache for the page selector	ported	f9e208417e3d	fixes pre-4.9 code; from handport-todo, hand port
-1433	f2951ebd15c3	tracing: Take trace_array reference when opening options file	ported	081fc73663bc	fixes pre-4.9 code; from handport-todo, hand port
-1434	eb35b73e1336	serial: abort TIOCMIWAIT on hangup	ported	d0037971d385	fixes pre-4.9 code; from handport-todo, hand port
-1435	810d467c11f0	serial: core: shut down initialized port on removal	ported	4dc877218ef8	fixes pre-4.9 code; from handport-todo, hand port
-1436	4ab37fcb4283	USB: gadget: f_midi: f_midi_complete to call queue_work	ported	8ab8b58f48aa	fixes pre-4.9 code; from handport-todo, hand port
-1437	1c8f6308e557	iommu/dma: Catch scatterlist length overflows	ported	26f6b20bf547	fixes pre-4.9 code; from handport-todo, hand port
-1438	29fe3a61bcdc	xfrm: prevent policy_hthresh.work from racing with netns teardown	ported	73ca3a3b2f1a	fixes pre-4.9 code; from handport-todo, hand port
-1439	4d7b41c0e439	Bluetooth: L2CAP: Fix slab-use-after-free in l2cap_connect()	ported	a11f59428f71	fixes pre-4.9 code; from handport-todo, hand port
-1440	e667d4690986	bonding: restore bond's IFF_SLAVE flag if a non-eth dev enslave fails	ported	2a573ba4bb29	fixes pre-4.9 code; from handport-todo, hand port
-1441	04e906839a05	usbnet: fix cyclical race on disconnect with work queue	ported	2de226635341	fixes pre-4.9 code; from handport-todo, hand port
-1442	b62f4c186c70	net: usb: usbnet: fix race in probe failure	ported	b6d692b26c99	fixes pre-4.9 code; from handport-todo, hand port
+1423	d4bfa78fd679	Bluetooth: L2CAP: reject accept queue add unless BT_LISTEN	ported	b959dd02ce2e	fixes pre-4.9 code; from handport-todo, hand port
+1424	45d872f0e655	af_unix: Use unix_recvq_full_lockless() in unix_stream_connect().	ported	e439890ff805	fixes pre-4.9 code; from handport-todo, hand port
+1425	2725ab3f5ad1	keys: fix lost wakeup when reaping a dead key type	ported	6d3ad0ca12a6	fixes pre-4.9 code; from handport-todo, hand port
+1426	e8fb5bc76eb8	usb: xhci: Check endpoint is valid before dereferencing it	ported	219663e10da1	fixes pre-4.9 code; from handport-todo, hand port
+1427	42c37c4b75d3	usb: xhci: Fix sleep in atomic context in xhci_free_streams()	ported	3eb723ed131f	fixes pre-4.9 code; from handport-todo, hand port
+1428	732e3e10234c	klist: avoid accesses after waking klist_remove()	ported	3de0dee3f771	fixes pre-4.9 code; from handport-todo, hand port
+1429	2aa8a4fa8d5b	net: usb: cdc_ncm: add ndpoffset to NDP16 nframes bounds check	ported	ac44fcafd715	fixes pre-4.9 code; from handport-todo, hand port
+1430	cabd1a976375	net/sched: cls_u32: use skb_header_pointer_careful()	ported	f47330a9e123	fixes pre-4.9 code; from handport-todo, hand port
+1431	31507fc2ad36	nvmem: core: improve range check for nvmem_cell_write()	ported	7f820d3a6949	fixes pre-4.9 code; from handport-todo, hand port
+1432	09e70e4f119f	regmap: Synchronize cache for the page selector	ported	ddb1e9c90525	fixes pre-4.9 code; from handport-todo, hand port
+1433	f2951ebd15c3	tracing: Take trace_array reference when opening options file	ported	ac0dcde4f8b3	fixes pre-4.9 code; from handport-todo, hand port
+1434	eb35b73e1336	serial: abort TIOCMIWAIT on hangup	ported	1f6065b1762f	fixes pre-4.9 code; from handport-todo, hand port
+1435	810d467c11f0	serial: core: shut down initialized port on removal	ported	1f16738bada7	fixes pre-4.9 code; from handport-todo, hand port
+1436	4ab37fcb4283	USB: gadget: f_midi: f_midi_complete to call queue_work	ported	8a4d9ae94319	fixes pre-4.9 code; from handport-todo, hand port
+1437	1c8f6308e557	iommu/dma: Catch scatterlist length overflows	ported	a94c3ce4af54	fixes pre-4.9 code; from handport-todo, hand port
+1438	29fe3a61bcdc	xfrm: prevent policy_hthresh.work from racing with netns teardown	ported	428f7d265477	fixes pre-4.9 code; from handport-todo, hand port
+1439	4d7b41c0e439	Bluetooth: L2CAP: Fix slab-use-after-free in l2cap_connect()	ported	8c4b34532260	fixes pre-4.9 code; from handport-todo, hand port
+1440	e667d4690986	bonding: restore bond's IFF_SLAVE flag if a non-eth dev enslave fails	ported	9f2509a46a4b	fixes pre-4.9 code; from handport-todo, hand port
+1441	04e906839a05	usbnet: fix cyclical race on disconnect with work queue	ported	4f7bb89cf152	fixes pre-4.9 code; from handport-todo, hand port
+1442	b62f4c186c70	net: usb: usbnet: fix race in probe failure	ported	40614aa8da86	fixes pre-4.9 code; from handport-todo, hand port
