@@ -1421,3 +1421,5 @@
 1418	a927d77778e3	nf_conntrack: fix -Wunused-const-variable=	n/a		compiler-warning fix only (unused const variable); no change in the built kernel
 1419	5e3486e64094	mmc: sdhci: fix timing selection for 1-bit bus width	n/a		only hosts with SDHCI_QUIRK_FORCE_1_BIT_DATA; sdhci-msm on the Pixel 3a does not set it
 1420	3855941f1e40	PM: sleep: Use complete() in device_pm_sleep_init()	n/a		silences a PREEMPT_RT lockdep check (lockdep_assert_RT_in_threaded_ctx) that 4.9 does not have
+1421	7f05e20b989a	of: address: Preserve the flags portion on 1:1 dma-ranges mapping	n/a		only buses with flag cells (PCI, ISA); the Pixel 3a device tree has no PCI or ISA node (none under /proc/device-tree, /sys/bus/pci/devices empty)
+1422	a26cc2934331	drm/mipi-dsi: Set the fwnode for mipi_dsi_device	n/a		silences an fw_devlink error message; 4.9 has no fw_devlink and finds DSI devices by of_node, which it already sets
