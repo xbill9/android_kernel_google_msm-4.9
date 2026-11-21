@@ -312,8 +312,8 @@ maybe_resched:
 
 	if (unlikely(gc_state & KEY_GC_REAPING_DEAD_3)) {
 		kdebug("dead wake");
-		smp_mb();
-		clear_bit(KEY_GC_REAPING_KEYTYPE, &key_gc_flags);
+		clear_bit_unlock(KEY_GC_REAPING_KEYTYPE, &key_gc_flags);
+		smp_mb__after_atomic();
 		wake_up_bit(&key_gc_flags, KEY_GC_REAPING_KEYTYPE);
 	}
 
