@@ -854,7 +854,14 @@ static void xhci_kill_endpoint_urbs(struct xhci_hcd *xhci,
 	struct xhci_virt_ep *ep;
 	struct xhci_ring *ring;
 
+	if (slot_id == 0 || slot_id >= MAX_HC_SLOTS ||
+	    ep_index > LAST_EP_INDEX || !xhci->devs[slot_id]) {
+		xhci_warn(xhci, "Invalid slot %d or endpoint index %d\n",
+			  slot_id, ep_index);
+		return;
+	}
 	ep = &xhci->devs[slot_id]->eps[ep_index];
+
 	if ((ep->ep_state & EP_HAS_STREAMS) ||
 			(ep->ep_state & EP_GETTING_NO_STREAMS)) {
 		int stream_id;
