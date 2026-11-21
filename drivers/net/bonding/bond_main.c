@@ -1823,9 +1823,11 @@ err_undo_flags:
 					    slave_dev->dev_addr))
 			eth_hw_addr_random(bond_dev);
 		if (bond_dev->type != ARPHRD_ETHER) {
+			unsigned int slave_flag = bond_dev->flags & IFF_SLAVE;
+
 			dev_close(bond_dev);
 			ether_setup(bond_dev);
-			bond_dev->flags |= IFF_MASTER;
+			bond_dev->flags |= IFF_MASTER | slave_flag;
 			bond_dev->priv_flags &= ~IFF_TX_SKB_SHARING;
 		}
 	}
