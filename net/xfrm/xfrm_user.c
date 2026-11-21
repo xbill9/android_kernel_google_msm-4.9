@@ -3114,6 +3114,9 @@ static int build_polexpire(struct sk_buff *skb, struct xfrm_policy *xp,
 		return err;
 	}
 	upe->hard = !!hard;
+	/* clear the padding bytes */
+	memset((char *)upe + offsetofend(struct xfrm_user_polexpire, hard), 0,
+	       sizeof(*upe) - offsetofend(struct xfrm_user_polexpire, hard));
 
 	nlmsg_end(skb, nlh);
 	return 0;
