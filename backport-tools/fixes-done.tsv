@@ -1168,7 +1168,7 @@
 1165	36d503ad547d	media: xc4000: Fix atomicity violation in xc4000_get_frequency	ported	c4a87dc527e4	fixes pre-4.9 code (gap scan batch 2)
 1166	eaac6a2d26b6	asix: Add check for usbnet_get_endpoints	ported	fd9edfd5b9f6	fixes pre-4.9 code (gap scan batch 2)
 1167	71fee48fb772	tick-sched: Fix idle and iowait sleeptime accounting vs CPU hotplug	ported	98dc85a07897	fixes pre-4.9 code (gap scan batch 2)
-1168	9319b647902c	mm/writeback: fix possible divide-by-zero in wb_dirty_limits(), again	ported	2090d3268c96	fixes pre-4.9 code (gap scan batch 2)
+1168	9319b647902c	mm/writeback: fix possible divide-by-zero in wb_dirty_limits(), again	skipped	2090d3268c96	reverted upstream by 8dfcffa37094 (32-bit overflow); ported as 2090d3268c96 and reverted in 4ecb36328a32
 1169	234ec0b6034b	netlink: fix potential sleeping issue in mqueue_flush_file	ported	7aa47530c8d9	fixes pre-4.9 code (gap scan batch 2)
 1170	f17c34ffc792	USB: hub: check for alternate port before enabling A_ALT_HNP_SUPPORT	ported	bba0a62f4092	fixes pre-4.9 code (gap scan batch 2)
 1171	31e03207119a	af_unix: Annotate data-race of gc_in_progress in wait_for_unix_gc().	ported	a58572b78177	fixes pre-4.9 code (gap scan batch 2)
@@ -1389,7 +1389,7 @@
 1386	dd815e6e3918	Bluetooth: L2CAP: Validate L2CAP_INFO_RSP payload length before access	ported	c5b8684cdfea	fixes pre-4.9 code; from handport-todo, applies by itself
 1387	c5ebb0245fe9	Bluetooth: L2CAP: Reject invalid TxWindow in configuration requests	ported	1b2d0b2714b3	fixes pre-4.9 code; from handport-todo, applies by itself
 1388	df5703348813	Bluetooth: L2CAP: Fix potential user-after-free	ported	3ccbf046e2da	fixes pre-4.9 code; from handport-todo, applies by itself
-1389	3f5f118bb657	af_unix: Call scm_recv() only after scm_set_cred().	ported	e0ef0dcd6c18	fixes pre-4.9 code; from handport-todo, applies by itself
+1389	3f5f118bb657	af_unix: Call scm_recv() only after scm_set_cred().	skipped	e0ef0dcd6c18	reverted upstream by 9d797ee2dce1; ported as e0ef0dcd6c18 and reverted in eb9d053a8f82 after it broke sargo-test on 2026-11-21 (fds passed without SO_PASSCRED were dropped)
 1390	ade32bd8a738	af_unix: Fix data-race around unix_tot_inflight.	ported	f7ce7e30e44e	fixes pre-4.9 code; from handport-todo, applies by itself
 1391	c531e63871c0	Bluetooth: l2cap: always unlock channel in l2cap_conless_channel()	ported	e185cc96f923	fixes pre-4.9 code; from handport-todo, applies by itself
 1392	c1398cf11b31	Bluetooth: L2CAP: Reject mode changes on connected channels	ported	fd5b1e4ea3c9	fixes pre-4.9 code; from handport-todo, applies by itself
