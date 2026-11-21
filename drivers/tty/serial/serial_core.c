@@ -1197,7 +1197,8 @@ static void uart_enable_ms(struct uart_port *uport)
  * FIXME: This wants extracting into a common all driver implementation
  * of TIOCMWAIT using tty_port.
  */
-static int uart_wait_modem_status(struct uart_state *state, unsigned long arg)
+static int uart_wait_modem_status(struct tty_struct *tty, struct uart_state *state,
+				  unsigned long arg)
 {
 	struct uart_port *uport;
 	struct tty_port *port = &state->port;
@@ -1229,6 +1230,11 @@ static int uart_wait_modem_status(struct uart_state *state, unsigned long arg)
 		    ((arg & TIOCM_CD)  && (cnow.dcd != cprev.dcd)) ||
 		    ((arg & TIOCM_CTS) && (cnow.cts != cprev.cts))) {
 			ret = 0;
+			break;
+		}
+
+		if (tty_io_error(tty)) {
+			ret = -EIO;
 			break;
 		}
 
@@ -1378,7 +1384,7 @@ uart_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned long arg)
 	 */
 	switch (cmd) {
 	case TIOCMIWAIT:
-		ret = uart_wait_modem_status(state, arg);
+		ret = uart_wait_modem_status(tty, state, arg);
 		break;
 	}
 
