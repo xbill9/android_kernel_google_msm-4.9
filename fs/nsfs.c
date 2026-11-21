@@ -7,14 +7,26 @@
 #include <linux/seq_file.h>
 #include <linux/user_namespace.h>
 #include <linux/nsfs.h>
+#include <linux/compat.h>
 
 static struct vfsmount *nsfs_mnt;
 
 static long ns_ioctl(struct file *filp, unsigned int ioctl,
 			unsigned long arg);
+#ifdef CONFIG_COMPAT
+static long ns_compat_ioctl(struct file *filp, unsigned int ioctl,
+			    unsigned long arg)
+{
+	return ns_ioctl(filp, ioctl, (unsigned long)compat_ptr(arg));
+}
+#endif
+
 static const struct file_operations ns_file_operations = {
 	.llseek		= no_llseek,
 	.unlocked_ioctl = ns_ioctl,
+#ifdef CONFIG_COMPAT
+	.compat_ioctl   = ns_compat_ioctl,
+#endif
 };
 
 static char *ns_dname(struct dentry *dentry, char *buffer, int buflen)
