@@ -1410,3 +1410,12 @@
 1407	87d571d6fb77	ntp: Clamp maxerror and esterror to operating range	ported	0a8f4a91fa8a	fixes pre-4.9 code; from handport-todo, hand port
 1408	75cea9860aa6	net: usb: rtl8150: Fix frame padding	ported	bc9831526e77	fixes pre-4.9 code; from handport-todo, hand port
 1409	f865c143629d	audit: fix potential integer overflow in audit_log_n_string()	ported	9c63d6e752a7	fixes pre-4.9 code; from handport-todo, hand port
+1410	b7c63520f670	modpost: fix section mismatch message for R_ARM_ABS32	n/a		build tool (modpost), runs on the build machine; the phone kernel is the same without it
+1411	d0acc76a49aa	modpost: remove broken calculation of exception_table_entry size	n/a		build tool (modpost), runs on the build machine; the phone kernel is the same without it
+1412	cbc3d00cf88f	modpost: add missing else to the "of" check	n/a		build tool (modpost), runs on the build machine; the phone kernel is the same without it
+1413	77dc55a978e6	modpost: fix input MODULE_DEVICE_TABLE() built for 64-bit on 32-bit host	n/a		build tool (modpost), runs on the build machine; the phone kernel is the same without it
+1414	2e766a1f5f94	modpost: fix acpi MODULE_DEVICE_TABLE built with mismatched endianness	n/a		build tool (modpost), runs on the build machine; the phone kernel is the same without it
+1415	0c3e091319e4	modpost: remove incorrect code in do_eisa_entry()	n/a		build tool (modpost), runs on the build machine; the phone kernel is the same without it
+1416	45c9c4101d3d	genksyms: fix memory leak when the same symbol is added from source	n/a		build tool (genksyms): applied as is it crashed with a double free (2026-11-19) and it computes the symbol CRCs wlan.ko checks
+1417	5e1c67abc930	xhci: Fix control transfer error on Etron xHCI host	n/a		Etron xHCI host quirk; the Pixel 3a's USB host is the SoC's DWC3, not an Etron chip
+1418	a927d77778e3	nf_conntrack: fix -Wunused-const-variable=	n/a		compiler-warning fix only (unused const variable); no change in the built kernel
