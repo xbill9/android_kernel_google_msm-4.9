@@ -525,6 +525,14 @@ int __cgroup_bpf_query(struct cgroup *cgrp, const union bpf_attr *attr,
 	struct bpf_prog_array *effective;
 	int cnt, ret = 0, i;
 
+	/*
+	 * cgroup_bpf_release() frees the effective arrays once the bpf
+	 * refcount is zero.  It takes this lock too, so a nonzero count means
+	 * the arrays are still valid.
+	 */
+	if (percpu_ref_is_zero(&cgrp->bpf.refcnt))
+		return -ENOENT;
+
 	effective = rcu_dereference_protected(cgrp->bpf.effective[type],
 					      lockdep_is_held(&cgroup_mutex));
 
