@@ -1443,3 +1443,42 @@
 1440	e667d4690986	bonding: restore bond's IFF_SLAVE flag if a non-eth dev enslave fails	ported	9f2509a46a4b	fixes pre-4.9 code; from handport-todo, hand port
 1441	04e906839a05	usbnet: fix cyclical race on disconnect with work queue	ported	4f7bb89cf152	fixes pre-4.9 code; from handport-todo, hand port
 1442	b62f4c186c70	net: usb: usbnet: fix race in probe failure	ported	40614aa8da86	fixes pre-4.9 code; from handport-todo, hand port
+1443	4722bac72de6	bpf: Fix verifier model mismatch on __sk_buff.remote_port narrow read	ported	fdff8d65205a	mainline fix of 2026-11-22 scan; hand port
+1444	4e13d3a9c25b	ipv6: Fix potential uninit-value access in __ip6_make_skb()	ported	b7de7efb4810	mainline fix of 2026-11-22 scan; hand port
+1445	7fed14f7ac9c	tracing: Fix incomplete locking when disabling buffered events	ported	23904b594d35	mainline fix of 2026-11-22 scan; hand port
+1446	90f4e698f9c1	bpf, cgroup: Don't read freed effective arrays in BPF_PROG_QUERY	ported	6757f0179f22	mainline fix of 2026-11-22 scan; hand port
+1447	98382d41f92f	net: bridge: fix skb leak of reinjected link-local frames	ported	d6b674348151	mainline fix of 2026-11-22 scan; hand port
+1448	9dbd84990394	Bluetooth: L2CAP: fix chan ref leak in l2cap_chan_timeout() on !conn	ported	ba38c4612c28	mainline fix of 2026-11-22 scan; hand port
+1449	ae633388cae3	pptp: fix pptp_xmit() error path	ported	32ebe74f6ff6	mainline fix of 2026-11-22 scan; hand port
+1450	b2e007371909	bpf, cgroup: Don't attach to a removed cgroup	ported	1b6046c12833	mainline fix of 2026-11-22 scan; hand port
+1451	cffd0441872e	use uniform permission checks for all mount propagation changes	ported	8a7a47b135db	mainline fix of 2026-11-22 scan; hand port
+1452	fc1092f51567	ipv4: Fix uninit-value access in __ip_make_skb()	ported	1839a63bdd4e	mainline fix of 2026-11-22 scan; hand port
+1453	fd038b82c71b	Bluetooth: SMP: Fail if local and remote public key X coords match	ported	e4c4aefbefd1	mainline fix of 2026-11-22 scan; hand port
+1454	0048086bd361	bpf, sockmap: Clear the end mark of elements added by push and pop	n/a		sk_msg code not built (CONFIG_NET_SOCK_MSG and CONFIG_BPF_STREAM_PARSER off); also 4.9 recvmsg stops at sg.end, not at the end mark (9974d37ea75f absent)
+1455	0fe8813baf4b	perf/core: Add RCU read lock protection to perf_iterate_ctx()	already	-	4.9 perf_event_exec() still takes rcu_read_lock() around perf_iterate_ctx()
+1456	12c45473dfe7	bpf, sockmap: Reset the copy position when corking	n/a		sk_msg/tcp_bpf code not built (CONFIG_NET_SOCK_MSG off)
+1457	2016066c6619	perf/core: Order the PMU list to fix warning about unordered pmu_ctx_list	n/a		perf core rewrite (bd2756811766, 6.2) code absent: 4.9 has no perf_event_pmu_context/pmu_ctx
+1458	30139c702048	Revert "mm/writeback: fix possible divide-by-zero in wb_dirty_limits(), again"	already	-	9319b647902c reverted on main in 4ecb36328a32 (same div_u64 line)
+1459	36bb85cf36ca	perf/core: Fix NULL pmu_ctx passed to pmu->sched_task()	n/a		perf core rewrite (bd2756811766, 6.2) code absent: 4.9 has no perf_event_pmu_context/pmu_ctx
+1460	3d8d74100954	perf/core: Run sched_task() for PMUs with only CPU-wide events	n/a		perf core rewrite (bd2756811766, 6.2) code absent: 4.9 has no perf_event_pmu_context/pmu_ctx
+1461	3e5241731847	xfrm: move policy_bydst RCU sync from per-netns .exit to .pre_exit	skipped		performance only (one RCU grace period per netns batch); needs pernet_operations.pre_exit (5.2)
+1462	430775a30b1f	net: Leave sk_stream_wait_memory() once the socket is dead	n/a		needs sockmap egress redirect; CONFIG_NET_SOCK_MSG and CONFIG_BPF_STREAM_PARSER off
+1463	4b9ce6719606	perf: Make sure to use pmu_ctx->pmu for groups	n/a		perf core rewrite (bd2756811766, 6.2) code absent: 4.9 has no perf_event_pmu_context/pmu_ctx
+1464	4f64a6c9f6f1	perf: Fix perf_event_pmu_context serialization	n/a		perf core rewrite (bd2756811766, 6.2) code absent: 4.9 has no perf_event_pmu_context/pmu_ctx
+1465	59e63416f515	perf/core: Allow list_del during perf_event_overflow()	n/a		4.9 sched_cb_list loop is the same, but no PMU built for arm64 uses perf_sched_cb_inc()/sched_task, so nothing can list_del during it
+1466	61d038627343	arm_pmu: fix event CPU filtering	n/a		4.9 uses pmu::filter_match (armpmu_filter_match) with the original polarity; pmu::filter came with bd2756811766
+1467	76f33296d2e0	sock: annotate data-races around prot->memory_pressure	skipped		data-race annotations only (READ_ONCE/WRITE_ONCE for KCSAN); SCTP not built
+1468	7f1e33230b7c	bpf: Report RCU-tasks quiescent states in do_check()	n/a		CONFIG_TASKS_RCU off on sargo: rcu_note_voluntary_context_switch() has no tasks-RCU holdout to clear
+1469	853e2dac25c1	arm64: perf: reject CHAIN events at creation time	n/a		regression from bd2756811766 dropping the CHAIN filter_match of ca2b497253ad; 4.9 PMUv3 has no chained counters or that filter
+1470	889c58b3155f	perf/core: Fix cpuctx refcounting	n/a		perf core rewrite (bd2756811766, 6.2) code absent: 4.9 has no perf_event_pmu_context/pmu_ctx
+1471	8dfcffa37094	Revert "mm/writeback: fix possible divide-by-zero in wb_dirty_limits(), again"	already	-	9319b647902c reverted on main in 4ecb36328a32 (same div_u64 line)
+1472	a551844e345b	perf: Fix use-after-free in error path	n/a		perf core rewrite (bd2756811766, 6.2) code absent: 4.9 has no perf_event_pmu_context/pmu_ctx
+1473	abf7185109d3	ring-buffer: Do not check si_mem_available() before deferred init completes	n/a		CONFIG_DEFERRED_STRUCT_PAGE_INIT off on sargo
+1474	bf480f938566	perf/core: Don't allow grouping events from different hw pmus	n/a		perf core rewrite (bd2756811766, 6.2) code absent: 4.9 has no perf_event_pmu_context/pmu_ctx
+1475	c55bfbb3ebce	perf: Fix IS_ERR() vs NULL check in inherit_event()	n/a		perf core rewrite (bd2756811766, 6.2) code absent: 4.9 has no perf_event_pmu_context/pmu_ctx
+1476	e2d371484653	perf core: Return error pointer if inherit_event() fails to find pmu_ctx	n/a		perf core rewrite (bd2756811766, 6.2) code absent: 4.9 has no perf_event_pmu_context/pmu_ctx
+1477	e4c7c401c6b9	perf: Update cgroup time when rotating multiplexed events	n/a		perf core rewrite (bd2756811766, 6.2) code absent: 4.9 has no perf_event_pmu_context/pmu_ctx
+1478	e76b36b4be71	perf: Fix perf_pmu_migrate_context() leaving events behind	n/a		perf core rewrite (bd2756811766, 6.2) code absent: 4.9 has no perf_event_pmu_context/pmu_ctx
+1479	f06cc667f799	perf: Optimize perf_cgroup_switch()	n/a		perf core rewrite (bd2756811766, 6.2) code absent: 4.9 has no perf_event_pmu_context/pmu_ctx; performance
+1480	f6562cd116a0	bpf, sockmap: Fix ring capacity invariant break in bpf_msg_push_data()	n/a		bpf_msg_push_data() is built but unreachable: sk_msg programs need sockmap (CONFIG_BPF_STREAM_PARSER, CONFIG_NET_SOCK_MSG off)
+1481	f841b682baef	perf/core: Fix cgroup events tracking	n/a		perf core rewrite (bd2756811766, 6.2) code absent: 4.9 has no perf_event_pmu_context/pmu_ctx
