@@ -1868,6 +1868,16 @@ static u8 sc_send_public_key(struct smp_chan *smp)
 	}
 
 done:
+	/* Check if remote and local public keys are the same and debug key is
+	 * not in use.
+	 */
+	if (!test_bit(SMP_FLAG_DEBUG_KEY, &smp->flags) &&
+	    !smp->conn->hcon->out &&
+	    !crypto_memneq(smp->remote_pk, smp->local_pk, 32)) {
+		bt_dev_err(hdev, "Remote and local public keys are identical");
+		return SMP_UNSPECIFIED;
+	}
+
 	SMP_DBG("Local Public Key X: %32phN", smp->local_pk);
 	SMP_DBG("Local Public Key Y: %32phN", smp->local_pk + 32);
 	SMP_DBG("Local Private Key:  %32phN", smp->local_sk);
@@ -2644,7 +2654,8 @@ static int smp_cmd_public_key(struct l2cap_conn *conn, struct sk_buff *skb)
 	 * not in use.
 	 */
 	if (!test_bit(SMP_FLAG_DEBUG_KEY, &smp->flags) &&
-	    !crypto_memneq(key, smp->local_pk, 64)) {
+	    hcon->out &&
+	    !crypto_memneq(key, smp->local_pk, 32)) {
 		bt_dev_err(hdev, "Remote and local public keys are identical");
 		return SMP_UNSPECIFIED;
 	}
