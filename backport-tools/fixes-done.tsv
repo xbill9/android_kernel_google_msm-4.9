@@ -1443,17 +1443,17 @@
 1440	e667d4690986	bonding: restore bond's IFF_SLAVE flag if a non-eth dev enslave fails	ported	9f2509a46a4b	fixes pre-4.9 code; from handport-todo, hand port
 1441	04e906839a05	usbnet: fix cyclical race on disconnect with work queue	ported	4f7bb89cf152	fixes pre-4.9 code; from handport-todo, hand port
 1442	b62f4c186c70	net: usb: usbnet: fix race in probe failure	ported	40614aa8da86	fixes pre-4.9 code; from handport-todo, hand port
-1443	4722bac72de6	bpf: Fix verifier model mismatch on __sk_buff.remote_port narrow read	ported	fdff8d65205a	mainline fix of 2026-11-22 scan; hand port
-1444	4e13d3a9c25b	ipv6: Fix potential uninit-value access in __ip6_make_skb()	ported	b7de7efb4810	mainline fix of 2026-11-22 scan; hand port
-1445	7fed14f7ac9c	tracing: Fix incomplete locking when disabling buffered events	ported	23904b594d35	mainline fix of 2026-11-22 scan; hand port
-1446	90f4e698f9c1	bpf, cgroup: Don't read freed effective arrays in BPF_PROG_QUERY	ported	6757f0179f22	mainline fix of 2026-11-22 scan; hand port
-1447	98382d41f92f	net: bridge: fix skb leak of reinjected link-local frames	ported	d6b674348151	mainline fix of 2026-11-22 scan; hand port
-1448	9dbd84990394	Bluetooth: L2CAP: fix chan ref leak in l2cap_chan_timeout() on !conn	ported	ba38c4612c28	mainline fix of 2026-11-22 scan; hand port
-1449	ae633388cae3	pptp: fix pptp_xmit() error path	ported	32ebe74f6ff6	mainline fix of 2026-11-22 scan; hand port
-1450	b2e007371909	bpf, cgroup: Don't attach to a removed cgroup	ported	1b6046c12833	mainline fix of 2026-11-22 scan; hand port
-1451	cffd0441872e	use uniform permission checks for all mount propagation changes	ported	8a7a47b135db	mainline fix of 2026-11-22 scan; hand port
-1452	fc1092f51567	ipv4: Fix uninit-value access in __ip_make_skb()	ported	1839a63bdd4e	mainline fix of 2026-11-22 scan; hand port
-1453	fd038b82c71b	Bluetooth: SMP: Fail if local and remote public key X coords match	ported	e4c4aefbefd1	mainline fix of 2026-11-22 scan; hand port
+1443	4722bac72de6	bpf: Fix verifier model mismatch on __sk_buff.remote_port narrow read	ported	24493dc69382	mainline fix of 2026-11-22 scan; hand port
+1444	4e13d3a9c25b	ipv6: Fix potential uninit-value access in __ip6_make_skb()	ported	ff0e34d95476	mainline fix of 2026-11-22 scan; hand port
+1445	7fed14f7ac9c	tracing: Fix incomplete locking when disabling buffered events	ported	5b564d938973	mainline fix of 2026-11-22 scan; hand port
+1446	90f4e698f9c1	bpf, cgroup: Don't read freed effective arrays in BPF_PROG_QUERY	ported	7bcb9e8de400	mainline fix of 2026-11-22 scan; hand port
+1447	98382d41f92f	net: bridge: fix skb leak of reinjected link-local frames	ported	e0a793fc6ac1	mainline fix of 2026-11-22 scan; hand port
+1448	9dbd84990394	Bluetooth: L2CAP: fix chan ref leak in l2cap_chan_timeout() on !conn	ported	96c5d55354e9	mainline fix of 2026-11-22 scan; hand port
+1449	ae633388cae3	pptp: fix pptp_xmit() error path	ported	9582f8d3ec8a	mainline fix of 2026-11-22 scan; hand port
+1450	b2e007371909	bpf, cgroup: Don't attach to a removed cgroup	ported	a0f9fa6443dd	mainline fix of 2026-11-22 scan; hand port
+1451	cffd0441872e	use uniform permission checks for all mount propagation changes	ported	4ec92b0d7b8f	mainline fix of 2026-11-22 scan; hand port
+1452	fc1092f51567	ipv4: Fix uninit-value access in __ip_make_skb()	ported	ad08cbb48be6	mainline fix of 2026-11-22 scan; hand port
+1453	fd038b82c71b	Bluetooth: SMP: Fail if local and remote public key X coords match	ported	6875fc644e8c	mainline fix of 2026-11-22 scan; hand port
 1454	0048086bd361	bpf, sockmap: Clear the end mark of elements added by push and pop	n/a		sk_msg code not built (CONFIG_NET_SOCK_MSG and CONFIG_BPF_STREAM_PARSER off); also 4.9 recvmsg stops at sg.end, not at the end mark (9974d37ea75f absent)
 1455	0fe8813baf4b	perf/core: Add RCU read lock protection to perf_iterate_ctx()	already	-	4.9 perf_event_exec() still takes rcu_read_lock() around perf_iterate_ctx()
 1456	12c45473dfe7	bpf, sockmap: Reset the copy position when corking	n/a		sk_msg/tcp_bpf code not built (CONFIG_NET_SOCK_MSG off)
