@@ -20,6 +20,12 @@
 #include <linux/fuse.h>
 #include <linux/file.h>
 
+int fuse_passthrough_open(struct fuse_conn *fc, int fd);
+
+void fuse_passthrough_free_unclaimed(struct fuse_conn *fc);
+
+int fuse_passthrough_mmap(struct file *file, struct vm_area_struct *vma);
+
 void fuse_setup_passthrough(struct fuse_conn *fc, struct fuse_req *req);
 
 ssize_t fuse_passthrough_read_iter(struct kiocb *iocb, struct iov_iter *to);

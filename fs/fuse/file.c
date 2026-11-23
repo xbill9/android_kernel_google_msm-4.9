@@ -961,6 +961,9 @@ static ssize_t fuse_file_read_iter(struct kiocb *iocb, struct iov_iter *to)
 	if (fuse_is_bad(inode))
 		return -EIO;
 
+	if (ff && ff->passthrough_enabled && ff->passthrough_filp)
+		return fuse_passthrough_read_iter(iocb, to);
+
 	/*
 	 * In auto invalidate mode, always update attributes on read.
 	 * Otherwise, only update if we attempt to read past EOF (to ensure
@@ -974,10 +977,7 @@ static ssize_t fuse_file_read_iter(struct kiocb *iocb, struct iov_iter *to)
 			return err;
 	}
 
-	if (ff && ff->passthrough_enabled && ff->passthrough_filp)
-		ret_val = fuse_passthrough_read_iter(iocb, to);
-	else
-		ret_val = generic_file_read_iter(iocb, to);
+	ret_val = generic_file_read_iter(iocb, to);
 
 	return ret_val;
 }
@@ -1222,6 +1222,9 @@ static ssize_t fuse_file_write_iter(struct kiocb *iocb, struct iov_iter *from)
 	if (fuse_is_bad(inode))
 		return -EIO;
 
+	if (ff && ff->passthrough_enabled && ff->passthrough_filp)
+		return fuse_passthrough_write_iter(iocb, from);
+
 	if (get_fuse_conn(inode)->writeback_cache) {
 		/* Update size (EOF optimization) and mode (SUID clearing) */
 		err = fuse_update_attributes(mapping->host, NULL, file, NULL);
@@ -1247,11 +1250,6 @@ static ssize_t fuse_file_write_iter(struct kiocb *iocb, struct iov_iter *from)
 	err = file_update_time(file);
 	if (err)
 		goto out;
-
-	if (ff && ff->passthrough_enabled && ff->passthrough_filp) {
-		written = fuse_passthrough_write_iter(iocb, from);
-		goto out;
-	}
 
 	if (iocb->ki_flags & IOCB_DIRECT) {
 		loff_t pos = iocb->ki_pos;
@@ -2132,7 +2130,8 @@ static int fuse_file_mmap(struct file *file, struct vm_area_struct *vma)
 {
 	struct fuse_file *ff = file->private_data;
 
-	ff->passthrough_enabled = 0;
+	if (ff->passthrough_enabled && ff->passthrough_filp)
+		return fuse_passthrough_mmap(file, vma);
 	if ((vma->vm_flags & VM_SHARED) && (vma->vm_flags & VM_MAYWRITE))
 		fuse_link_write_file(file);
 

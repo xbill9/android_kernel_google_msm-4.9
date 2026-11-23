@@ -268,7 +268,8 @@ struct fuse_file_lock {
 #define FUSE_PARALLEL_DIROPS    (1 << 18)
 #define FUSE_HANDLE_KILLPRIV	(1 << 19)
 #define FUSE_POSIX_ACL		(1 << 20)
-#define FUSE_PASSTHROUGH	(1 << 21)
+/* Android passthrough: the value libfuse and MediaProvider use */
+#define FUSE_PASSTHROUGH	(1 << 31)
 
 /**
  * CUSE INIT request/reply flags
@@ -501,7 +502,7 @@ struct fuse_create_in {
 struct fuse_open_out {
 	uint64_t	fh;
 	uint32_t	open_flags;
-	int32_t   passthrough_fd;
+	uint32_t	passthrough_fh;
 };
 
 struct fuse_release_in {
@@ -778,6 +779,8 @@ struct fuse_notify_retrieve_in {
 
 /* Device ioctls: */
 #define FUSE_DEV_IOC_CLONE	_IOR(229, 0, uint32_t)
+/* Android passthrough: takes a file descriptor, returns the id for passthrough_fh */
+#define FUSE_DEV_IOC_PASSTHROUGH_OPEN_V2	_IOW(229, 126, uint32_t)
 
 struct fuse_lseek_in {
 	uint64_t	fh;

@@ -23,6 +23,7 @@
 #include <linux/poll.h>
 #include <linux/workqueue.h>
 #include <linux/kref.h>
+#include <linux/idr.h>
 #include <linux/xattr.h>
 
 /** Max number of pages that can be used in a single read request */
@@ -556,6 +557,10 @@ struct fuse_conn {
 
 	/** passthrough IO. */
 	unsigned passthrough:1;
+
+	/** files the daemon handed over with FUSE_DEV_IOC_PASSTHROUGH_OPEN_V2,
+	 *  not yet claimed by an open reply (under lock) */
+	struct idr passthrough_req;
 
 	/*
 	 * The following bitfields are only for optimization purposes

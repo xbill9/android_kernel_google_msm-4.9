@@ -2319,6 +2319,16 @@ static long fuse_dev_ioctl(struct file *file, unsigned int cmd,
 				fput(old);
 			}
 		}
+	} else if (cmd == FUSE_DEV_IOC_PASSTHROUGH_OPEN_V2) {
+		struct fuse_dev *fud = fuse_get_dev(file);
+		u32 fd;
+
+		err = -EINVAL;
+		if (fud && file->f_op == &fuse_dev_operations) {
+			err = -EFAULT;
+			if (!get_user(fd, (__u32 __user *) arg))
+				err = fuse_passthrough_open(fud->fc, fd);
+		}
 	}
 	return err;
 }
