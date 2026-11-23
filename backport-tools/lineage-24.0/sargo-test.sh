@@ -181,6 +181,8 @@ if [ -n "$BUILD" ]; then
 fi
 PH=$(grep -vE '^\s*(#|$)' "$L24/phones.conf" 2>/dev/null || echo "local unit,smoke,hw,vts,cts")
 [ -n "$LOCAL" ] && PH="local unit,smoke,hw,vts,cts"
+# A line naming this machine is its own phone: phones.conf then reads the same on every machine.
+PH=$(echo "$PH" | awk -v me="$(hostname)" '$1 == me { $1 = "local" } { print }')
 TOP=$HOME/sargo-logs/test-${WANT#4.9.337-}-$(date +%Y%m%d-%H%M)
 mkdir -p "$TOP"; S=$TOP/summary.txt
 say() { echo "$(date '+%F %T') $*" | tee -a "$S"; }
