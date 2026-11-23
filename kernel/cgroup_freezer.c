@@ -123,6 +123,10 @@ static int freezer_css_online(struct cgroup_subsys_state *css)
 
 	freezer->state |= CGROUP_FREEZER_ONLINE;
 
+	/* On the v2 hierarchy, as with the v2 freezer, frozen tasks die on SIGKILL */
+	if (cgroup_subsys_on_dfl(freezer_cgrp_subsys))
+		freezer->state |= CGROUP_FREEZER_KILLABLE;
+
 	if (parent) {
 		if (parent->state & CGROUP_FREEZER_KILLABLE)
 			freezer->state |= CGROUP_FREEZER_KILLABLE;
@@ -533,6 +537,39 @@ static struct cftype files[] = {
 	{ }	/* terminate */
 };
 
+/*
+ * The v2 freezer's interface file, for Android's cached-app freezer
+ * (libprocessgroup "FreezerState": cgroup.freeze in the process's v2 cgroup;
+ * "1" freezes the cgroup and its descendants, "0" thaws). The freezer
+ * controller is implicit on the v2 hierarchy, so every v2 cgroup has it
+ * without "+freezer" in cgroup.subtree_control. Freezing is the v1 freezer's.
+ */
+static u64 freezer_freeze_read(struct cgroup_subsys_state *css,
+			       struct cftype *cft)
+{
+	return (bool)(css_freezer(css)->state & CGROUP_FREEZING_SELF);
+}
+
+static int freezer_freeze_write(struct cgroup_subsys_state *css,
+				struct cftype *cft, u64 val)
+{
+	if (val > 1)
+		return -ERANGE;
+
+	freezer_change_state(css_freezer(css), val);
+	return 0;
+}
+
+static struct cftype dfl_files[] = {
+	{
+		.name = "cgroup.freeze",
+		.flags = CFTYPE_NOT_ON_ROOT | CFTYPE_NO_PREFIX,
+		.read_u64 = freezer_freeze_read,
+		.write_u64 = freezer_freeze_write,
+	},
+	{ }	/* terminate */
+};
+
 struct cgroup_subsys freezer_cgrp_subsys = {
 	.css_alloc	= freezer_css_alloc,
 	.css_online	= freezer_css_online,
@@ -541,4 +578,6 @@ struct cgroup_subsys freezer_cgrp_subsys = {
 	.attach		= freezer_attach,
 	.fork		= freezer_fork,
 	.legacy_cftypes	= files,
+	.dfl_cftypes	= dfl_files,
+	.implicit_on_dfl = true,
 };
