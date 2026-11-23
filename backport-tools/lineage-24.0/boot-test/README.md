@@ -44,7 +44,7 @@ What a passing `sargo test` shows, and the known differences it does not count:
 | VTS net | 647 pass, 0 fail | |
 | CTS net | 1005 pass, 6 fail | the 6 below |
 | bpfloader | 2 errors: `fuseMedia`, `dmabufIter` | both |
-| kernel log | no oops, BUG or WARNING | the ion cache-sync warning at boot; kswapd allocation failures when the camera starts |
+| kernel log | no oops, BUG or WARNING | kswapd allocation failures when the camera starts |
 
 CTS core on the installed build (2026-11-13 and 11-14): kernel config 5/0, SELinux 10/0,
 bionic 3,286/0, graphics 3,774/0, permission 388/1, security host 3,347/150 (147 are neverallow

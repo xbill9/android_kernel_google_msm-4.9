@@ -149,10 +149,10 @@ if [ -n "$CHILD" ]; then
     fi
     [ "$(kern)" = "$WANT" ] || { say "kernel changed to $(kern) during the tests (panic?)"; fail panic; }
     adb shell dmesg > "$TOP/dmesg-end.txt"
-    # Known and not counted: the ion cache-sync warning at boot (since 2026-11-09) and kswapd
-    # page allocation failures when the camera starts (zram, GFP_NOIO; since 2026-10-28).
+    # Known and not counted: kswapd page allocation failures when the camera starts (zram,
+    # GFP_NOIO; since 2026-10-28).
     grep -hE 'Oops|BUG:|WARNING:' "$TOP/boot-dmesg.txt" "$TOP/dmesg-end.txt" | sort -u \
-      | grep -vE 'ion\.c:1215|page allocation failure' > "$TOP/dmesg-oops.txt"
+      | grep -vE 'page allocation failure' > "$TOP/dmesg-oops.txt"
     n=$(wc -l < "$TOP/dmesg-oops.txt"); say "kernel oops/BUG/WARNING lines: $n (dmesg-oops.txt)"; [ "$n" = 0 ] || fail dmesg
   fi
 
