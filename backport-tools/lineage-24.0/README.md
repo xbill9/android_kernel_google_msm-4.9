@@ -11,7 +11,7 @@ the one marked Latest has passed the hardware check on a phone. Current test res
 |---|---|---|
 | `sargo update` | pulls LineageOS (rebasing the forks), commits the upstream kernel fixes that apply as is, builds the ROM with this kernel tree, RAM-boots the ROM's kernel on the plugged-in phone and runs every test (nothing flashed). On PASS it pushes the kernel and publishes the ROM as a prerelease; on FAIL nothing is pushed or published | 1 to 3 h |
 | `sargo install` | installs the newest release on the phone (data kept, Google apps kept), compiles apps, runs the hardware check and marks the release Latest if it passes; `sargo install tested` takes the Latest one | 12 min, no taps (2026-11-19, four phones at once with `sargo install --all`); a phone without Google apps goes to recovery once |
-| `sargo test` | tests a kernel change in progress without building the ROM: builds the kernel at HEAD and runs the same tests; `--push` pushes on PASS | 15 min build + 22 min test |
+| `sargo test` | tests a kernel change in progress without building the ROM: builds the kernel at HEAD and runs the same tests; `--push` pushes on PASS; `--local` runs every check on this machine's phone alone | 15 min build + 22 min test |
 
 A kernel or Android change: commit it (Android changes to the fork, pushed), then `sargo update`,
 then `sargo install`. Upstream fixes that need a hand merge are listed by `sargo update` (from

@@ -9,6 +9,7 @@
 #   sargo test                 build, then test (about 25 minutes with three or four phones)
 #   sargo test --push          build, test, and on PASS commit results.tsv and push main
 #   sargo test --no-build      test the last build (KOUT=<kernel build dir> to pick another)
+#   sargo test --local         every check on this machine's phone only, ignoring phones.conf
 #   CTS_MODS="CtsNetTestCases CtsBluetoothTestCases" sargo test   CTS modules (default: net)
 # Result: ~/sargo-logs/test-<kernel>-<time>/summary.txt (one directory per phone beside it),
 # last line PASS or FAIL, and one line per run in boot-test/results.tsv.
@@ -24,9 +25,9 @@ export KOUT
 CTS_MODS=${CTS_MODS-CtsNetTestCases}
 UNIT="qmaptest xdptest ringbuftest rawtptest clone3test clone3test32 atomictest udp0test"
 TREE=${LINEAGE_TREE:-$HOME/android/lineage-24.0}
-PUSH=; BUILD=1; CHILD=; HOST=local; ONLY=unit,smoke,hw,vts,cts
+PUSH=; BUILD=1; CHILD=; HOST=local; ONLY=unit,smoke,hw,vts,cts; LOCAL=
 for a in "$@"; do case $a in
-  --push) PUSH=1 ;; --no-build) BUILD= ;; --child) CHILD=1 ;;
+  --push) PUSH=1 ;; --no-build) BUILD= ;; --child) CHILD=1 ;; --local) LOCAL=1 ;;
   --host=*) HOST=${a#*=} ;; --only=*) ONLY=${a#*=} ;;
   *) sed -n '2,18p' "$0"; exit 1 ;;
 esac; done
@@ -179,6 +180,7 @@ if [ -n "$BUILD" ]; then
   WANT=$(cat "$KOUT/include/config/kernel.release")
 fi
 PH=$(grep -vE '^\s*(#|$)' "$L24/phones.conf" 2>/dev/null || echo "local unit,smoke,hw,vts,cts")
+[ -n "$LOCAL" ] && PH="local unit,smoke,hw,vts,cts"
 TOP=$HOME/sargo-logs/test-${WANT#4.9.337-}-$(date +%Y%m%d-%H%M)
 mkdir -p "$TOP"; S=$TOP/summary.txt
 say() { echo "$(date '+%F %T') $*" | tee -a "$S"; }
