@@ -1482,3 +1482,5 @@
 1479	f06cc667f799	perf: Optimize perf_cgroup_switch()	n/a		perf core rewrite (bd2756811766, 6.2) code absent: 4.9 has no perf_event_pmu_context/pmu_ctx; performance
 1480	f6562cd116a0	bpf, sockmap: Fix ring capacity invariant break in bpf_msg_push_data()	n/a		bpf_msg_push_data() is built but unreachable: sk_msg programs need sockmap (CONFIG_BPF_STREAM_PARSER, CONFIG_NET_SOCK_MSG off)
 1481	f841b682baef	perf/core: Fix cgroup events tracking	n/a		perf core rewrite (bd2756811766, 6.2) code absent: 4.9 has no perf_event_pmu_context/pmu_ctx
+1482	ced081a436d2	binder: Return EFAULT if we fail BINDER_ENABLE_ONEWAY_SPAM_DETECTION	ported	3084cb6937db	folded into the a7dc1e6f99df backport
+1483	1aa3aaf8953c	binder: fix memory leaks of spam and pending work	ported	3084cb6937db	ONEWAY_SPAM_SUSPECT half folded into the a7dc1e6f99df backport; TRANSACTION_PENDING is n/a (BR_TRANSACTION_PENDING_FROZEN, 0567461a7a6e, not ported)
