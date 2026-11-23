@@ -44,7 +44,7 @@ if [ -n "$CHILD" ]; then
     rsh() { ssh -o BatchMode=yes -o ConnectTimeout=10 "$HOST" "$@"; }
     fb() { timeout 90 ssh -o BatchMode=yes "$HOST" "$RP; fastboot $*"; }
     inbl() { rsh lsusb | grep -q 18d1:4ee0; }
-    # Exit 3: the machine is off or asleep (a phone marked optional in phones.conf is then skipped).
+    # Exit 3: the machine is off or asleep (its phone is then skipped).
     rsh true 2>/dev/null || { echo "OFFLINE: $HOST does not answer on SSH"; exit 3; }
     rsh "$RP; adb start-server" >/dev/null 2>&1
     # adb and tradefed on this machine reach the phone through the other machine's adb server.
@@ -197,18 +197,26 @@ if [ "$(echo "$PH" | grep -cE 'vts|cts')" -gt 1 ]; then
 fi
 
 i=0; pids=""
-while read -r host only opt; do
-  i=$((i+1)); OPT[$i]=${opt:-}
+while read -r host only _; do
+  i=$((i+1)); ONLY_OF[$i]=$only
   SARGO_TOP=$TOP/phone$i bash "$0" --child --host="$host" --only="$only" > "$TOP/phone$i.out" 2>&1 &
   pids="$pids $!"
 done <<< "$PH"
-bad=""; i=0
+# A phone whose machine is off or asleep (exit 3) is skipped; the run fails only when a check
+# that phones.conf lists ran on no phone (2026-11-22: 192.168.50.58 was off and stopped a release
+# whose checks had all run on the other phones).
+bad=""; i=0; ran=,; want=,
 for p in $pids; do
-  i=$((i+1))
+  i=$((i+1)); want="$want${ONLY_OF[$i]},"
   wait "$p"; rc=$?
-  if [ "$rc" = 3 ] && [ "${OPT[$i]}" = optional ]; then
-    say "phone$i skipped: $(tail -1 "$TOP/phone$i.out") (optional in phones.conf)"
-  elif [ "$rc" != 0 ]; then bad="$bad phone$i"; fi
+  if [ "$rc" = 3 ]; then
+    say "phone$i skipped: $(tail -1 "$TOP/phone$i.out")"; continue
+  fi
+  ran="$ran${ONLY_OF[$i]},"
+  [ "$rc" = 0 ] || bad="$bad phone$i"
+done
+for c in $(tr , '\n' <<< "$want" | sort -u); do
+  case $ran in *",$c,"*) ;; *) say "FAIL: no phone ran $c"; bad="$bad no-$c" ;; esac
 done
 cat "$TOP"/phone*/summary.txt >> "$S" 2>/dev/null
 grep -h 'FAIL' "$TOP"/phone*/summary.txt | sed 's/^/  /'

@@ -31,7 +31,7 @@ if [ "${1:-}" = --all ]; then
   for h in $(grep -vE '^\s*(#|$)' "$B/phones.conf" | awk '{print $1}'); do
     L=~/sargo-rom/install-$h-$T.log
     if [ "$h" = local ]; then "$SELF" "$@" > "$L" 2>&1 < /dev/null &
-    else ssh -o BatchMode=yes "$h" "~/bin/sargo-install $*" > "$L" 2>&1 < /dev/null & fi
+    else ssh -o BatchMode=yes -o ConnectTimeout=10 "$h" "~/bin/sargo-install $*" > "$L" 2>&1 < /dev/null & fi
     pids="$pids $!"; hosts="$hosts $h"; echo "$h: installing (log: $L)"
   done
   wait $pids
