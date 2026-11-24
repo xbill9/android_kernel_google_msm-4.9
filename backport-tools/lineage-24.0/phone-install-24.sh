@@ -24,13 +24,13 @@ CACHE=~/sargo-rom
 GAPPS_URL=https://github.com/MindTheGapps/17.0.0-arm64/releases/download/MindTheGapps-17.0.0-arm64-20261022_132445/MindTheGapps-17.0.0-arm64-20261022_132445.zip
 for d in ~/android/lineage-24.0/out/host/linux-x86/bin ~/platform-tools; do [ -x $d/adb ] && PATH=$d:$PATH; done
 log() { echo; echo "=== $(date +%T) $*"; }
-# --all: this script on every phone in phones.conf at the same time; "local" is this machine, any
-# other name is an SSH host with sargo-install in ~/bin. Logs: ~/sargo-rom/install-<host>-<time>.log.
+# --all: this script on every phone in phones.conf at the same time; "local" or this machine's
+# hostname is this machine, any other name is an SSH host with sargo-install in ~/bin. Logs: ~/sargo-rom/install-<host>-<time>.log.
 if [ "${1:-}" = --all ]; then
   shift; T=$(date +%m%d-%H%M); mkdir -p ~/sargo-rom; pids=""; hosts=""
   for h in $(grep -vE '^\s*(#|$)' "$B/phones.conf" | awk '{print $1}'); do
     L=~/sargo-rom/install-$h-$T.log
-    if [ "$h" = local ]; then "$SELF" "$@" > "$L" 2>&1 < /dev/null &
+    if [ "$h" = local ] || [ "$h" = "$(hostname)" ]; then "$SELF" "$@" > "$L" 2>&1 < /dev/null &
     else ssh -o BatchMode=yes -o ConnectTimeout=10 "$h" "~/bin/sargo-install $*" > "$L" 2>&1 < /dev/null & fi
     pids="$pids $!"; hosts="$hosts $h"; echo "$h: installing (log: $L)"
   done
