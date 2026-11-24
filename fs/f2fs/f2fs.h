@@ -28,7 +28,6 @@
 
 #include <linux/fscrypt.h>
 
-#define __FS_HAS_VERITY IS_ENABLED(CONFIG_F2FS_FS_VERITY)
 #include <linux/fsverity.h>
 
 #ifdef CONFIG_F2FS_CHECK_FS
@@ -2438,6 +2437,7 @@ enum {
 	FI_PROJ_INHERIT,	/* indicate file inherits projectid */
 	FI_PIN_FILE,		/* indicate file should not be gced */
 	FI_ATOMIC_REVOKE_REQUEST, /* request to drop atomic data */
+	FI_VERITY_IN_PROGRESS,	/* building fs-verity Merkle tree */
 };
 
 static inline void __mark_inode_dirty_flag(struct inode *inode,
@@ -2475,6 +2475,12 @@ static inline void clear_inode_flag(struct inode *inode, int flag)
 	if (test_bit(flag, &F2FS_I(inode)->flags))
 		clear_bit(flag, &F2FS_I(inode)->flags);
 	__mark_inode_dirty_flag(inode, flag, false);
+}
+
+static inline bool f2fs_verity_in_progress(struct inode *inode)
+{
+	return IS_ENABLED(CONFIG_FS_VERITY) &&
+	       is_inode_flag_set(inode, FI_VERITY_IN_PROGRESS);
 }
 
 static inline void set_acl_inode(struct inode *inode, umode_t mode)
@@ -3212,7 +3218,6 @@ void f2fs_destroy_checkpoint_caches(void);
  * data.c
  */
 #define F2FS_GETPAGE_FOR_WRITE		0x01
-#define F2FS_GETPAGE_SKIP_VERITY	0x02
 int f2fs_init_post_read_processing(void);
 void f2fs_destroy_post_read_processing(void);
 void f2fs_submit_merged_write(struct f2fs_sb_info *sbi, enum page_type type);
@@ -3577,6 +3582,9 @@ void f2fs_exit_sysfs(void);
 int f2fs_register_sysfs(struct f2fs_sb_info *sbi);
 void f2fs_unregister_sysfs(struct f2fs_sb_info *sbi);
 
+/* verity.c */
+extern const struct fsverity_operations f2fs_verityops;
+
 /*
  * crypto support
  */
@@ -3593,18 +3601,13 @@ static inline void f2fs_set_encrypted_inode(struct inode *inode)
 #endif
 }
 
-static inline bool f2fs_verity_file(struct inode *inode)
-{
-	return file_is_verity(inode);
-}
-
 /*
  * Returns true if the reads of the inode's data need to undergo some
  * postprocessing step, like decryption or authenticity verification.
  */
 static inline bool f2fs_post_read_required(struct inode *inode)
 {
-	return f2fs_encrypted_file(inode) || f2fs_verity_file(inode);
+	return f2fs_encrypted_file(inode) || fsverity_active(inode);
 }
 
 #define F2FS_FEATURE_FUNCS(name, flagname) \
@@ -3738,7 +3741,7 @@ static inline bool f2fs_force_buffered_io(struct inode *inode,
 
 	if ((f2fs_encrypted_file(inode) &&
 			!fscrypt_using_hardware_encryption(inode)) ||
-			f2fs_verity_file(inode))
+			fsverity_active(inode))
 		return true;
 	if (f2fs_is_multi_device(sbi))
 		return true;

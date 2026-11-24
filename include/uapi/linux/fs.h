@@ -305,22 +305,6 @@ struct fscrypt_key {
 	__u32 size;
 };
 
-/* file-based verity support */
-
-#define FS_VERITY_ALG_SHA256	1
-#define FS_VERITY_ALG_CRC32	2
-
-struct fsverity_measurement {
-	__u16 digest_algorithm;
-	__u16 digest_size;
-	__u32 reserved1;
-	__u64 reserved2[3];
-	__u8 digest[];
-};
-
-#define FS_IOC_ENABLE_VERITY		_IO('f', 133)
-#define FS_IOC_SET_VERITY_MEASUREMENT	_IOW('f', 134, struct fsverity_measurement)
-
 /*
  * Inode flags (FS_IOC_GETFLAGS / FS_IOC_SETFLAGS)
  *
@@ -364,6 +348,7 @@ struct fsverity_measurement {
 #define FS_TOPDIR_FL			0x00020000 /* Top of directory hierarchies*/
 #define FS_HUGE_FILE_FL			0x00040000 /* Reserved for ext4 */
 #define FS_EXTENT_FL			0x00080000 /* Extents */
+#define FS_VERITY_FL			0x00100000 /* Verity protected inode */
 #define FS_EA_INODE_FL			0x00200000 /* Inode used for large EA */
 #define FS_EOFBLOCKS_FL			0x00400000 /* Reserved for ext4 */
 #define FS_NOCOW_FL			0x00800000 /* Do not cow file */

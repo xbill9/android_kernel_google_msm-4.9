@@ -2313,39 +2313,6 @@ static const struct fscrypt_operations f2fs_cryptops = {
 };
 #endif
 
-#ifdef CONFIG_F2FS_FS_VERITY
-static bool f2fs_is_verity(struct inode *inode)
-{
-	return f2fs_verity_file(inode);
-}
-
-static int f2fs_set_verity(struct inode *inode)
-{
-	int err;
-
-	err = f2fs_convert_inline_inode(inode);
-	if (err)
-		return err;
-
-	file_set_verity(inode);
-	f2fs_mark_inode_dirty_sync(inode, true);
-	return 0;
-}
-
-static struct page *f2fs_read_metadata_page(struct inode *inode, pgoff_t index)
-{
-	if (WARN_ON(f2fs_has_inline_data(inode)))
-		return ERR_PTR(-EINVAL);
-
-	return f2fs_find_data_page(inode, index, F2FS_GETPAGE_SKIP_VERITY);
-}
-
-static const struct fsverity_operations f2fs_verityops = {
-	.is_verity		= f2fs_is_verity,
-	.set_verity		= f2fs_set_verity,
-	.read_metadata_page	= f2fs_read_metadata_page,
-};
-#endif /* CONFIG_F2FS_FS_VERITY */
 
 static struct inode *f2fs_nfs_get_inode(struct super_block *sb,
 		u64 ino, u32 generation)
@@ -3270,7 +3237,7 @@ try_onemore:
 #ifdef CONFIG_FS_ENCRYPTION
 	sb->s_cop = &f2fs_cryptops;
 #endif
-#ifdef CONFIG_F2FS_FS_VERITY
+#ifdef CONFIG_FS_VERITY
 	sb->s_vop = &f2fs_verityops;
 #endif
 	sb->s_xattr = f2fs_xattr_handlers;

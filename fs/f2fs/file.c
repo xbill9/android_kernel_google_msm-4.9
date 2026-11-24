@@ -529,11 +529,9 @@ static int f2fs_file_open(struct inode *inode, struct file *filp)
 	if (err)
 		return err;
 
-	if (f2fs_verity_file(inode)) {
-		err = fsverity_file_open(inode, filp);
-		if (err)
-			return err;
-	}
+	err = fsverity_file_open(inode, filp);
+	if (err)
+		return err;
 
 	filp->f_mode |= FMODE_NOWAIT;
 
@@ -764,6 +762,8 @@ int f2fs_getattr(struct vfsmount *mnt,
 		stat->attributes |= STATX_ATTR_APPEND;
 	if (IS_ENCRYPTED(inode))
 		stat->attributes |= STATX_ATTR_ENCRYPTED;
+	if (IS_VERITY(inode))
+		stat->attributes |= STATX_ATTR_VERITY;
 	if (flags & F2FS_IMMUTABLE_FL)
 		stat->attributes |= STATX_ATTR_IMMUTABLE;
 	if (flags & F2FS_NODUMP_FL)
@@ -772,24 +772,9 @@ int f2fs_getattr(struct vfsmount *mnt,
 	stat->attributes_mask |= (STATX_ATTR_APPEND |
 				  STATX_ATTR_ENCRYPTED |
 				  STATX_ATTR_IMMUTABLE |
-				  STATX_ATTR_NODUMP);
+				  STATX_ATTR_NODUMP |
+				  STATX_ATTR_VERITY);
 #endif
-
-	if (f2fs_verity_file(inode)) {
-		/*
-		 * For fs-verity we need to override i_size with the original
-		 * data i_size.  This requires I/O to the file which with
-		 * fscrypt requires that the key be set up.  But, if the key is
-		 * unavailable just continue on without the i_size override.
-		 */
-		int err = fscrypt_require_key(inode);
-
-		if (err != -ENOKEY) {
-			err = fsverity_prepare_getattr(inode);
-			if (err)
-				return err;
-		}
-	}
 
 	generic_fillattr(inode, stat);
 
@@ -847,11 +832,9 @@ int f2fs_setattr(struct dentry *dentry, struct iattr *attr)
 	if (err)
 		return err;
 
-	if (f2fs_verity_file(inode)) {
-		err = fsverity_prepare_setattr(dentry, attr);
-		if (err)
-			return err;
-	}
+	err = fsverity_prepare_setattr(dentry, attr);
+	if (err)
+		return err;
 
 	if (is_quota_modification(inode, attr)) {
 		err = dquot_initialize(inode);
@@ -1781,7 +1764,8 @@ static const struct {
 		FS_PROJINHERIT_FL |	\
 		FS_ENCRYPT_FL |		\
 		FS_INLINE_DATA_FL |	\
-		FS_NOCOW_FL)
+		FS_NOCOW_FL |		\
+		FS_VERITY_FL)
 
 #define F2FS_SETTABLE_FS_FL (		\
 		FS_SYNC_FL |		\
@@ -1826,6 +1810,8 @@ static int f2fs_ioc_getflags(struct file *filp, unsigned long arg)
 
 	if (IS_ENCRYPTED(inode))
 		fsflags |= FS_ENCRYPT_FL;
+	if (IS_VERITY(inode))
+		fsflags |= FS_VERITY_FL;
 	if (f2fs_has_inline_data(inode) || f2fs_has_inline_dentry(inode))
 		fsflags |= FS_INLINE_DATA_FL;
 	if (is_inode_flag_set(inode, FI_PIN_FILE))
@@ -2923,17 +2909,20 @@ static int f2fs_ioc_enable_verity(struct file *filp, unsigned long arg)
 
 	if (!f2fs_sb_has_verity(F2FS_I_SB(inode))) {
 		f2fs_warn(F2FS_I_SB(inode),
-			 "Can't enable fs-verity on inode %lu: the fs-verity feature is disabled on this filesystem.\n",
-			 inode->i_ino);
+			  "Can't enable fs-verity on inode %lu: the verity feature is not enabled on this filesystem.\n",
+			  inode->i_ino);
 		return -EOPNOTSUPP;
 	}
 
 	return fsverity_ioctl_enable(filp, (const void __user *)arg);
 }
 
-static int f2fs_ioc_set_verity_measurement(struct file *filp, unsigned long arg)
+static int f2fs_ioc_measure_verity(struct file *filp, unsigned long arg)
 {
-	return fsverity_ioctl_set_measurement(filp, (const void __user *)arg);
+	if (!f2fs_sb_has_verity(F2FS_I_SB(file_inode(filp))))
+		return -EOPNOTSUPP;
+
+	return fsverity_ioctl_measure(filp, (void __user *)arg);
 }
 
 static int f2fs_ioc_resize_fs(struct file *filp, unsigned long arg)
@@ -3011,8 +3000,8 @@ long f2fs_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		return f2fs_ioc_precache_extents(filp, arg);
 	case FS_IOC_ENABLE_VERITY:
 		return f2fs_ioc_enable_verity(filp, arg);
-	case FS_IOC_SET_VERITY_MEASUREMENT:
-		return f2fs_ioc_set_verity_measurement(filp, arg);
+	case FS_IOC_MEASURE_VERITY:
+		return f2fs_ioc_measure_verity(filp, arg);
 	case F2FS_IOC_RESIZE_FS:
 		return f2fs_ioc_resize_fs(filp, arg);
 	default:
@@ -3147,7 +3136,7 @@ long f2fs_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	case F2FS_IOC_SET_PIN_FILE:
 	case F2FS_IOC_PRECACHE_EXTENTS:
 	case FS_IOC_ENABLE_VERITY:
-	case FS_IOC_SET_VERITY_MEASUREMENT:
+	case FS_IOC_MEASURE_VERITY:
 	case F2FS_IOC_RESIZE_FS:
 		break;
 	default:
