@@ -1484,3 +1484,12 @@
 1481	f841b682baef	perf/core: Fix cgroup events tracking	n/a		perf core rewrite (bd2756811766, 6.2) code absent: 4.9 has no perf_event_pmu_context/pmu_ctx
 1482	ced081a436d2	binder: Return EFAULT if we fail BINDER_ENABLE_ONEWAY_SPAM_DETECTION	ported	ff3fc63fece1	folded into the a7dc1e6f99df backport
 1483	1aa3aaf8953c	binder: fix memory leaks of spam and pending work	ported	ff3fc63fece1	ONEWAY_SPAM_SUSPECT half folded into the a7dc1e6f99df backport; TRANSACTION_PENDING is n/a (BR_TRANSACTION_PENDING_FROZEN, 0567461a7a6e, not ported)
+1484	d579b04a52a1	binder: frozen notification	ported	766c95e8d7e8	binder.c only (no binder_internal.h); feature file from d3b185a0c169
+1485	dc8aea47b928	binder: fix node UAF in binder_add_freeze_work()	ported	766c95e8d7e8	folded into the d579b04a52a1 backport
+1486	011e69a1b230	binder: fix OOB in binder_add_freeze_work()	ported	766c95e8d7e8	folded into the d579b04a52a1 backport
+1487	7e20434cbca8	binder: fix freeze UAF in binder_release_work()	ported	766c95e8d7e8	folded into the d579b04a52a1 backport
+1488	830d7db744b4	binder: fix BINDER_WORK_FROZEN_BINDER debug logs	ported	766c95e8d7e8	folded into the d579b04a52a1 backport
+1489	595ea72efff9	binder: fix BINDER_WORK_CLEAR_FREEZE_NOTIFICATION debug logs	ported	766c95e8d7e8	folded into the d579b04a52a1 backport
+1490	ca63c66935b9	binder: allow freeze notification for dead nodes	ported	766c95e8d7e8	folded into the d579b04a52a1 backport
+1491	1db76ec2b4b2	binder: fix memleak of proc->delivered_freeze	ported	766c95e8d7e8	folded into the d579b04a52a1 backport
+1492	cb2aeb2ec258	binder: add delivered_freeze to debugfs output	ported	766c95e8d7e8	folded into the d579b04a52a1 backport
