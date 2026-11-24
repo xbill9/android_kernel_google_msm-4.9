@@ -1,6 +1,8 @@
 #!/bin/bash
 # Install the newest LineageOS 24.0 build on the attached Pixel 3a, put GApps back and compile apps.
-# Run as `sargo install` on the build machine, ~/bin/sargo-install on a laptop. Usage:
+# Run as `sargo install` on the build machine, ~/bin/sargo-install on a laptop. A new PC needs only
+#   bash <(curl -fsSL https://raw.githubusercontent.com/xbill9/android_kernel_google_msm-4.9/main/backport-tools/lineage-24.0/phone-install-24.sh)
+# which sets up ~/bin/sargo-install (and adb/fastboot if missing) and installs. Usage:
 #   sargo-install                 the newest build from GitHub releases (downloaded once, checked)
 #   sargo-install tested          the newest build marked Latest (tested on a phone)
 #   sargo-install <tag>           that release (lineage-24.0-sargo-...)
@@ -24,6 +26,33 @@ CACHE=~/sargo-rom
 GAPPS_URL=https://github.com/MindTheGapps/17.0.0-arm64/releases/download/MindTheGapps-17.0.0-arm64-20261022_132445/MindTheGapps-17.0.0-arm64-20261022_132445.zip
 for d in ~/android/lineage-24.0/out/host/linux-x86/bin ~/platform-tools; do [ -x $d/adb ] && PATH=$d:$PATH; done
 log() { echo; echo "=== $(date +%T) $*"; }
+# First run on a new PC (this file alone, or `bash <(curl -fsSL <raw URL of this file>)`): fetch the
+# scripts it needs into ~/sargo-tools (only backport-tools/lineage-24.0, about 13 MB), link
+# ~/bin/sargo-install to them, get Android platform-tools into ~/platform-tools if adb or fastboot
+# is missing, then carry on with the fetched copy.
+if [ ! -f "$B/boot-test/post-install-24.sh" ]; then
+  T=~/sargo-tools; D=backport-tools/lineage-24.0
+  command -v git >/dev/null || { echo "!!! STOPPED: git not found"; exit 1; }
+  if [ ! -d $T/.git ]; then
+    echo "first run: fetching the install scripts into $T"
+    git clone -q --depth 1 --filter=blob:none --sparse "https://github.com/$REPO" $T &&
+      git -C $T sparse-checkout set $D || { echo "!!! STOPPED: could not fetch the scripts"; exit 1; }
+  fi
+  mkdir -p ~/bin && ln -sf $T/$D/phone-install-24.sh ~/bin/sargo-install
+  echo "installed ~/bin/sargo-install"
+  exec bash $T/$D/phone-install-24.sh "$@"
+fi
+if ! command -v adb >/dev/null || ! command -v fastboot >/dev/null; then
+  echo "adb or fastboot missing: fetching Android platform-tools into ~/platform-tools"
+  z=$(mktemp --suffix=.zip)
+  curl -fsSL -o "$z" https://dl.google.com/android/repository/platform-tools-latest-linux.zip &&
+    python3 -c 'import sys,zipfile,os
+z=zipfile.ZipFile(sys.argv[1]); d=os.path.expanduser("~")
+for i in z.infolist():
+    p=z.extract(i,d); m=i.external_attr>>16
+    if m: os.chmod(p,m)' "$z" || echo "(platform-tools download failed)"
+  rm -f "$z"; PATH=~/platform-tools:$PATH
+fi
 # --all: this script on every phone in phones.conf at the same time; "local" or this machine's
 # hostname is this machine, any other name is an SSH host with sargo-install in ~/bin. Logs: ~/sargo-rom/install-<host>-<time>.log.
 if [ "${1:-}" = --all ]; then
