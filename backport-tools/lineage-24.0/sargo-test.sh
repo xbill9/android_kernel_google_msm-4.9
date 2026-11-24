@@ -23,7 +23,7 @@ SRC=$(cd "$L24/../.." && pwd)
 KOUT=${KOUT:-/android/sargo-bpf-test/kout}
 export KOUT
 CTS_MODS=${CTS_MODS-CtsNetTestCases}
-UNIT="qmaptest xdptest ringbuftest rawtptest clone3test clone3test32 atomictest udp0test"
+UNIT="qmaptest xdptest ringbuftest rawtptest clone3test clone3test32 atomictest udp0test fsveritytest"
 TREE=${LINEAGE_TREE:-$HOME/android/lineage-24.0}
 PUSH=; BUILD=1; CHILD=; HOST=local; ONLY=unit,smoke,hw,vts,cts; LOCAL=
 for a in "$@"; do case $a in
@@ -157,6 +157,11 @@ if [ -n "$CHILD" ]; then
     n=$(wc -l < "$TOP/dmesg-oops.txt"); say "kernel oops/BUG/WARNING lines: $n (dmesg-oops.txt)"; [ "$n" = 0 ] || fail dmesg
   fi
 
+  # Files that the test kernel's fs-verity protected (Android protects packages.xml and a few
+  # more) can't be opened by a kernel with the 2018 fs-verity prototype (before 2026-11-24), and
+  # Android then deletes packages.xml. Make them plain files again with Android stopped.
+  adb push "$BT/fsveritytest" /data/local/tmp/ >/dev/null
+  say "$(adb shell 'stop; /data/local/tmp/fsveritytest strip /data/system /data/system_de /data/system_ce /data/misc /data/misc_de /data/misc_ce' 2>&1 | tail -1 | tr -d '\r')"
   timeout 30 adb reboot; sleep 20
   trap - INT TERM HUP
   booted 150 && say "back on $(kern)" || { say "phone not back after reboot"; fail return; }
