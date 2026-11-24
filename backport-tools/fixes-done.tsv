@@ -1493,3 +1493,4 @@
 1490	ca63c66935b9	binder: allow freeze notification for dead nodes	ported	766c95e8d7e8	folded into the d579b04a52a1 backport
 1491	1db76ec2b4b2	binder: fix memleak of proc->delivered_freeze	ported	766c95e8d7e8	folded into the d579b04a52a1 backport
 1492	cb2aeb2ec258	binder: add delivered_freeze to debugfs output	ported	766c95e8d7e8	folded into the d579b04a52a1 backport
+1493	01e881f5a1fc	userfaultfd: check VM_MAYWRITE was set after verifying the uffd is registered	ported	388ea14d6a04	built since the ROM config set CONFIG_USERFAULTFD=y; hand port
