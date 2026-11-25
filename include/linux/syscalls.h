@@ -894,6 +894,8 @@ asmlinkage long sys_statx(int dfd, const char __user *path, unsigned flags,
 asmlinkage long sys_close_range(unsigned int fd, unsigned int max_fd,
 				unsigned int flags);
 asmlinkage long sys_process_mrelease(int pidfd, unsigned int flags);
+asmlinkage long sys_process_madvise(int pidfd, const struct iovec __user *vec,
+				    size_t vlen, int behavior, unsigned int flags);
 asmlinkage long sys_process_vm_readv(pid_t pid,
 				     const struct iovec __user *lvec,
 				     unsigned long liovcnt,
