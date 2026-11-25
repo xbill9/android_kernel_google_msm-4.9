@@ -172,15 +172,13 @@ retry:
 	down_read(&dst_mm->mmap_sem);
 
 	/*
-	 * Make sure the vma is not shared, that the dst range is
-	 * both valid and fully within a single existing vma.
+	 * Make sure the dst range is both valid and fully within a single
+	 * existing vma. The mapping may have changed since the fault: no
+	 * compatible vma is -ENOENT, so the monitor can tell that apart.
 	 */
-	err = -EINVAL;
+	err = -ENOENT;
 	dst_vma = find_vma(dst_mm, dst_start);
-	if (!dst_vma || (dst_vma->vm_flags & VM_SHARED))
-		goto out_unlock;
-	if (dst_start < dst_vma->vm_start ||
-	    dst_start + len > dst_vma->vm_end)
+	if (!dst_vma)
 		goto out_unlock;
 
 	/*
@@ -189,6 +187,14 @@ retry:
 	 * time.
 	 */
 	if (!dst_vma->vm_userfaultfd_ctx.ctx)
+		goto out_unlock;
+
+	if (dst_start < dst_vma->vm_start ||
+	    dst_start + len > dst_vma->vm_end)
+		goto out_unlock;
+
+	err = -EINVAL;
+	if (dst_vma->vm_flags & VM_SHARED)
 		goto out_unlock;
 
 	/*

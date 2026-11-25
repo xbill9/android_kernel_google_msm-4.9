@@ -16,12 +16,7 @@
 #define USERFAULTFD_IOC_NEW _IO(USERFAULTFD_IOC, 0x00)
 
 #define UFFD_API ((__u64)0xAA)
-/*
- * After implementing the respective features it will become:
- * #define UFFD_API_FEATURES (UFFD_FEATURE_PAGEFAULT_FLAG_WP | \
- *			      UFFD_FEATURE_EVENT_FORK)
- */
-#define UFFD_API_FEATURES (0)
+#define UFFD_API_FEATURES (UFFD_FEATURE_SIGBUS)
 #define UFFD_API_IOCTLS				\
 	((__u64)1 << _UFFDIO_REGISTER |		\
 	 (__u64)1 << _UFFDIO_UNREGISTER |	\
@@ -108,11 +103,17 @@ struct uffdio_api {
 	 * Note: UFFD_EVENT_PAGEFAULT and UFFD_PAGEFAULT_FLAG_WRITE
 	 * are to be considered implicitly always enabled in all kernels as
 	 * long as the uffdio_api.api requested matches UFFD_API.
+	 *
+	 * UFFD_FEATURE_SIGBUS feature means no page-fault
+	 * (UFFD_EVENT_PAGEFAULT) event will be delivered, instead
+	 * a SIGBUS signal will be sent to the faulting process.
+	 * The application process can enable this behavior by adding
+	 * it to uffdio_api.features.
+	 *
+	 * SIGBUS has its upstream value; bits 0-6 are upstream features
+	 * this kernel does not have.
 	 */
-#if 0 /* not available yet */
-#define UFFD_FEATURE_PAGEFAULT_FLAG_WP		(1<<0)
-#define UFFD_FEATURE_EVENT_FORK			(1<<1)
-#endif
+#define UFFD_FEATURE_SIGBUS			(1<<7)
 	__u64 features;
 
 	__u64 ioctls;
@@ -167,5 +168,14 @@ struct uffdio_zeropage {
 	 */
 	__s64 zeropage;
 };
+
+/*
+ * Flags for the userfaultfd(2) system call itself.
+ */
+
+/*
+ * Create a userfaultfd that can handle page faults only in user mode.
+ */
+#define UFFD_USER_MODE_ONLY 1
 
 #endif /* _LINUX_USERFAULTFD_H */
