@@ -39,6 +39,7 @@
 #include <linux/init.h>
 #include <linux/show_mem_notifier.h>
 #include <linux/mmu_notifier.h>
+#include <linux/syscalls.h>
 
 #include <asm/tlb.h>
 #include "internal.h"
@@ -1101,4 +1102,86 @@ void pagefault_out_of_memory(void)
 
 	if (__ratelimit(&pfoom_rs))
 		pr_warn("Huh VM_FAULT_OOM leaked out to the #PF handler. Retrying PF\n");
+}
+
+SYSCALL_DEFINE2(process_mrelease, int, pidfd, unsigned int, flags)
+{
+#ifdef CONFIG_MMU
+	struct mm_struct *mm = NULL;
+	struct task_struct *task;
+	struct task_struct *p;
+	unsigned int f_flags;
+	bool reap = false;
+	struct pid *pid;
+	long ret = 0;
+
+	if (flags)
+		return -EINVAL;
+
+	pid = pidfd_get_pid(pidfd, &f_flags);
+	if (IS_ERR(pid))
+		return PTR_ERR(pid);
+
+	/* A pidfd refers to a thread-group leader. */
+	task = get_pid_task(pid, PIDTYPE_PID);
+	if (!task) {
+		ret = -ESRCH;
+		goto put_pid;
+	}
+
+	/*
+	 * Make sure to choose a thread which still has a reference to mm
+	 * during the group exit
+	 */
+	p = find_lock_task_mm(task);
+	if (!p) {
+		ret = -ESRCH;
+		goto put_task;
+	}
+
+	/*
+	 * Holding mm_users keeps exit_mmap() from running while the mm is
+	 * reaped: exit_mmap() frees the page tables without mmap_sem.
+	 */
+	if (mmget_not_zero(p->mm)) {
+		mm = p->mm;
+		if (task_will_free_mem(p))
+			reap = true;
+		else {
+			/* Error only if the work has not been done already */
+			if (!test_bit(MMF_OOM_SKIP, &mm->flags))
+				ret = -EINVAL;
+		}
+	}
+	task_unlock(p);
+
+	if (!reap)
+		goto drop_mm;
+
+	/*
+	 * Upstream takes the lock killable; 4.9 has no down_read_killable().
+	 * The target is exiting, so a writer holds mmap_sem only briefly.
+	 */
+	down_read(&mm->mmap_sem);
+	/*
+	 * As in oom_reap_task_mm(): notifiers around unmap_page_range()
+	 * may sleep, so an mm with notifiers is left to its exit.
+	 */
+	if (mm_has_notifiers(mm))
+		ret = -EAGAIN;
+	else if (!test_bit(MMF_OOM_SKIP, &mm->flags))
+		__oom_reap_task_mm(mm);
+	up_read(&mm->mmap_sem);
+
+drop_mm:
+	if (mm)
+		mmput(mm);
+put_task:
+	put_task_struct(task);
+put_pid:
+	put_pid(pid);
+	return ret;
+#else
+	return -ENOSYS;
+#endif /* CONFIG_MMU */
 }

@@ -893,6 +893,7 @@ asmlinkage long sys_statx(int dfd, const char __user *path, unsigned flags,
 			  unsigned mask, struct statx __user *buffer);
 asmlinkage long sys_close_range(unsigned int fd, unsigned int max_fd,
 				unsigned int flags);
+asmlinkage long sys_process_mrelease(int pidfd, unsigned int flags);
 asmlinkage long sys_process_vm_readv(pid_t pid,
 				     const struct iovec __user *lvec,
 				     unsigned long liovcnt,

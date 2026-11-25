@@ -742,9 +742,11 @@ __SYSCALL(__NR_clone3, sys_clone3)
 #endif
 #define __NR_close_range 436
 __SYSCALL(__NR_close_range, sys_close_range)
+#define __NR_process_mrelease 448
+__SYSCALL(__NR_process_mrelease, sys_process_mrelease)
 
 #undef __NR_syscalls
-#define __NR_syscalls 437
+#define __NR_syscalls 449
 
 /*
  * All syscalls below here should go away really,
