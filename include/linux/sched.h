@@ -346,6 +346,7 @@ enum migrate_types {
 };
 
 #include <linux/spinlock.h>
+#include <linux/sync_core.h>
 
 /*
  * This serializes "schedule()" and also protects
@@ -3221,9 +3222,47 @@ extern struct mm_struct * mm_alloc(void);
 extern void __mmdrop(struct mm_struct *);
 static inline void mmdrop(struct mm_struct *mm)
 {
+	/*
+	 * The implicit full barrier implied by atomic_dec_and_test() is
+	 * required by the membarrier system call before returning to
+	 * user-space, after storing to rq->curr.
+	 */
 	if (unlikely(atomic_dec_and_test(&mm->mm_count)))
 		__mmdrop(mm);
 }
+
+#ifdef CONFIG_MEMBARRIER
+enum {
+	MEMBARRIER_STATE_PRIVATE_EXPEDITED_READY		= (1U << 0),
+	MEMBARRIER_STATE_PRIVATE_EXPEDITED			= (1U << 1),
+	MEMBARRIER_STATE_PRIVATE_EXPEDITED_SYNC_CORE_READY	= (1U << 4),
+	MEMBARRIER_STATE_PRIVATE_EXPEDITED_SYNC_CORE		= (1U << 5),
+};
+
+enum {
+	MEMBARRIER_FLAG_SYNC_CORE	= (1U << 0),
+};
+
+static inline void membarrier_mm_sync_core_before_usermode(struct mm_struct *mm)
+{
+	if (likely(!(atomic_read(&mm->membarrier_state) &
+		     MEMBARRIER_STATE_PRIVATE_EXPEDITED_SYNC_CORE)))
+		return;
+	sync_core_before_usermode();
+}
+
+static inline void membarrier_execve(struct task_struct *t)
+{
+	atomic_set(&t->mm->membarrier_state, 0);
+}
+#else
+static inline void membarrier_mm_sync_core_before_usermode(struct mm_struct *mm)
+{
+}
+static inline void membarrier_execve(struct task_struct *t)
+{
+}
+#endif
 
 static inline void mmdrop_async_fn(struct work_struct *work)
 {

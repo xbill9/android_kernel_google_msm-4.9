@@ -2899,8 +2899,22 @@ static struct rq *finish_task_switch(struct task_struct *prev)
 	finish_arch_post_lock_switch();
 
 	fire_sched_in_preempt_notifiers(current);
-	if (mm)
+	/*
+	 * When switching through a kernel thread, the loop in
+	 * membarrier_private_expedited() may have observed that kernel
+	 * thread and not issued an IPI. It is therefore possible to
+	 * schedule between user->kernel->user threads without passing
+	 * through switch_mm(). Membarrier requires a barrier after storing
+	 * to rq->curr, before returning to userspace, so provide them here:
+	 *
+	 * - a full memory barrier for PRIVATE_EXPEDITED, implicitly
+	 *   provided by mmdrop(),
+	 * - a sync_core for SYNC_CORE.
+	 */
+	if (mm) {
+		membarrier_mm_sync_core_before_usermode(mm);
 		mmdrop(mm);
+	}
 	if (unlikely(prev_state == TASK_DEAD)) {
 		if (prev->sched_class->task_dead)
 			prev->sched_class->task_dead(prev);
@@ -3584,6 +3598,11 @@ static void __sched notrace __schedule(bool preempt)
 	 * can't be reordered with __set_current_state(TASK_INTERRUPTIBLE)
 	 * done by the caller to avoid the race with signal_wake_up().
 	 */
+	/*
+	 * The membarrier system call requires a full memory barrier
+	 * after coming from user-space, before storing to rq->curr:
+	 * smp_mb__before_spinlock() is smp_mb() on arm64.
+	 */
 	smp_mb__before_spinlock();
 	raw_spin_lock(&rq->lock);
 	rq_pin_lock(rq, &rf);
@@ -3632,6 +3651,13 @@ static void __sched notrace __schedule(bool preempt)
 		update_task_ravg(next, rq, PICK_NEXT_TASK, wallclock, 0);
 		rq->nr_switches++;
 		rq->curr = next;
+		/*
+		 * The membarrier system call requires each architecture
+		 * to have a full memory barrier after updating
+		 * rq->curr, before returning to user-space: on arm64 it
+		 * is the dsb(ish) in __switch_to(), or mmdrop() in
+		 * finish_task_switch() when switching from a kernel thread.
+		 */
 		++*switch_count;
 
 		trace_sched_switch(preempt, prev, next);

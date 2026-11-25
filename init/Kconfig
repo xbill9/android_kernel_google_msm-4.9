@@ -1873,6 +1873,12 @@ config PCI_QUIRKS
 	  bugs/quirks. Disable this only if your target machine is
 	  unaffected by PCI quirks.
 
+config ARCH_HAS_MEMBARRIER_SYNC_CORE
+	bool
+
+config ARCH_HAS_SYNC_CORE_BEFORE_USERMODE
+	bool
+
 config MEMBARRIER
 	bool "Enable membarrier() system call" if EXPERT
 	default y
