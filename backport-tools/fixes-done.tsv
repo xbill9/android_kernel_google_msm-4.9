@@ -1499,3 +1499,4 @@
 1496	838bb60dc215	mm/mremap: fix locked_vm leak from MREMAP_DONTUNMAP self-merge	ported	e619f92e3df7	copy_vma() keep_source: no merge
 1497	597e4b9ab48a	mm/mremap: fix locked_vm leak by splitting VMA for MREMAP_DONTUNMAP	ported	e619f92e3df7	split_vma() of a locked source
 1498	d15649260661	userfaultfd: fix remap event with MREMAP_DONTUNMAP	n/a		no UFFD_FEATURE_EVENT_REMAP in this kernel
+1499	9627baed418b	ext4: check multi-block overlap on left traversal in add_system_zone()	ported	2081daf61e64	mainline fix of 2026-11-25 scan; hand port
