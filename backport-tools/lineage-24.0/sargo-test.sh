@@ -23,7 +23,7 @@ SRC=$(cd "$L24/../.." && pwd)
 KOUT=${KOUT:-/android/sargo-bpf-test/kout}
 export KOUT
 CTS_MODS=${CTS_MODS-CtsNetTestCases}
-UNIT="qmaptest xdptest ringbuftest rawtptest clone3test clone3test32 atomictest udp0test fsveritytest uffdtest"
+UNIT="qmaptest xdptest ringbuftest rawtptest clone3test clone3test32 atomictest udp0test fsveritytest uffdtest mreleasetest"
 TREE=${LINEAGE_TREE:-$HOME/android/lineage-24.0}
 PUSH=; BUILD=1; CHILD=; HOST=local; ONLY=unit,smoke,hw,vts,cts; LOCAL=
 for a in "$@"; do case $a in
