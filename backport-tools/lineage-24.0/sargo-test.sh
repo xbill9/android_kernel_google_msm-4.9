@@ -38,9 +38,19 @@ WANT=; [ -f "$KOUT/include/config/kernel.release" ] && WANT=$(cat "$KOUT/include
 if [ -n "$CHILD" ]; then
   # ---- one phone: $HOST (local, or an SSH host with one phone), checks $ONLY, report in $TOP
   TOP=$SARGO_TOP; mkdir -p "$TOP"; S=$TOP/summary.txt
+  # One test per phone: a lock on the machine the phone is plugged into, which runs started on
+  # other machines take too (2026-11-25: a run from gpu RAM-booted its kernel on build's phone in
+  # the middle of build's own run). Exit 3 like an offline machine: the phone is skipped.
+  PLOCK='$HOME/sargo-bpf-test/.phone.lock'
   if [ "$HOST" = local ]; then
     fb() { timeout 90 fastboot "$@"; }
     inbl() { lsusb | grep -q 18d1:4ee0; }
+    # flock holds the lock in its own child (sleep), so adb servers started later do not inherit it.
+    mkdir -p "$HOME/sargo-bpf-test"
+    flock -n "$HOME/sargo-bpf-test/.phone.lock" -c 'echo locked; exec sleep infinity' > "$TOP/phone-lock.txt" 2>&1 &
+    LOCKPID=$!; trap 'pkill -P $LOCKPID 2>/dev/null; kill $LOCKPID 2>/dev/null' EXIT  # the child first
+    for i in $(seq 1 20); do grep -q locked "$TOP/phone-lock.txt" 2>/dev/null && break; kill -0 $LOCKPID 2>/dev/null || break; sleep 0.5; done
+    grep -q locked "$TOP/phone-lock.txt" || { echo "BUSY: another sargo test is using this machine's phone"; exit 3; }
   else
     RP='PATH=$PATH:$HOME/android/lineage-24.0/out/host/linux-x86/bin:$HOME/platform-tools'
     rsh() { ssh -o BatchMode=yes -o ConnectTimeout=10 "$HOST" "$@"; }
@@ -48,11 +58,16 @@ if [ -n "$CHILD" ]; then
     inbl() { rsh lsusb | grep -q 18d1:4ee0; }
     # Exit 3: the machine is off or asleep (its phone is then skipped).
     rsh true 2>/dev/null || { echo "OFFLINE: $HOST does not answer on SSH"; exit 3; }
+    # The remote side holds the lock until this ssh ends (cat sees end of input).
+    { sleep infinity & echo $! > "$TOP/phone-lock.sleep"; wait; } | ssh -o BatchMode=yes "$HOST" "mkdir -p ~/sargo-bpf-test; flock -n $PLOCK -c 'echo locked; exec cat >/dev/null' || echo busy" > "$TOP/phone-lock.txt" 2>&1 &
+    LOCKPID=$!
+    for i in $(seq 1 20); do grep -qE 'locked|busy' "$TOP/phone-lock.txt" 2>/dev/null && break; sleep 1; done
+    grep -q locked "$TOP/phone-lock.txt" || { kill $LOCKPID "$(cat "$TOP/phone-lock.sleep")" 2>/dev/null; echo "BUSY: another sargo test is using $HOST's phone"; exit 3; }
     rsh "$RP; adb start-server" >/dev/null 2>&1
     # adb and tradefed on this machine reach the phone through the other machine's adb server.
     PORT=$(python3 -c 'import socket; s = socket.socket(); s.bind(("127.0.0.1", 0)); print(s.getsockname()[1])')
     ssh -o BatchMode=yes -o ExitOnForwardFailure=yes -o ServerAliveInterval=15 -N -L "$PORT:localhost:5037" "$HOST" & TUN=$!
-    trap 'kill $TUN 2>/dev/null' EXIT
+    trap 'kill $TUN $LOCKPID "$(cat "$TOP/phone-lock.sleep")" 2>/dev/null' EXIT
     # No adb call before the tunnel listens: adb would start a server of its own on the port,
     # and that server takes this machine's phone.
     up() { python3 -c 'import socket, sys; socket.create_connection(("127.0.0.1", int(sys.argv[1])), 1)' "$PORT" 2>/dev/null; }
