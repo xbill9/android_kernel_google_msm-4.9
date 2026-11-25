@@ -72,8 +72,11 @@ res CHECK "sensor list" "$ns sensors registered"
 
 # --- Camera: take one photo with the default camera
 before=$(sh "ls /sdcard/DCIM/Camera 2>/dev/null | wc -l")
-ap=org.lineageos.aperture  # enable Aperture for the photo if the user disabled it
+ap=org.lineageos.aperture  # Aperture back for the photo if the user disabled or removed it
 off=$(sh "pm list packages -d" | grep -c "^package:$ap$"); [ "$off" = 1 ] && sh pm enable $ap >/dev/null
+gone=$(sh "pm list packages $ap" | grep -c "^package:$ap$")  # 0: removed for this user
+[ "$gone" = 0 ] && sh cmd package install-existing $ap >/dev/null
+for pm in CAMERA RECORD_AUDIO ACCESS_FINE_LOCATION; do sh pm grant $ap android.permission.$pm; done
 sh am start -W -a android.media.action.STILL_IMAGE_CAMERA >/dev/null
 for i in $(seq 15); do sh "dumpsys activity activities" | grep -m1 topResumedActivity | grep -q $ap && break; sleep 1; done
 if sh "dumpsys activity activities" | grep -m1 topResumedActivity | grep -q $ap; then
@@ -82,6 +85,7 @@ if sh "dumpsys activity activities" | grep -m1 topResumedActivity | grep -q $ap;
   [ "${after:-0}" -gt "${before:-0}" ] && res PASS camera "photo saved ($(sh "ls -t /sdcard/DCIM/Camera | head -1"))" || res FAIL camera "camera open, but no new photo in DCIM/Camera"
 else res FAIL camera "Aperture did not come to the front within 15 s (phone locked?)"; fi
 sh input keyevent KEYCODE_HOME; sh am force-stop $ap; [ "$off" = 1 ] && sh pm disable-user $ap >/dev/null
+[ "$gone" = 0 ] && sh pm uninstall --user 0 $ap >/dev/null
 res CHECK "camera front" "$(sh "dumpsys media.camera" | grep -m1 -oE 'Number of camera devices: [0-9]+'); switch cameras by hand"
 
 # --- Other hardware
