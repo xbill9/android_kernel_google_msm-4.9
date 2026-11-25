@@ -1494,8 +1494,8 @@
 1491	1db76ec2b4b2	binder: fix memleak of proc->delivered_freeze	ported	766c95e8d7e8	folded into the d579b04a52a1 backport
 1492	cb2aeb2ec258	binder: add delivered_freeze to debugfs output	ported	766c95e8d7e8	folded into the d579b04a52a1 backport
 1493	01e881f5a1fc	userfaultfd: check VM_MAYWRITE was set after verifying the uffd is registered	ported	388ea14d6a04	built since the ROM config set CONFIG_USERFAULTFD=y; hand port
-1494	dadbd85f2afc	mm: Fix MREMAP_DONTUNMAP accounting on VMA merge	ported	e9a51a7b2e38	folded into the e346b3813067 backport
-1495	fdbef6149135	mm/mremap: don't account pages in vma_to_resize()	ported	e9a51a7b2e38	DONTUNMAP part only: charge the new range before copying
-1496	838bb60dc215	mm/mremap: fix locked_vm leak from MREMAP_DONTUNMAP self-merge	ported	e9a51a7b2e38	copy_vma() keep_source: no merge
-1497	597e4b9ab48a	mm/mremap: fix locked_vm leak by splitting VMA for MREMAP_DONTUNMAP	ported	e9a51a7b2e38	split_vma() of a locked source
+1494	dadbd85f2afc	mm: Fix MREMAP_DONTUNMAP accounting on VMA merge	ported	e619f92e3df7	folded into the e346b3813067 backport
+1495	fdbef6149135	mm/mremap: don't account pages in vma_to_resize()	ported	e619f92e3df7	DONTUNMAP part only: charge the new range before copying
+1496	838bb60dc215	mm/mremap: fix locked_vm leak from MREMAP_DONTUNMAP self-merge	ported	e619f92e3df7	copy_vma() keep_source: no merge
+1497	597e4b9ab48a	mm/mremap: fix locked_vm leak by splitting VMA for MREMAP_DONTUNMAP	ported	e619f92e3df7	split_vma() of a locked source
 1498	d15649260661	userfaultfd: fix remap event with MREMAP_DONTUNMAP	n/a		no UFFD_FEATURE_EVENT_REMAP in this kernel
