@@ -25,6 +25,7 @@ export KOUT
 CTS_MODS=${CTS_MODS-CtsNetTestCases}
 UNIT="qmaptest xdptest ringbuftest rawtptest clone3test clone3test32 atomictest udp0test fsveritytest uffdtest mreleasetest membarriertest"
 TREE=${LINEAGE_TREE:-$HOME/android/lineage-24.0}
+KT_STRIP=$TREE/prebuilts/clang/kernel/linux-x86/clang-r416183b/bin/llvm-strip  # the kernel build's clang
 PUSH=; BUILD=1; CHILD=; HOST=local; ONLY=unit,smoke,hw,vts,cts; LOCAL=
 for a in "$@"; do case $a in
   --push) PUSH=1 ;; --no-build) BUILD= ;; --child) CHILD=1 ;; --local) LOCAL=1 ;;
@@ -119,6 +120,14 @@ if [ -n "$CHILD" ]; then
     adb shell 'logcat -b all -d' > "$TOP/boot-logcat.txt"; adb shell dmesg > "$TOP/boot-dmesg.txt"
     say "bpfloader errors: $(grep -E 'BpfLoader|bpfloader|NetBpfLoad' "$TOP/boot-logcat.txt" | grep -E ' E ' | grep -oE '/system[^ :]*\.(bpf|o)' | sort -u | tr '\n' ' ')"
     say "wlan module: $(adb shell 'lsmod | grep -c ^wlan' | tr -d '\r') loaded; symbol errors: $(grep -cE 'disagrees about version|Unknown symbol' "$TOP/boot-dmesg.txt")"
+    # The installed wlan.ko refused (built against other headers): load the test build's own.
+    WKO=$KOUT/drivers/staging/qcacld-3.0/wlan.ko
+    if [ "$(adb shell 'lsmod | grep -c ^wlan' | tr -d '\r')" = 0 ] && [ -f "$WKO" ]; then
+      "$KT_STRIP" --strip-debug -o "$TOP/wlan.ko" "$WKO" && adb push "$TOP/wlan.ko" /data/local/tmp/wlan.ko >/dev/null \
+        && adb shell 'insmod /data/local/tmp/wlan.ko' > "$TOP/wlan-insmod.txt" 2>&1
+      for i in $(seq 30); do adb shell 'ip link show wlan0' >/dev/null 2>&1 && break; sleep 2; done
+      say "wlan module: test build's wlan.ko $(adb shell 'lsmod | grep -c ^wlan' | tr -d '\r') loaded, wlan0 $(adb shell 'ip link show wlan0' >/dev/null 2>&1 && echo up || echo absent) $(tr -d '\r' < "$TOP/wlan-insmod.txt" | tail -1)"
+    fi
     if has unit; then
       for t in $UNIT; do
         adb push "$BT/$t" /data/local/tmp/ >/dev/null
@@ -181,7 +190,9 @@ if [ -n "$BUILD" ] && [ -n "$(git -C "$SRC" status --porcelain -- ':(top)' ':(to
 fi
 if [ -n "$BUILD" ]; then
   echo "building $(git -C "$SRC" log -1 --format='%h %s' | cut -c1-70)"
-  bash "$L24/kbuild.sh" > "$KOUT.log" 2>&1 || { tail -20 "$KOUT.log"; echo "FAIL: kernel build (log: $KOUT.log)"; exit 1; }
+  # The modules too: a change to a structure the module ABI covers (mm_struct in 5f5acb1b48ca)
+  # makes the installed wlan.ko fail "disagrees about version of symbol module_layout".
+  bash "$L24/kbuild.sh" Image.lz4 modules > "$KOUT.log" 2>&1 || { tail -20 "$KOUT.log"; echo "FAIL: kernel build (log: $KOUT.log)"; exit 1; }
   WANT=$(cat "$KOUT/include/config/kernel.release")
 fi
 PH=$(grep -vE '^\s*(#|$)' "$L24/phones.conf" 2>/dev/null || echo "local unit,smoke,hw,vts,cts")
