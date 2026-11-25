@@ -10,7 +10,7 @@ B=$(dirname "$(readlink -f "$0")")
 CC=$(ls -d $T/prebuilts/clang/host/linux-x86/clang-r*/bin/clang | sort -V | tail -1)
 S=$T/out/soong/ndk/sysroot
 I=$T/out/soong/.intermediates/bionic/libc
-ALL="atomictest clone3test fsveritytest qmaptest rawtptest ringbuftest sensorread udp0test xdptest"
+ALL="atomictest clone3test fsveritytest qmaptest rawtptest ringbuftest sensorread udp0test uffdtest xdptest"
 
 build() {  # name output target libdir crtvariant [extra libs]
   local n=$1 o=$2 t=$3 l=$4 v=$5; shift 5
