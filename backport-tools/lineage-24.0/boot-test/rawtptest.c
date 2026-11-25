@@ -192,10 +192,15 @@ static void pin_case(void) {
   check(g >= 0 && strstr(info, "raw_tracepoint") != NULL, "BPF_OBJ_GET on the pin", ev);
   if (g >= 0) close(g);
   int u = unlink(PIN);
-  usleep(100000);  // the last put frees the link from a work item
-  uint64_t c2 = map_read(map);
-  fire("sched_switch");
-  uint64_t c3 = map_read(map);
+  // the last put frees the link from a work item, which can take a while on a busy phone:
+  // wait up to 2 s for the count to stop moving
+  uint64_t c2 = 0, c3 = 1;
+  for (int i = 0; i < 20 && c3 != c2; i++) {
+    usleep(100000);
+    c2 = map_read(map);
+    fire("sched_switch");
+    c3 = map_read(map);
+  }
   snprintf(ev, sizeof(ev), "unlink %s; count %llu -> %llu after", u ? strerror(errno) : "ok",
            (unsigned long long)c2, (unsigned long long)c3);
   check(u == 0 && c3 == c2, "removing the pin detaches", ev);
