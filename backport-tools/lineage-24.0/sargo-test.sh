@@ -214,6 +214,15 @@ PH=$(grep -vE '^\s*(#|$)' "$L24/phones.conf" 2>/dev/null || echo "local unit,smo
 [ -n "$LOCAL" ] && PH="local unit,smoke,hw,vts,cts"
 # A line naming this machine is its own phone: phones.conf then reads the same on every machine.
 PH=$(echo "$PH" | awk -v me="$(hostname)" '$1 == me { $1 = "local" } { print }')
+# SARGO_SKIP_HOSTS="gpu ...": leave those machines and their phones alone (busy with other work);
+# their checks move to this machine's phone.
+if [ -n "${SARGO_SKIP_HOSTS:-}" ]; then
+  PH=$(echo "$PH" | awk -v skip=" $SARGO_SKIP_HOSTS " '
+    index(skip, " " $1 " ") { moved = moved "," $2; next }
+    { line[++n] = $0; if ($1 == "local") me = n }
+    END { if (moved != "") { if (!me) line[me = ++n] = "local " substr(moved, 2); else line[me] = line[me] moved }
+          for (i = 1; i <= n; i++) print line[i] }')
+fi
 TOP=$HOME/sargo-logs/test-${WANT#4.9.337-}-$(date +%Y%m%d-%H%M)
 mkdir -p "$TOP"; S=$TOP/summary.txt
 say() { echo "$(date '+%F %T') $*" | tee -a "$S"; }

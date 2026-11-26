@@ -12,6 +12,9 @@
 #   sargo test       test this kernel tree on the phone without building the ROM (a kernel change
 #                    in progress; builds the kernel alone, about 35 minutes)
 #
+# SARGO_SKIP_HOSTS="gpu" keeps the test and the install off those machines' phones; their checks
+# run on this machine's phone instead.
+#
 # One sargo command runs at a time (they share the build tree and the phone).
 # Logs: ~/sargo-bpf-test/logs/; test reports: ~/sargo-logs/; results: boot-test/results.tsv.
 set -euo pipefail

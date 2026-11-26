@@ -58,6 +58,7 @@ fi
 if [ "${1:-}" = --all ]; then
   shift; T=$(date +%m%d-%H%M); mkdir -p ~/sargo-rom; pids=""; hosts=""
   for h in $(grep -vE '^\s*(#|$)' "$B/phones.conf" | awk '{print $1}'); do
+    case " ${SARGO_SKIP_HOSTS:-} " in *" $h "*) echo "$h: skipped (SARGO_SKIP_HOSTS)"; continue ;; esac
     L=~/sargo-rom/install-$h-$T.log
     if [ "$h" = local ] || [ "$h" = "$(hostname)" ]; then "$SELF" "$@" > "$L" 2>&1 < /dev/null &
     else ssh -o BatchMode=yes -o ConnectTimeout=10 "$h" "~/bin/sargo-install $*" > "$L" 2>&1 < /dev/null & fi
