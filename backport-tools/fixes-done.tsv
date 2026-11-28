@@ -1503,3 +1503,4 @@
 1500	ff73a2bb558f	net: initialize sk_peer_lock in cloned sockets	ported	e96a0317446a	sk_clone_lock(); mainline fix of 2026-11-26 scan
 1501	5677cf0e039b	tun: flush uc and mc addresses in TUNSETLINK	ported	d7656f5f0ce5	no PRE_TYPE_CHANGE notifier in 4.9
 1502	337546e83fc7	mm/oom_kill.c: prevent a race between process_mrelease and exit_mmap	ported	7c8521301574	in the process_mrelease backport (mmget_not_zero)
+1503	95c16f9d9cf9	binder: use EINTR for interrupted wait for work	ported	2bb01e999a33	no Fixes: tag (not in the scan); found from captured gms.unstable crashes
