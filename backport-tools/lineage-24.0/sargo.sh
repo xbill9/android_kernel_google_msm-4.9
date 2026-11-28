@@ -46,7 +46,21 @@ git -C "$SRC" pull -q --ff-only || stop "this kernel tree and GitHub main have d
 bash "$SRC/backport-tools/check-upstream.sh" --apply
 cp "$HERE/local_manifest-sargo.xml" "$T/.repo/local_manifests/sargo.xml"
 cd "$T"
-repo sync -c -j8 --no-tags --no-clone-bundle --optimized-fetch
+# A project the local manifest moves to another repository (art to xbill9/android_art on
+# 2026-11-26) needs --force-sync once: repo will not swap a checked-out project's git dir by
+# itself. Do it for those projects only, when they have no local changes or branches to lose.
+SYNCLOG=~/sargo-bpf-test/logs/repo-sync.log
+if ! repo sync -c -j8 --no-tags --no-clone-bundle --optimized-fetch 2>&1 | tee "$SYNCLOG"; then
+  moved=$(grep -oE 'use `repo sync --force-sync [^`]+`' "$SYNCLOG" | awk '{print $NF}' | tr -d '`' | sort -u)
+  [ -n "$moved" ] || stop "repo sync failed (above)"
+  for p in $moved; do
+    [ -z "$(git -C "$p" status --porcelain)$(git -C "$p" for-each-ref refs/heads)" ] \
+      || stop "repo sync wants --force-sync for $p, which has local changes or branches; save them, then run repo sync --force-sync $p"
+  done
+  echo "moved to another repository: $moved (force-sync)"
+  repo sync -c --force-sync --no-tags --no-clone-bundle $moved || stop "repo sync --force-sync $moved failed (above)"
+  repo sync -c -j8 --no-tags --no-clone-bundle --optimized-fetch || stop "repo sync failed (above)"
+fi
 behind=$(bash "$HERE/update-forks.sh" | grep -v ' 0 behind' | cut -d: -f1 || true)
 if [ -n "$behind" ]; then
   echo "rebasing forks: $behind"
