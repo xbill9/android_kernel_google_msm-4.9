@@ -1500,3 +1500,6 @@
 1497	597e4b9ab48a	mm/mremap: fix locked_vm leak by splitting VMA for MREMAP_DONTUNMAP	ported	e619f92e3df7	split_vma() of a locked source
 1498	d15649260661	userfaultfd: fix remap event with MREMAP_DONTUNMAP	n/a		no UFFD_FEATURE_EVENT_REMAP in this kernel
 1499	9627baed418b	ext4: check multi-block overlap on left traversal in add_system_zone()	ported	2081daf61e64	mainline fix of 2026-11-25 scan; hand port
+1500	ff73a2bb558f	net: initialize sk_peer_lock in cloned sockets	ported	e96a0317446a	sk_clone_lock(); mainline fix of 2026-11-26 scan
+1501	5677cf0e039b	tun: flush uc and mc addresses in TUNSETLINK	ported	d7656f5f0ce5	no PRE_TYPE_CHANGE notifier in 4.9
+1502	337546e83fc7	mm/oom_kill.c: prevent a race between process_mrelease and exit_mmap	ported	7c8521301574	in the process_mrelease backport (mmget_not_zero)
