@@ -23,7 +23,7 @@ SRC=$(cd "$L24/../.." && pwd)
 KOUT=${KOUT:-/android/sargo-bpf-test/kout}
 export KOUT
 CTS_MODS=${CTS_MODS-CtsNetTestCases}
-UNIT="qmaptest xdptest ringbuftest rawtptest clone3test clone3test32 atomictest udp0test fsveritytest uffdtest mreleasetest membarriertest madvisetest tuntest"
+UNIT="qmaptest xdptest ringbuftest rawtptest clone3test clone3test32 atomictest udp0test fsveritytest uffdtest mreleasetest membarriertest madvisetest tuntest binderfreezetest"
 TREE=${LINEAGE_TREE:-$HOME/android/lineage-24.0}
 KT_STRIP=$TREE/prebuilts/clang/kernel/linux-x86/clang-r416183b/bin/llvm-strip  # the kernel build's clang
 PUSH=; BUILD=1; CHILD=; HOST=local; ONLY=unit,smoke,hw,vts,cts; LOCAL=
