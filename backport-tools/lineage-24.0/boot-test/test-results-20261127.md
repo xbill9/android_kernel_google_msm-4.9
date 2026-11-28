@@ -38,3 +38,39 @@ on build. CtsNetTestCases runs on every `sargo-test` (on the phone with the SIM)
   `Killing ...android.security.cts/u0a405 (adj 0): killBackgroundUserProcessesWithAudioRecordPermission`,
   when the run switches to its second user. The run leaves that user
   (`testUser`) running; `pm remove-user` takes it away.
+
+---
+
+#### VTS kernel (`vts-kernel-24.sh all`, the same phone, 22:08 to 23:33)
+
+11 modules pass, 4 fail, 4 skip; 1635 tests pass, 13 fail. Report:
+`~/sargo-logs/936AY07BAJ-vts-kernel-all-20261127-2208/`.
+
+| Module | 11-06 | 11-27 |
+|---|---|---|
+| `drop_caches_test` | 0 pass, 1 fail | 1 pass |
+| `vts_kernel_net_tests` | 577 pass, 70 fail | 647 pass, 0 fail |
+| `f2fs_test` | 4 fail | 4 fail |
+| `vts_test_binary_zram_module` | 1 fail | 1 fail (left out of the script since: see below) |
+| kselftest | 24 pass, 1 fail (`net_psock_tpacket`) | 25 pass, 1 fail (`mm_uffd_unit_tests`) |
+| LTP | 1127 pass, 13 fail | 900 pass, 7 fail (907 tests in this LTP build) |
+
+Every other module passes or is skipped by the runner as before (dynamic
+partitions and virtual A/B need a first API level of 29 and 30; the phone's is 28).
+
+- **`f2fs_test`**: the test formats its image with f2fs compression (5.6) and
+  casefolding (5.4); this f2fs has neither, so the mount fails.
+- **`vts_test_binary_zram_module`** is `zram_module_test`'s binary without the
+  config that roots the phone; as `shell` it may not read `/proc/swaps`
+  (`avc: denied { read } ... tcontext=u:object_r:proc_swaps:s0`).
+  `zram_module_test` passes.
+- **`mm_uffd_unit_tests`**: `zeropage` on shmem fails to register
+  (`errno=22`): userfaultfd on shmem arrived in 4.11 and this tree has the
+  anonymous-memory part only.
+- **LTP**: `getitimer01` and `setitimer01` read a 10000 µs interval back as
+  13323 and 13332 µs, rounded to the 3333 µs tick (CPU-time timers in
+  nanoseconds came with 4.11); `inotify07` and `inotify08` miss events on
+  overlayfs after copy-up (4.13 overlayfs); `ioctl_ns07` and `munmap04` end
+  in `TCONF` ("requires kernel 4.11" and "4.17"), which VTS counts as a
+  failure; `mkdir09` passes on ext2, ext3 and ext4 and exits 255 while
+  formatting ntfs (ntfs-3g over FUSE).
