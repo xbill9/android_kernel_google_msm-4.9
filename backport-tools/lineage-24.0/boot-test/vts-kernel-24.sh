@@ -3,7 +3,9 @@
 # LineageOS tree (atest builds each module and its test runner first). Prints PASS / FAIL
 # per module with its test counts, or SKIP when no test ran (e.g. the feature is absent),
 # and saves each module's atest output.
-# Left out: the GKI, 16 KB page size and bootloader tests, which need a newer kernel or device.
+# Left out: the GKI, 16 KB page size and bootloader tests, which need a newer kernel or device;
+# vts_test_binary_zram_module, zram_module_test's binary without its test config: it runs as
+# shell, which may not read /proc/swaps (avc: denied { read } proc_swaps), and fails there.
 # Usage: vts-kernel-24.sh [quick|ltp|kselftest|all|<module>] [report dir]
 #   quick      the kernel API, file system, encryption, networking and BPF modules
 #   ltp        the Linux Test Project (long)
@@ -15,14 +17,14 @@ SET=${1:-quick}
 QUICK="drop_caches_test vts_kernel_net_tests vts_kernel_encryption_test vts_kernel_loopconfig_test
   vts_memfd_class_selinux_test KernelApiSysfsTest KernelAbilistTest KernelDynamicPartitionsTest
   vts_kernel_checkpoint_test vts_kernel_fuse_bpf_test f2fs_test vts_kernel_toolchain
-  vts_kernel_isa_test zram_module_test vts_test_binary_zram_module vts_virtual_ab_test
+  vts_kernel_isa_test zram_module_test vts_virtual_ab_test
   vts_test_binary_bow_module"
 case $SET in
   quick) MODS=$QUICK; LIMIT=1800 ;;
   ltp) MODS=vts_ltp_test_arm_64; LIMIT=28800 ;;
   kselftest) MODS=vts_linux_kselftest_arm_64; LIMIT=7200 ;;
   all) MODS="$QUICK vts_linux_kselftest_arm_64 vts_ltp_test_arm_64"; LIMIT=28800 ;;
-  -*) sed -n '7,11p' "$0"; exit 1 ;;
+  -*) sed -n '9,13p' "$0"; exit 1 ;;
   *) MODS=$SET; LIMIT=28800 ;;
 esac
 
