@@ -1552,6 +1552,7 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
 			get_net(sock_net(newsk));
 		sk_node_init(&newsk->sk_node);
 		sock_lock_init(newsk);
+		spin_lock_init(&newsk->sk_peer_lock);
 		bh_lock_sock(newsk);
 		newsk->sk_backlog.head	= newsk->sk_backlog.tail = NULL;
 		newsk->sk_backlog.len = 0;
