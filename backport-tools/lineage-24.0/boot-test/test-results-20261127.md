@@ -2,7 +2,7 @@
 
 Phone 936AY07BAJ (Pixel 3a on yoga9i, no SIM), `24.0-20261127-UNOFFICIAL-sargo`
 (release `lineage-24.0-sargo-20261127-1304`), kernel `4.9.337-ga0f3ef14d1cb`.
-CTS modules that touch the kernel, run 2026-11-27 20:21 to 22:58 with
+CTS modules that touch the kernel, run 2026-11-27 20:21 to 22:07 with
 `cts-24.sh` through an SSH tunnel to yoga9i's adb server, Play Protect's adb
 install check off. Report: `~/sargo-logs/936AY07BAJ-cts-kernel-20261127-2021/`
 on build. CtsNetTestCases runs on every `sargo-test` (on the phone with the SIM):
