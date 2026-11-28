@@ -22,6 +22,7 @@ set -u
 SELF=$(readlink -f "$0")
 B=$(dirname "$SELF")
 REPO=xbill9/android_kernel_google_msm-4.9
+RAW=https://raw.githubusercontent.com/$REPO/main/backport-tools/lineage-24.0/phone-install-24.sh
 CACHE=~/sargo-rom
 GAPPS_URL=https://github.com/MindTheGapps/17.0.0-arm64/releases/download/MindTheGapps-17.0.0-arm64-20261022_132445/MindTheGapps-17.0.0-arm64-20261022_132445.zip
 for d in ~/android/lineage-24.0/out/host/linux-x86/bin ~/platform-tools; do [ -x $d/adb ] && PATH=$d:$PATH; done
@@ -61,12 +62,20 @@ if [ "${1:-}" = --all ]; then
     case " ${SARGO_SKIP_HOSTS:-} " in *" $h "*) echo "$h: skipped (SARGO_SKIP_HOSTS)"; continue ;; esac
     L=~/sargo-rom/install-$h-$T.log
     if [ "$h" = local ] || [ "$h" = "$(hostname)" ]; then "$SELF" "$@" > "$L" 2>&1 < /dev/null &
-    else ssh -o BatchMode=yes -o ConnectTimeout=10 "$h" "~/bin/sargo-install $*" > "$L" 2>&1 < /dev/null & fi
+    # A machine without ~/bin/sargo-install yet gets it from GitHub first (the first-run path below).
+    else ssh -o BatchMode=yes -o ConnectTimeout=10 "$h" "if [ -x ~/bin/sargo-install ]; then ~/bin/sargo-install $*; else bash -c 'bash <(curl -fsSL $RAW) $*'; fi" > "$L" 2>&1 < /dev/null & fi
     pids="$pids $!"; hosts="$hosts $h"; echo "$h: installing (log: $L)"
   done
   wait $pids
-  for h in $hosts; do printf '%-16s %s\n' "$h" "$(grep -aE '^=== .* DONE|STOPPED|hw-check:' ~/sargo-rom/install-$h-$T.log | tail -2 | paste -sd' ')"; done
-  exit 0
+  # A host with no DONE or STOPPED line failed before the install started (no SSH, no script):
+  # show the log's last line, and fail.
+  bad=0
+  for h in $hosts; do
+    L=~/sargo-rom/install-$h-$T.log; r=$(grep -aE '^=== .* DONE|STOPPED|hw-check:' "$L" | tail -2 | paste -sd' ')
+    grep -aqE '^=== .* DONE' "$L" || { bad=1; [ -n "$r" ] || r="FAILED: $(tr -d '\000' < "$L" | grep -av '^\s*$' | tail -1)"; }
+    printf '%-16s %s\n' "$h" "$r"
+  done
+  exit $bad
 fi
 BOOTONLY=; [ "${1:-}" = --boot-only ] && { BOOTONLY=1; shift; }
 # One sargo command at a time (absent on a laptop install: no lock needed).

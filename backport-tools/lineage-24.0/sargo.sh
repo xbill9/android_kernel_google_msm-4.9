@@ -99,5 +99,6 @@ echo "$STATE" > "$STATE_FILE"
 echo "published: https://github.com/$REPO/releases/tag/$TAG"
 
 step "6/6 install it on every phone in phones.conf"
-bash "$HERE/phone-install-24.sh" --all "$TAG"   # by tag: the release list lags a new release
+bash "$HERE/phone-install-24.sh" --all "$TAG" \
+  || echo "not installed on every phone (above): run sargo-install $TAG there"   # by tag: the release list lags a new release
 step "done: https://github.com/$REPO/releases/tag/$TAG"
