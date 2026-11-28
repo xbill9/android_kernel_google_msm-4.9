@@ -234,6 +234,9 @@ for p in $(pgrep -f com.android.tradefed); do kill -9 "$p" 2>/dev/null; done
 # then install and run them at the same time without building (atest -i -t).
 if [ "$(echo "$PH" | grep -cE 'vts|cts')" -gt 1 ]; then
   say "building the test modules"
+  # Soong waits only 10 s for out/.lock; another atest (a CTS or VTS run) may be building in
+  # this tree (2026-11-27: "Tried to lock out/.lock, but timed out"). Wait up to an hour for it.
+  [ -e "$TREE/out/.lock" ] && { flock -w 3600 "$TREE/out/.lock" true || say "out/.lock still held after an hour"; }
   ( cd "$TREE" && source build/envsetup.sh >/dev/null 2>&1 && lunch lineage_sargo cp2a userdebug >/dev/null 2>&1 \
     && atest -b vts_kernel_net_tests $CTS_MODS ) > "$TOP/atest-build.log" 2>&1 \
     || { say "FAIL: test module build (atest-build.log)"; exit 1; }
