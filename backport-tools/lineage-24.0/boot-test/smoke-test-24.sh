@@ -77,13 +77,16 @@ off=$(sh "pm list packages -d" | grep -c "^package:$ap$"); [ "$off" = 1 ] && sh 
 gone=$(sh "pm list packages $ap" | grep -c "^package:$ap$")  # 0: removed for this user
 [ "$gone" = 0 ] && sh cmd package install-existing $ap >/dev/null
 for pm in CAMERA RECORD_AUDIO ACCESS_FINE_LOCATION; do sh pm grant $ap android.permission.$pm; done
+# Wake it again here: since the sensor check the screen can have gone back to dozing behind the
+# keyguard, and the camera then never comes to the front (5 of 11 runs to 2026-11-27).
+sh input keyevent KEYCODE_WAKEUP; sh wm dismiss-keyguard; sleep 2
 sh am start -W -a android.media.action.STILL_IMAGE_CAMERA >/dev/null
 for i in $(seq 15); do sh "dumpsys activity activities" | grep -m1 topResumedActivity | grep -q $ap && break; sleep 1; done
 if sh "dumpsys activity activities" | grep -m1 topResumedActivity | grep -q $ap; then
   sleep 4; sh input keyevent KEYCODE_CAMERA
   for i in $(seq 10); do after=$(sh "ls /sdcard/DCIM/Camera 2>/dev/null | wc -l"); [ "${after:-0}" -gt "${before:-0}" ] && break; sleep 1; done
   [ "${after:-0}" -gt "${before:-0}" ] && res PASS camera "photo saved ($(sh "ls -t /sdcard/DCIM/Camera | head -1"))" || res FAIL camera "camera open, but no new photo in DCIM/Camera"
-else res FAIL camera "Aperture did not come to the front within 15 s (phone locked?)"; fi
+else res FAIL camera "Aperture did not come to the front within 15 s ($(sh "dumpsys power" | grep -m1 -oE 'mWakefulness=[A-Za-z]+'), $(sh "dumpsys window" | grep -m1 -oE 'isKeyguardShowing=[a-z]+'))"; fi
 sh input keyevent KEYCODE_HOME; sh am force-stop $ap; [ "$off" = 1 ] && sh pm disable-user $ap >/dev/null
 [ "$gone" = 0 ] && sh pm uninstall --user 0 $ap >/dev/null
 res CHECK "camera front" "$(sh "dumpsys media.camera" | grep -m1 -oE 'Number of camera devices: [0-9]+'); switch cameras by hand"
@@ -107,11 +110,16 @@ else res CHECK "play services" "not installed (sideload GApps)"; fi
 # userdebug build it reads /data/local/tmp/chrome-command-line, so skip that screen for the test only
 CL=/data/local/tmp/chrome-command-line
 sh "[ -e $CL ] && mv $CL $CL.smoke-saved; echo '_ --disable-fre --no-default-browser-check --no-first-run' > $CL; chmod 644 $CL"
-sh am force-stop com.android.chrome; sh "logcat -c"
-sh am start -a android.intent.action.VIEW -d https://example.com com.android.chrome >/dev/null; sleep 20
-nr=$(sh "ps -A -o USER,NAME" | grep -cE '^u0_i[0-9]+ +com.android.chrome:sandboxed')
-ca=$(sh "dumpsys activity activities" | grep -m1 topResumedActivity | grep -oE 'com.android.chrome/[^ ]+')
-[ "$nr" -gt 0 ] && res PASS chrome "$nr sandboxed renderer(s)" || res FAIL chrome "no renderer (${ca:-Chrome not in front})"
+if [ "$(sh "pm list packages com.android.chrome" | grep -c '^package:com.android.chrome$')" = 0 ]; then
+  res CHECK chrome "not installed on this phone"
+else
+  sh am force-stop com.android.chrome; sh "logcat -c"
+  sh input keyevent KEYCODE_WAKEUP; sh wm dismiss-keyguard; sleep 2
+  sh am start -a android.intent.action.VIEW -d https://example.com com.android.chrome >/dev/null; sleep 20
+  nr=$(sh "ps -A -o USER,NAME" | grep -cE '^u0_i[0-9]+ +com.android.chrome:sandboxed')
+  ca=$(sh "dumpsys activity activities" | grep -m1 topResumedActivity | grep -oE 'com.android.chrome/[^ ]+')
+  [ "$nr" -gt 0 ] && res PASS chrome "$nr sandboxed renderer(s)" || res FAIL chrome "no renderer (${ca:-Chrome not in front})"
+fi
 sh input keyevent KEYCODE_HOME; sh am force-stop com.android.chrome
 sh "rm -f $CL; [ -e $CL.smoke-saved ] && mv $CL.smoke-saved $CL"
 nv=$(sh "pm art dump" | grep -cE 'arm64: \[status=verify\]'); np=$(sh "pm art dump" | grep -cE 'arm64: \[status=speed-profile\]')
